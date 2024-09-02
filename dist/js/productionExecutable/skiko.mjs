@@ -14,8 +14,8 @@ var Module=moduleArg;var readyPromiseResolve,readyPromiseReject;Module["ready"]=
 })();
 ;
 export default loadSkikoWASM;
-// This file is merged with skiko.js and skiko.mjs by emcc
-// It used by setup.js and setup.mjs (see in the same directory)
+// This file is merged with skiko.js-0 and skiko.mjs by emcc
+// It used by setup.js-0 and setup.mjs (see in the same directory)
 
 const SkikoCallbacks = (() => {
     const CB_NULL = {
