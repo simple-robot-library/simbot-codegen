@@ -38,7 +38,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew wasmJsBrowserDistribution
+        run: ./gradlew wasmJsBrowserDistribution -s
 
       - uses: actions/upload-artifact@v4
         name: Upload dist
@@ -52,9 +52,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
       - name: Download dist
         uses: actions/download-artifact@v4
@@ -63,11 +63,16 @@ jobs:
 
       - run: ls -R
 
-#      - name: Push changes
-#        uses: ad-m/github-push-action@master
-#        with:
-#          branch: pages
-#          force: true
+      - name: Commit files
+        run: |
+          git add .
+          git commit -a -m "Push dist from ${{ github.sha }}"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: pages
+          force: true
 
       # https://github.com/marketplace/actions/github-push
 
