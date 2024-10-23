@@ -48,7 +48,7 @@ class GradleProjectViewModel : ViewModel() {
     var gradleSettings by mutableStateOf(GradleSettings())
 
     var simbotVersion: String? by mutableStateOf(null)
-    var kotlinVersion: String by mutableStateOf("2.0.0") // TODO initial able?
+    var kotlinVersion: String by mutableStateOf("2.0.20") // TODO initial able?
 
     // TODO generate
     // var withSpring: Boolean by mutableStateOf(false)
