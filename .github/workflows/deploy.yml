@@ -28,6 +28,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -52,9 +53,10 @@ jobs:
     permissions:
       contents: write
     steps:
-#      - uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+      - uses: actions/checkout@v4
+        with:
+          ref: pages
+          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
 
       - name: Download dist
         uses: actions/download-artifact@v4
