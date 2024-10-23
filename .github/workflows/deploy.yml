@@ -9,7 +9,7 @@ name: Deploy Pages
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 concurrency:
   cancel-in-progress: true
