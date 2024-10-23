@@ -1,0 +1,109 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../kotlinpoet/1.19.0-KMP-SNAPSHOT/kotlinpoet-1.19.0-KMP-SNAPSHOT.module",
+    "group": "com.squareup",
+    "module": "kotlinpoet",
+    "version": "1.19.0-KMP-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT.klib",
+          "url": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT.klib",
+          "size": 438451,
+          "sha512": "27098721c7e4a20bfc56a996fba0e2f987572d44964ca91f1041cb383d90d23e51e0233cf431267d55280f69ca94dfae3caabe36dbbe5af74e9b6f4d313875e2",
+          "sha256": "bebf88dea8d75da4796a167e78bfeebf410377ce08db109fe5523668064396ec",
+          "sha1": "c392eefba1d2d65a2cd7dba3441107e10a9ba81a",
+          "md5": "258cdf9c3ed0b7a37472514c1f69fc5d"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT.klib",
+          "url": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT.klib",
+          "size": 438451,
+          "sha512": "27098721c7e4a20bfc56a996fba0e2f987572d44964ca91f1041cb383d90d23e51e0233cf431267d55280f69ca94dfae3caabe36dbbe5af74e9b6f4d313875e2",
+          "sha256": "bebf88dea8d75da4796a167e78bfeebf410377ce08db109fe5523668064396ec",
+          "sha1": "c392eefba1d2d65a2cd7dba3441107e10a9ba81a",
+          "md5": "258cdf9c3ed0b7a37472514c1f69fc5d"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "files": [
+        {
+          "name": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "url": "kotlinpoet-wasm-js-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "size": 121835,
+          "sha512": "bc9e83d17921b14261d88bceeeb3b07c0af2ae0dd87388b0727e32133d4677cb2176e95f71e806b11385176c5d456d9bedcd30816e09cae1609db549c2384c6e",
+          "sha256": "6656c959f24ae407a74db4ff5337f9611ad37f08e6ba79cf6155a97a70c193c7",
+          "sha1": "680988498a36777de756ac2d8efd199a529f4c0c",
+          "md5": "dd5e56cd229cb1b7259946af2553012d"
+        }
+      ]
+    }
+  ]
+}

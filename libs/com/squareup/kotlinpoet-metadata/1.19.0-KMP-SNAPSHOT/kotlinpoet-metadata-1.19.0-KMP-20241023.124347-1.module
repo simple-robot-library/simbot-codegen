@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.squareup",
+    "module": "kotlinpoet-metadata",
+    "version": "1.19.0-KMP-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-metadata-jvm",
+          "version": {
+            "requires": "2.0.10"
+          }
+        },
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet",
+          "version": {
+            "requires": "1.19.0-KMP-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 161211,
+          "sha512": "4e0114b4e8bea581bd8d8c02a18a5e821f33c995dc880f654ef90b133d7c3be219c3c3442c72ac5b097525dd2bc4ad5288fba6a3fcd8f6bf9958107f978640b0",
+          "sha256": "42eeae72d0edfa58202d929aa9e3cecc19191e1b055d6b31e703cb47a9cf9f28",
+          "sha1": "91301e453417120a4b9568c54765c9e90dcff252",
+          "md5": "7ba2f0c01ca156c836a315d06b06d7ba"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.auto",
+          "module": "auto-common",
+          "version": {
+            "requires": "1.2.2"
+          }
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "33.2.1-jre"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-metadata-jvm",
+          "version": {
+            "requires": "2.0.10"
+          }
+        },
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet",
+          "version": {
+            "requires": "1.19.0-KMP-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 161211,
+          "sha512": "4e0114b4e8bea581bd8d8c02a18a5e821f33c995dc880f654ef90b133d7c3be219c3c3442c72ac5b097525dd2bc4ad5288fba6a3fcd8f6bf9958107f978640b0",
+          "sha256": "42eeae72d0edfa58202d929aa9e3cecc19191e1b055d6b31e703cb47a9cf9f28",
+          "sha1": "91301e453417120a4b9568c54765c9e90dcff252",
+          "md5": "7ba2f0c01ca156c836a315d06b06d7ba"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "url": "kotlinpoet-metadata-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "size": 43663,
+          "sha512": "13b2319a82981f4a8e005a23def59b3c7555482c03de040d51641a03b373c3aa26d7f7b941cfde3b7aff3ed886dffa67ef9374abb1bd231a1d23e6d25d2b7937",
+          "sha256": "84d837bcfaffeb326ff2dbfd0deac6878054fb8806ab9a6995c3e86f094aacad",
+          "sha1": "2ba1138d5a9891146a6343ecca22c6e29483135c",
+          "md5": "516b217f76acb54b2a397931e4ffa270"
+        }
+      ]
+    }
+  ]
+}

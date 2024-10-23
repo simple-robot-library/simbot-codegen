@@ -1,0 +1,109 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../kotlinpoet/1.19.0-KMP-SNAPSHOT/kotlinpoet-1.19.0-KMP-SNAPSHOT.module",
+    "group": "com.squareup",
+    "module": "kotlinpoet",
+    "version": "1.19.0-KMP-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 386286,
+          "sha512": "66e9ac0ef67badd8c65c0ac4196e5a5737b8a3e04c086068e786e22130c85f1cad9015aff7d34d609f112dd93291edf5dbd5b0044390aae579bc28794a205a46",
+          "sha256": "dbd1d08da5faf453b32c5ecadcafecec4720616a82bd2e30eea1d712c075b957",
+          "sha1": "3921e2e980581fce8d6e16de50e614aee34fbc7b",
+          "md5": "567394a440efefaf964a7d62119403ce"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 386286,
+          "sha512": "66e9ac0ef67badd8c65c0ac4196e5a5737b8a3e04c086068e786e22130c85f1cad9015aff7d34d609f112dd93291edf5dbd5b0044390aae579bc28794a205a46",
+          "sha256": "dbd1d08da5faf453b32c5ecadcafecec4720616a82bd2e30eea1d712c075b957",
+          "sha1": "3921e2e980581fce8d6e16de50e614aee34fbc7b",
+          "md5": "567394a440efefaf964a7d62119403ce"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "url": "kotlinpoet-jvm-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "size": 124793,
+          "sha512": "0ed4009b314051e419ddf9ba19f914a559e564e1d3c6b79b3fc7ae6a080430f52c5264f5faa7950aac7a96d5b7118541731f052c54e7791d1527e19e7e208ce8",
+          "sha256": "b9e21d9263fc43dfb7cdff15f12dc444b8372024712a275a131b0080b27672bf",
+          "sha1": "777bb19d306bec606dce9f1e6580774bd1bbcfa4",
+          "md5": "2985210a0f293a5884c8c20af45a0842"
+        }
+      ]
+    }
+  ]
+}

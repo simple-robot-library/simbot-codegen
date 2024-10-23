@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.squareup</groupId>
+  <artifactId>kotlinpoet</artifactId>
+  <versioning>
+    <latest>1.19.0-KMP-SNAPSHOT</latest>
+    <versions>
+      <version>1.19.0-KMP-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20241023124347</lastUpdated>
+  </versioning>
+</metadata>

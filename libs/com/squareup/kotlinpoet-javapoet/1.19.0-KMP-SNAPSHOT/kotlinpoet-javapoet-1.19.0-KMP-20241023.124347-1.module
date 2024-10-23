@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.squareup",
+    "module": "kotlinpoet-javapoet",
+    "version": "1.19.0-KMP-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet",
+          "version": {
+            "requires": "1.19.0-KMP-SNAPSHOT"
+          }
+        },
+        {
+          "group": "com.squareup",
+          "module": "javapoet",
+          "version": {
+            "requires": "1.13.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 13957,
+          "sha512": "38ff5678adb5734b2c604f329b83bed337255f67b0149c3cb29bd10d73a12edc5d83ae8bdeeac1c813f07da583a7263a047c2cb955c7ac426a3e739a23b24f7d",
+          "sha256": "3047ab0ba1a116840ba63050fd56afd2dc8c2a21933d451355e621c2b6ef6ac6",
+          "sha1": "c3a13e1b6ce5607c8745e8cece0a005d3be74600",
+          "md5": "0b922b8c0866a1a51f183dce0eeb5b65"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.squareup",
+          "module": "kotlinpoet",
+          "version": {
+            "requires": "1.19.0-KMP-SNAPSHOT"
+          }
+        },
+        {
+          "group": "com.squareup",
+          "module": "javapoet",
+          "version": {
+            "requires": "1.13.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT.jar",
+          "url": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT.jar",
+          "size": 13957,
+          "sha512": "38ff5678adb5734b2c604f329b83bed337255f67b0149c3cb29bd10d73a12edc5d83ae8bdeeac1c813f07da583a7263a047c2cb955c7ac426a3e739a23b24f7d",
+          "sha256": "3047ab0ba1a116840ba63050fd56afd2dc8c2a21933d451355e621c2b6ef6ac6",
+          "sha1": "c3a13e1b6ce5607c8745e8cece0a005d3be74600",
+          "md5": "0b922b8c0866a1a51f183dce0eeb5b65"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "url": "kotlinpoet-javapoet-1.19.0-KMP-SNAPSHOT-sources.jar",
+          "size": 6265,
+          "sha512": "07c17bf60067deed2f7f1397a7313059b3fc38064a6a1f71973c82b20be32477f20d40451af8aea6183eb32705e7bdd1bfe689a0bd048a3b1556248b32de1a0f",
+          "sha256": "12348fe83e1d121c0ab1f68832a0bad804c5bb2493f8bca4795753787958160f",
+          "sha1": "def06b61bb335bc2c6a10a60da61ece673705b0d",
+          "md5": "e9d7737ec1483796145df0fabef4fd60"
+        }
+      ]
+    }
+  ]
+}

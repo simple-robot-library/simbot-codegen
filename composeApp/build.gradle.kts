@@ -14,7 +14,9 @@ repositories {
     //     // https://ktor.io/eap/
     //     url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
     // }
-    mavenLocal()
+    maven {
+        url = rootDir.resolve("libs").toURI()
+    }
 }
 
 kotlin {
