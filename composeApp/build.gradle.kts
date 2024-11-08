@@ -64,8 +64,8 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
             implementation("io.ktor:ktor-client-core:$ktor")
 
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.2")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
+            implementation(libs.kotlin.serialization.core)
+            implementation(libs.kotlin.serialization.json)
 
         }
 
