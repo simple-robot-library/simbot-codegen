@@ -2,63 +2,23 @@ package love.forte.simbot.codegen.gen.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.onClick
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.UrlAnnotation
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,19 +26,13 @@ import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import love.forte.simbot.codegen.DefaultTextLinkStyles
 import love.forte.simbot.codegen.JsDate
 import love.forte.simbot.codegen.filesaver.saveAs
-import love.forte.simbot.codegen.gen.COMPONENT_KOOK
-import love.forte.simbot.codegen.gen.COMPONENT_OB_11
-import love.forte.simbot.codegen.gen.COMPONENT_QQ
-import love.forte.simbot.codegen.gen.ComponentVersion
-import love.forte.simbot.codegen.gen.GradleProjectViewModel
-import love.forte.simbot.codegen.gen.SIMBOT_VERSION
-import love.forte.simbot.codegen.gen.SimbotComponent
-import love.forte.simbot.codegen.gen.SimbotComponentWithVersion
-import love.forte.simbot.codegen.gen.doGenerate
+import love.forte.simbot.codegen.gen.*
 import love.forte.simbot.codegen.jszip.JsZipFileGenerateOptions
 import love.forte.simbot.codegen.versions.fetchLatest
+import love.forte.simbot.codegen.withLink
 import org.w3c.files.Blob
 import kotlin.time.Duration.Companion.seconds
 
@@ -107,7 +61,7 @@ operator fun LoadingCounter.dec(): LoadingCounter = apply { removeLoading() }
  * Composable function to display the view for configuring Gradle project settings.
  *
  * This view allows users to manage settings related to a*/
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun GradleSettingsView(
     projectViewModel: GradleProjectViewModel = viewModel { GradleProjectViewModel() },
@@ -135,18 +89,29 @@ fun GradleSettingsView(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("© ${JsDate().getFullYear()} ")
-                    val link = "https://github.com/simple-robot"
-                    ClickableText(
-                        buildAnnotatedString {
-                            withStyle(SpanStyle(color = Color.Blue)) {
-                                append("Simple Robot.")
-                                pushUrlAnnotation(UrlAnnotation(link))
-                            }
-                        }) {
-                        window.open(link, target = "_blank")
+
+                    val textWithLink = buildAnnotatedString {
+                        append("© ")
+                        append(JsDate().getFullYear().toString())
+                        append(" ")
+                        withLink(text = "Simple Robot", url = "https://github.com/simple-robot")
+                        append(" All rights reserved.")
                     }
-                    Text("All rights reserved.")
+
+                    Text(textWithLink)
+
+                    // Text("© ${JsDate().getFullYear()} ")
+                    // val link = "https://github.com/simple-robot"
+                    // ClickableText(
+                    //     buildAnnotatedString {
+                    //         withStyle(SpanStyle(color = Color.Blue)) {
+                    //             append("Simple Robot.")
+                    //             pushUrlAnnotation(UrlAnnotation(link))
+                    //         }
+                    //     }) {
+                    //     window.open(link, target = "_blank")
+                    // }
+                    // Text("All rights reserved.")
                 }
             }
         },
@@ -364,18 +329,13 @@ private fun SimbotVersion(
             Column {
                 Text("输入一个要使用的simbot版本。")
                 Row {
-                    Text("可前往 ")
-                    val link = "https://github.com/simple-robot/simpler-robot/releases"
-                    ClickableText(
+                    Text(
                         buildAnnotatedString {
-                            withStyle(SpanStyle(color = Color.Blue)) {
-                                append("Releases")
-                                pushUrlAnnotation(UrlAnnotation(link))
-                            }
-                        }) {
-                        window.open(link, target = "_blank")
-                    }
-                    Text(" 参考。")
+                            append("可前往 ")
+                            withLink("Releases", "https://github.com/simple-robot/simpler-robot/releases")
+                            append(" 参考并选择版本。")
+                        }
+                    )
                 }
             }
         }
