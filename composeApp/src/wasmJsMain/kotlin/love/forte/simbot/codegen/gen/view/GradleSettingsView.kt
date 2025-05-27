@@ -7,7 +7,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -200,27 +203,28 @@ private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: Loadin
  */
 @Composable
 private fun ProjectName(project: GradleProjectViewModel) {
-    val isDanger = project.projectName.isEmpty() //  by remember { mutableStateOf(false) }
+    val isDanger = project.projectName.isEmpty()
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("项目名称") },
-        placeholder = { Text("你的项目名称") },
+    EnhancedTextField(
+        value = project.projectName,
+        onValueChange = { project.projectName = it },
+        label = "项目名称",
+        placeholder = "你的项目名称",
+        isError = isDanger,
+        singleLine = true,
         supportingText = {
             Column {
                 Text("你的项目名称。同时也会作为项目的工件名。")
                 Text("建议仅包含大小写英文、数字和下划线，不以数字为开头，且长度不可大于60。")
                 AnimatedVisibility(isDanger) {
-                    Text("项目名称不可为空！", fontWeight = FontWeight.Bold)
+                    Text(
+                        "项目名称不可为空！", 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
-        },
-        isError = isDanger,
-        singleLine = true,
-        value = project.projectName,
-        onValueChange = {
-            project.projectName = it
-        },
+        }
     )
 }
 
@@ -235,10 +239,13 @@ private fun ProjectName(project: GradleProjectViewModel) {
 private fun ProjectPackage(project: GradleProjectViewModel) {
     val isDanger = !project.projectPackage.matches(Regex("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*"))
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("项目包") },
-        placeholder = { Text("你的项目根包结构") },
+    EnhancedTextField(
+        value = project.projectPackage,
+        onValueChange = { project.projectPackage = it },
+        label = "项目包",
+        placeholder = "你的项目根包结构",
+        isError = isDanger,
+        singleLine = true,
         supportingText = {
             Column {
                 Text(
@@ -246,16 +253,20 @@ private fun ProjectPackage(project: GradleProjectViewModel) {
                             "包结构应当至少有一层，整体长度不可大于120。"
                 )
                 AnimatedVisibility(isDanger) {
-                    Text("项目包结构格式不匹配！", fontWeight = FontWeight.Bold)
+                    Text(
+                        "项目包结构格式不匹配！",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         },
-        isError = isDanger,
-        singleLine = true,
-        value = project.projectPackage,
-        onValueChange = {
-            project.projectPackage = it
-        },
+        // isError = isDanger,
+        // singleLine = true,
+        // value = project.projectPackage,
+        // onValueChange = {
+        //     project.projectPackage = it
+        // },
     )
 }
 
@@ -263,37 +274,55 @@ private fun ProjectPackage(project: GradleProjectViewModel) {
 private fun LanguageSelection(
     project: GradleProjectViewModel,
 ) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+        ),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        )
+    ) {
         Row(
-            modifier = Modifier.padding(horizontal = 6.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(
-                    selected = true,
-                    enabled = false,
-                    onClick = {}
+            // Row(
+            //     modifier = Modifier.padding(horizontal = 6.dp),
+            //     verticalAlignment = Alignment.CenterVertically,
+            // ) {
+            RadioButton(
+                selected = true,
+                enabled = false,
+                onClick = {},
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = MaterialTheme.colorScheme.primary
                 )
+            )
 
-                Text("Kotlin")
-            }
+            Text(
+                "Kotlin",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+
+            // }
         }
     }
     KotlinVersion(project)
 }
 
 @Composable
-private fun KotlinVersion(
-    project: GradleProjectViewModel,
-) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
+private fun KotlinVersion(project: GradleProjectViewModel) {
+    EnhancedTextField(
         value = project.kotlinVersion,
         onValueChange = { project.kotlinVersion = it.trim() },
-        label = { Text("Kotlin 版本") },
+        label = "Kotlin 版本",
         trailingIcon = null,
         supportingText = {
             Column {
@@ -330,16 +359,13 @@ private fun SimbotVersion(
         }
     }
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        enabled = !isLoading,
+    EnhancedTextField(
         value = simbotVersion ?: "",
         onValueChange = { project.simbotVersion = it.trim() },
-        label = {
-            Text("simbot版本")
-        },
+        label = "simbot版本",
+        enabled = !isLoading,
         trailingIcon = {
-            AnimatedVisibility(isLoading) {
+        AnimatedVisibility(isLoading) {
                 SearchingIcon()
             }
         },
@@ -365,12 +391,15 @@ private fun SimbotVersion(
 private fun GradleVersion(project: GradleProjectViewModel) {
     val isDanger = project.gradleSettings.version.isEmpty()
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text("Gradle版本") },
-        placeholder = { Text("请输入Gradle版本") },
+    EnhancedTextField(
+        value = project.gradleSettings.version,
+        onValueChange = { project.gradleSettings.version = it },
+        label = "Gradle版本",
+        placeholder = "请输入Gradle版本",
+        isError = isDanger,
+        singleLine = true,
         supportingText = {
-            Column {
+        Column {
                 Text(
                     "输入一个要使用的Gradle版本"
                 )
@@ -379,29 +408,62 @@ private fun GradleVersion(project: GradleProjectViewModel) {
                 }
             }
         },
-        isError = isDanger,
-        singleLine = true,
-        value = project.gradleSettings.version,
-        onValueChange = {
-            project.gradleSettings.version = it
-        },
+        // isError = isDanger,
+        // singleLine = true,
+        // value = project.gradleSettings.version,
+        // onValueChange = {
+        //     project.gradleSettings.version = it
+        // },
     )
 }
 
 @Composable
 private fun WithSpring(project: GradleProjectViewModel) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .hoverable(interactionSource),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isHovered)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            else
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+        ),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = if (project.withSpring)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else
+                MaterialTheme.colorScheme.surface
+        )
+    ) {
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Checkbox(
                 checked = project.withSpring,
                 onCheckedChange = {
                     project.withSpring = it
                 },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.outline
+                )
             )
 
-            Text("集成 Spring Boot")
+            Text(
+                "集成 Spring Boot",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (project.withSpring) FontWeight.Medium else FontWeight.Normal
+            )
         }
     }
 }
@@ -587,33 +649,50 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
                         }
                     }
 
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp),
-                        enabled = !loadingVersion,
+                    EnhancedTextField(
                         value = versionDisplay,
                         onValueChange = {
                             componentWithVersion.version = ComponentVersion.Value(it)
                         },
+                        enabled = !loadingVersion,
                         isError = !loadingVersion && versionDisplay.isEmpty(),
-                        label = {
-                            Text("${component.display}版本号")
-                        },
-                        placeholder = {
-                            if (loadingVersion) {
-                                Text("查询中...")
-                            } else {
-                                Text("版本号")
-                            }
-                        },
+                        label = "${component.display}版本号",
+                        placeholder = if (loadingVersion) "查询中..." else "版本号",
                         trailingIcon = {
                             AnimatedVisibility(loadingVersion) {
                                 SearchingIcon()
                             }
                         },
-                        shape = RoundedCornerShape(8.dp)
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
+
+                    // OutlinedTextField(
+                    //     modifier = Modifier
+                    //         .fillMaxWidth()
+                    //         .padding(bottom = 12.dp),
+                    //     enabled = !loadingVersion,
+                    //     value = versionDisplay,
+                    //     onValueChange = {
+                    //         componentWithVersion.version = ComponentVersion.Value(it)
+                    //     },
+                    //     isError = !loadingVersion && versionDisplay.isEmpty(),
+                    //     label = {
+                    //         Text("${component.display}版本号")
+                    //     },
+                    //     placeholder = {
+                    //         if (loadingVersion) {
+                    //             Text("查询中...")
+                    //         } else {
+                    //             Text("版本号")
+                    //         }
+                    //     },
+                    //     trailingIcon = {
+                    //         AnimatedVisibility(loadingVersion) {
+                    //             SearchingIcon()
+                    //         }
+                    //     },
+                    //     shape = RoundedCornerShape(8.dp)
+                    // )
                 }
             }
         }
@@ -626,6 +705,8 @@ private fun DoDownload(
     loadingCounter: LoadingCounter
 ) {
     val scope = rememberCoroutineScope()
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
     Button(
         enabled = !loadingCounter.hasLoading,
@@ -642,8 +723,13 @@ private fun DoDownload(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(8.dp),
+            .height(56.dp).shadow(
+                elevation = if (isPressed) 0.dp else 4.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            ),
+        shape = RoundedCornerShape(12.dp),
+        interactionSource = interactionSource,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -658,9 +744,11 @@ private fun DoDownload(
             Icon(
                 Icons.Default.Download,
                 contentDescription = "下载",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(end = 8.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 "生成并下载",
                 fontSize = 18.sp,
@@ -734,4 +822,87 @@ private suspend fun doDownload(
     ).await<Blob>()
 
     saveAs(blob, "$name.zip")
+}
+
+/**
+ * 定制化的输入框组件，提供统一的样式和交互体验
+ */
+@Composable
+private fun EnhancedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String,
+    placeholder: String? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    enabled: Boolean = true,
+    singleLine: Boolean = false,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    
+    val borderColor by animateColorAsState(
+        targetValue = when {
+            isError -> MaterialTheme.colorScheme.error
+            isFocused -> MaterialTheme.colorScheme.primary
+            else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "边框颜色动画"
+    )
+    
+    val backgroundColor by animateColorAsState(
+        targetValue = when {
+            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            else -> MaterialTheme.colorScheme.surface
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "背景颜色动画"
+    )
+    
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            ),
+        label = { 
+            Text(
+                text = label,
+                fontWeight = if (isFocused) FontWeight.Medium else FontWeight.Normal
+            ) 
+        },
+        placeholder = placeholder?.let { { Text(it) } },
+        supportingText = supportingText,
+        isError = isError,
+        singleLine = singleLine,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        trailingIcon = trailingIcon,
+        leadingIcon = leadingIcon,
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = borderColor,
+            unfocusedBorderColor = borderColor.copy(alpha = 0.7f),
+            focusedContainerColor = backgroundColor,
+            unfocusedContainerColor = backgroundColor,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f),
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    )
 }
