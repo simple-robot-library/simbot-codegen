@@ -7,15 +7,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import love.forte.simbot.codegen.filesaver.saveAs
-import love.forte.simbot.codegen.gen.GradleProjectViewModel
-import love.forte.simbot.codegen.gen.SimbotComponent
-import love.forte.simbot.codegen.gen.SimbotComponentWithVersion
-import love.forte.simbot.codegen.gen.doGenerate
 import love.forte.simbot.codegen.gen.view.GradleSettingsView
-import love.forte.simbot.codegen.jszip.JsZipFileGenerateOptions
 import org.jetbrains.compose.resources.Font
-import org.w3c.files.Blob
 import simbot_codegen.composeapp.generated.resources.LXGWNeoXiHeiScreen
 import simbot_codegen.composeapp.generated.resources.Res
 
@@ -84,48 +77,27 @@ fun App() {
         )
     ) {
         GradleSettingsView()
-        // var showContent by remember { mutableStateOf(false) }
-        // Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        //     Button(onClick = {
-        //         showContent = !showContent
-        //         scope.launch { doDownload(gradleModel) }
-        //     }) {
-        //         Text("Click me!")
-        //     }
-        //
-        //     AnimatedVisibility(showContent) {
-        //         val greeting = remember { Greeting().greet() }
-        //         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        //             Image(painterResource(Res.drawable.compose_multiplatform), null)
-        //             Text("Compose: $greeting")
-        //         }
-        //     }
-        // }
     }
 }
-
-private suspend fun doDownload(gradleModel: GradleProjectViewModel) {
-    gradleModel.components.addAll(SimbotComponent.entries.map { SimbotComponentWithVersion(it) })
-
-    val zip = doGenerate(gradleModel)
-    log(zip)
-
-    val opt = JsZipFileGenerateOptions("blob")
-    log(opt)
-
-    val promise = zip.generateAsync(opt)
-
-    promise.then { blob ->
-        log(blob)
-        saveAs(blob.unsafeCast<Blob>(), "file.zip")
-        null
-    }
-
-    // val blob = promise.await<JsAny>().unsafeCast<Blob>()
-    // log(blob)
-    // saveAs(blob.unsafeCast<Blob>(), "zip.zip")
-}
-
-internal fun log(any: JsAny?) {
-    js("console.log(any)")
-}
+//
+// private suspend fun doDownload(gradleModel: GradleProjectViewModel) {
+//     gradleModel.components.addAll(SimbotComponent.entries.map { SimbotComponentWithVersion(it) })
+//
+//     val zip = doGenerate(gradleModel)
+//     log(zip)
+//
+//     val opt = JsZipFileGenerateOptions("blob")
+//     log(opt)
+//
+//     val promise = zip.generateAsync(opt)
+//
+//     promise.then { blob ->
+//         log(blob)
+//         saveAs(blob.unsafeCast<Blob>(), "file.zip")
+//         null
+//     }
+//
+//     // val blob = promise.await<JsAny>().unsafeCast<Blob>()
+//     // log(blob)
+//     // saveAs(blob.unsafeCast<Blob>(), "zip.zip")
+// }
