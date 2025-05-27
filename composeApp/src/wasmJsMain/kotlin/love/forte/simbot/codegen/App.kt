@@ -1,21 +1,32 @@
 package love.forte.simbot.codegen
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import love.forte.simbot.codegen.gen.view.GradleSettingsView
-import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.preloadFont
 import simbot_codegen.composeapp.generated.resources.LXGWNeoXiHeiScreen
 import simbot_codegen.composeapp.generated.resources.Res
 
 
 @Composable
 fun App() {
-    val fm = FontFamily(Font(Res.font.LXGWNeoXiHeiScreen))
+    @OptIn(ExperimentalResourceApi::class)
+    val font by preloadFont(resource = Res.font.LXGWNeoXiHeiScreen)
+    val fm = font?.let { FontFamily(it) }
+    // val fm = FontFamily(Font(Res.font.LXGWNeoXiHeiScreen))
+    // preloadFont()
 
     val darkTheme = isSystemInDarkTheme()
 
@@ -55,28 +66,33 @@ fun App() {
         )
     }
 
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = MaterialTheme.typography.copy(
-            displayLarge = MaterialTheme.typography.displayLarge.copy(fontFamily = fm),
-            displayMedium = MaterialTheme.typography.displayMedium.copy(fontFamily = fm),
-            displaySmall = MaterialTheme.typography.displaySmall.copy(fontFamily = fm),
-            headlineLarge = MaterialTheme.typography.headlineLarge.copy(fontFamily = fm),
-            headlineMedium = MaterialTheme.typography.headlineMedium.copy(fontFamily = fm),
-            headlineSmall = MaterialTheme.typography.headlineSmall.copy(fontFamily = fm),
-            titleLarge = MaterialTheme.typography.titleLarge.copy(fontFamily = fm),
-            titleMedium = MaterialTheme.typography.titleMedium.copy(fontFamily = fm),
-            titleSmall = MaterialTheme.typography.titleSmall.copy(fontFamily = fm),
-            bodyLarge = MaterialTheme.typography.bodyLarge.copy(fontFamily = fm),
-            bodyMedium = MaterialTheme.typography.bodyMedium.copy(fontFamily = fm),
-            bodySmall = MaterialTheme.typography.bodySmall.copy(fontFamily = fm),
-            labelLarge = MaterialTheme.typography.labelLarge.copy(fontFamily = fm),
-            labelMedium = MaterialTheme.typography.labelMedium.copy(fontFamily = fm),
-            labelSmall = MaterialTheme.typography.labelSmall.copy(fontFamily = fm),
-        )
-    ) {
-        GradleSettingsView()
+    if (fm == null) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    } else {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = MaterialTheme.typography.copy(
+                displayLarge = MaterialTheme.typography.displayLarge.copy(fontFamily = fm),
+                displayMedium = MaterialTheme.typography.displayMedium.copy(fontFamily = fm),
+                displaySmall = MaterialTheme.typography.displaySmall.copy(fontFamily = fm),
+                headlineLarge = MaterialTheme.typography.headlineLarge.copy(fontFamily = fm),
+                headlineMedium = MaterialTheme.typography.headlineMedium.copy(fontFamily = fm),
+                headlineSmall = MaterialTheme.typography.headlineSmall.copy(fontFamily = fm),
+                titleLarge = MaterialTheme.typography.titleLarge.copy(fontFamily = fm),
+                titleMedium = MaterialTheme.typography.titleMedium.copy(fontFamily = fm),
+                titleSmall = MaterialTheme.typography.titleSmall.copy(fontFamily = fm),
+                bodyLarge = MaterialTheme.typography.bodyLarge.copy(fontFamily = fm),
+                bodyMedium = MaterialTheme.typography.bodyMedium.copy(fontFamily = fm),
+                bodySmall = MaterialTheme.typography.bodySmall.copy(fontFamily = fm),
+                labelLarge = MaterialTheme.typography.labelLarge.copy(fontFamily = fm),
+                labelMedium = MaterialTheme.typography.labelMedium.copy(fontFamily = fm),
+                labelSmall = MaterialTheme.typography.labelSmall.copy(fontFamily = fm),
+            )
+        ) {
+            GradleSettingsView()
+        }
     }
 }
 //
