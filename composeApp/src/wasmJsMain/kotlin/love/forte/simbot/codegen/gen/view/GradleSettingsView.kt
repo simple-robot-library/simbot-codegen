@@ -2,31 +2,37 @@ package love.forte.simbot.codegen.gen.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import love.forte.simbot.codegen.DefaultTextLinkStyles
 import love.forte.simbot.codegen.JsDate
 import love.forte.simbot.codegen.filesaver.saveAs
 import love.forte.simbot.codegen.gen.*
@@ -71,74 +77,36 @@ fun GradleSettingsView(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = topAppBarColors(
-                    // containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    // titleContentColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 title = {
-                    Text("Simbot Codegen")
+                    Text(
+                        "Simbot Codegen",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
                 }
             )
         },
-        bottomBar = {
-            BottomAppBar(
-                // containerColor = MaterialTheme.colorScheme.primaryContainer,
-                // contentColor = MaterialTheme.colorScheme.primary,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    val textWithLink = buildAnnotatedString {
-                        append("© ")
-                        append(JsDate().getFullYear().toString())
-                        append(" ")
-                        withLink(text = "Simple Robot", url = "https://github.com/simple-robot")
-                        append(" All rights reserved.")
-                    }
-
-                    Text(textWithLink)
-
-                    // Text("© ${JsDate().getFullYear()} ")
-                    // val link = "https://github.com/simple-robot"
-                    // ClickableText(
-                    //     buildAnnotatedString {
-                    //         withStyle(SpanStyle(color = Color.Blue)) {
-                    //             append("Simple Robot.")
-                    //             pushUrlAnnotation(UrlAnnotation(link))
-                    //         }
-                    //     }) {
-                    //     window.open(link, target = "_blank")
-                    // }
-                    // Text("All rights reserved.")
-                }
-            }
-        },
-
         content = { innerPaddings ->
-            val focusManager = LocalFocusManager.current
+            // val focusManager = LocalFocusManager.current
             val scrollState = rememberScrollState()
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPaddings)
                     .padding(top = 8.dp, bottom = 8.dp)
-                    .verticalScroll(scrollState)
-                    .onClick {
-                        focusManager.clearFocus()
-                    },
+                    .verticalScroll(scrollState),
+                    // .onClick {
+                    //     focusManager.clearFocus()
+                    // },
                 contentAlignment = Alignment.TopCenter,
             ) {
                 SettingViewContent(projectViewModel, loadingCounter)
             }
         }
     )
-    // Box(
-    //     modifier = Modifier.fillMaxSize(),
-    //     contentAlignment = androidx.compose.ui.Alignment.Center,
-    // ) {
-    // }
 }
 
 
@@ -157,10 +125,27 @@ private fun SettingViewContent(
 @Composable
 private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: LoadingCounter) {
     Column(
-        modifier = Modifier.focusGroup(),
+        modifier = Modifier
+            .focusGroup()
+            .padding(16.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(24.dp),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-    ) {
+        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
+    )
+    {
+        Text(
+            "项目配置",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         ProjectName(project)
         ProjectPackage(project)
         LanguageSelection(project)
@@ -169,8 +154,41 @@ private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: Loadin
         WithSpring(project)
         ComponentSelection(project, loadingCounter)
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         // Do download
         DoDownload(project, loadingCounter)
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Footer at the bottom of the content
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val textWithLink = buildAnnotatedString {
+                append("© ")
+                append(JsDate().getFullYear().toString())
+                append(" ")
+                withLink(text = "Simple Robot", url = "https://github.com/simple-robot")
+                append(" All rights reserved.")
+            }
+            
+            Text(
+                text = textWithLink,
+                style = MaterialTheme.typography.bodySmall,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -393,40 +411,149 @@ private fun WithSpring(project: GradleProjectViewModel) {
 private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: LoadingCounter) {
     val components = project.components
 
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
     ) {
-        SimbotComponent.entries.forEach { simbotComponent ->
-            val isSelected = components.any { it.component == simbotComponent }
+        // 标题区域
+        Column(modifier = Modifier.padding(bottom = 16.dp)) {
+            Text(
+                "组件选择",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
 
-            ElevatedFilterChip(
-                selected = isSelected,
-                onClick = {
-                    if (isSelected) {
-                        components.removeAll { it.component == simbotComponent }
-                    } else {
-                        components.add(SimbotComponentWithVersion(simbotComponent, ComponentVersion.UNKNOWN))
-                    }
-                },
-                label = { Text(simbotComponent.display) },
-                leadingIcon = {
-                    AnimatedVisibility(isSelected) {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Done icon",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                }
+            Text(
+                "选择您需要的组件，系统将自动获取最新版本",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
-    }
 
-    Column {
-        components.forEach { componentWithVersion ->
-            val component = componentWithVersion.component
-            val version = componentWithVersion.version
+        // 组件选择区域
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            tonalElevation = 1.dp,
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        ) {
+            FlowRow(
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                SimbotComponent.entries.forEach { simbotComponent ->
+                    val isSelected = components.any { it.component == simbotComponent }
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isHovered by interactionSource.collectIsHoveredAsState()
+
+                    val backgroundColor by animateColorAsState(
+                        targetValue = when {
+                            isSelected -> MaterialTheme.colorScheme.primaryContainer
+                            isHovered -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                            else -> MaterialTheme.colorScheme.surface
+                        },
+                        label = "背景颜色动画"
+                    )
+
+                    val borderColor by animateColorAsState(
+                        targetValue = when {
+                            isSelected -> MaterialTheme.colorScheme.primary
+                            isHovered -> MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                            else -> MaterialTheme.colorScheme.outlineVariant
+                        },
+                        label = "边框颜色动画"
+                    )
+
+                    val textColor by animateColorAsState(
+                        targetValue = when {
+                            isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
+                            else -> MaterialTheme.colorScheme.onSurface
+                        },
+                        label = "文本颜色动画"
+                    )
+
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            if (isSelected) {
+                                components.removeAll { it.component == simbotComponent }
+                            } else {
+                                components.add(SimbotComponentWithVersion(simbotComponent, ComponentVersion.UNKNOWN))
+                            }
+                        },
+                        label = {
+                            Text(
+                                simbotComponent.display,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = textColor
+                            )
+                        },
+                        leadingIcon = {
+                            AnimatedVisibility(isSelected) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "已选择",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        interactionSource = interactionSource,
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = backgroundColor,
+                            labelColor = textColor,
+                            selectedContainerColor = backgroundColor,
+                            selectedLabelColor = textColor,
+                            iconColor = MaterialTheme.colorScheme.primary
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = borderColor,
+                            selectedBorderColor = borderColor,
+                            selectedBorderWidth = 1.5.dp,
+                            borderWidth = 1.dp
+                        ),
+                        elevation = FilterChipDefaults.filterChipElevation(
+                            elevation = 0.dp,
+                            pressedElevation = 2.dp,
+                            hoveredElevation = if (isSelected) 0.dp else 1.dp
+                        )
+                    )
+                }
+            }
+        }
+
+        // 所选组件的版本配置区域
+        AnimatedVisibility(visible = components.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                if (components.isNotEmpty()) {
+                    Text(
+                        "组件版本配置",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+
+                components.forEach { componentWithVersion ->
+                    val component = componentWithVersion.component
+                    val version = componentWithVersion.version
 
             var loadingVersion by remember(component) { mutableStateOf(false) }
 
@@ -435,64 +562,60 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
                 is ComponentVersion.Value -> version.value
             }
 
-            if (version is ComponentVersion.UNKNOWN) {
-                LaunchedEffect(component) {
-                    loadingVersion = true
-                    loadingCounter.inc()
-                    try {
-                        withTimeout(5.seconds) {
-                            val latest = fetchLatest(component.owner, component.repo)
-                            componentWithVersion.version = ComponentVersion.Value(latest.tagName.removePrefix("v"))
-                        }
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                        componentWithVersion.version = ComponentVersion.Value(
-                            when (component) {
-                                SimbotComponent.QQ -> COMPONENT_QQ.version?.version ?: ""
-                                SimbotComponent.KOOK -> COMPONENT_KOOK.version?.version ?: ""
-                                SimbotComponent.OB -> COMPONENT_OB_11.version?.version ?: ""
+                    if (version is ComponentVersion.UNKNOWN) {
+                        LaunchedEffect(component) {
+                            loadingVersion = true
+                            loadingCounter.inc()
+                            try {
+                                withTimeout(5.seconds) {
+                                    val latest = fetchLatest(component.owner, component.repo)
+                                    componentWithVersion.version = ComponentVersion.Value(latest.tagName.removePrefix("v"))
+                                }
+                            } catch (e: Throwable) {
+                                e.printStackTrace()
+                                componentWithVersion.version = ComponentVersion.Value(
+                                    when (component) {
+                                        SimbotComponent.QQ -> COMPONENT_QQ.version?.version ?: ""
+                                        SimbotComponent.KOOK -> COMPONENT_KOOK.version?.version ?: ""
+                                        SimbotComponent.OB -> COMPONENT_OB_11.version?.version ?: ""
+                                    }
+                                )
+                            } finally {
+                                loadingVersion = false
+                                loadingCounter.dec()
                             }
-                        )
-                    } finally {
-                        loadingVersion = false
-                        loadingCounter.dec()
+                        }
                     }
-                }
 
-                // LaunchedEffect(component) {
-                //     componentWithVersion.version = ComponentVersion.Value(
-                //         when (component) {
-                //             SimbotComponent.QQ -> COMPONENT_QQ.version?.version ?: ""
-                //             SimbotComponent.KOOK -> COMPONENT_KOOK.version?.version ?: ""
-                //             SimbotComponent.OB -> COMPONENT_OB_11.version?.version ?: ""
-                //         }
-                //     )
-                // }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        enabled = !loadingVersion,
+                        value = versionDisplay,
+                        onValueChange = {
+                            componentWithVersion.version = ComponentVersion.Value(it)
+                        },
+                        isError = !loadingVersion && versionDisplay.isEmpty(),
+                        label = {
+                            Text("${component.display}版本号")
+                        },
+                        placeholder = {
+                            if (loadingVersion) {
+                                Text("查询中...")
+                            } else {
+                                Text("版本号")
+                            }
+                        },
+                        trailingIcon = {
+                            AnimatedVisibility(loadingVersion) {
+                                SearchingIcon()
+                            }
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
             }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !loadingVersion,
-                value = versionDisplay,
-                onValueChange = {
-                    componentWithVersion.version = ComponentVersion.Value(it)
-                },
-                isError = !loadingVersion && versionDisplay.isEmpty(),
-                label = {
-                    Text("${component.display}版本号")
-                },
-                placeholder = {
-                    if (loadingVersion) {
-                        Text("查询中...")
-                    } else {
-                        Text("版本号")
-                    }
-                },
-                trailingIcon = {
-                    AnimatedVisibility(loadingVersion) {
-                        SearchingIcon()
-                    }
-                },
-            )
         }
     }
 }
@@ -504,7 +627,7 @@ private fun DoDownload(
 ) {
     val scope = rememberCoroutineScope()
 
-    FilledTonalButton(
+    Button(
         enabled = !loadingCounter.hasLoading,
         onClick = {
             loadingCounter.inc()
@@ -516,10 +639,53 @@ private fun DoDownload(
                     window.alert("生成失败QAQ")
                 }
             }.invokeOnCompletion { loadingCounter.dec() }
-        }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     ) {
-        Text("生成并下载")
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                Icons.Default.Download,
+                contentDescription = "下载",
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "生成并下载",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
+
+    //
+    // FilledTonalButton(
+    //     enabled = !loadingCounter.hasLoading,
+    //     onClick = {
+    //         loadingCounter.inc()
+    //         scope.launch {
+    //             kotlin.runCatching {
+    //                 doDownload(project)
+    //             }.onFailure { err ->
+    //                 println("生成失败: $err")
+    //                 window.alert("生成失败QAQ")
+    //             }
+    //         }.invokeOnCompletion { loadingCounter.dec() }
+    //     }
+    // ) {
+    //     Text("生成并下载")
+    // }
 }
 
 @Composable
@@ -532,17 +698,29 @@ private fun SearchingIcon(
     ),
     label: String = "SearchIconColorAnimation"
 ) {
-    val color by rememberInfiniteTransition().animateColor(
+    val infiniteTransition = rememberInfiniteTransition(label = "SearchIconTransition")
+    val color by infiniteTransition.animateColor(
         initialValue = initialColor,
         targetValue = targetColor,
         animationSpec = animationSpec,
         label = label
     )
+    val size by infiniteTransition.animateFloat(
+        initialValue = 24f,
+        targetValue = 28f,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis = 800, delayMillis = 100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "IconSizeAnimation"
+    )
+
 
     Icon(
         Icons.Outlined.Search,
         "Searching",
-        tint = color
+        tint = color,
+        modifier = Modifier.size(size.dp)
     )
 }
 

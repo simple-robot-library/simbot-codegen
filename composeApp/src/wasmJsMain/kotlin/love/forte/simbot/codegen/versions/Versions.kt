@@ -1,11 +1,10 @@
 package love.forte.simbot.codegen.versions
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.js.JsClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.utils.io.core.use
+import io.ktor.client.*
+import io.ktor.client.engine.js.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.serialization.ExperimentalSerializationApi

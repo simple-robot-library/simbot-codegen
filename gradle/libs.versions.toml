@@ -1,8 +1,8 @@
 [versions]
-androidx-lifecycle = "2.8.0"
-compose-plugin = "1.7.0"
+androidx-lifecycle = "2.9.0"
+compose-plugin = "1.8.1"
 junit = "4.13.2"
-kotlin = "2.0.20"
+kotlin = "2.1.20"
 kotlin-coroutine = "1.9.0"
 kotlin-serialization = "1.7.3"
 
@@ -17,6 +17,10 @@ androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet" }
 kotlin-coroutine = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutine" }
+
+# composes
+## ICON https://www.jetbrains.com/help/kotlin-multiplatform-dev/whats-new-compose-180.html#implicit-dependency-on-material-icons-core-removed
+
 
 # kotlin serialization
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }

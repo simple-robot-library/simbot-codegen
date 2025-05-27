@@ -22,7 +22,7 @@ repositories {
 kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
         useEsModules()
         browser {
             val projectDirPath = project.projectDir.path
@@ -46,6 +46,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-images-resources.html
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -58,7 +59,7 @@ kotlin {
             // implementation(libs.androidx.lifecycle)
             implementation(libs.kotlinpoet)
             implementation(libs.kotlin.coroutine)
-            val ktor = "3.0.0-beta-2"
+            val ktor = "3.1.3"
             implementation("io.ktor:ktor-client-core:$ktor")
             implementation("io.ktor:ktor-client-content-negotiation:$ktor")
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
