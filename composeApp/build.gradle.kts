@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -9,6 +8,7 @@ plugins {
 }
 
 repositories {
+    google()
     mavenCentral()
     // maven {
     //     // https://ktor.io/eap/
