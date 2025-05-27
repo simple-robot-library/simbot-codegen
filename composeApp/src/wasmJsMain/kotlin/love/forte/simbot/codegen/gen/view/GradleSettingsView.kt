@@ -17,14 +17,12 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -76,6 +74,8 @@ fun GradleSettingsView(
     projectViewModel: GradleProjectViewModel = viewModel { GradleProjectViewModel() },
     loadingCounter: LoadingCounter = remember { LoadingCounter() },
 ) {
+    val windowSize = rememberWindowSize()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -87,7 +87,10 @@ fun GradleSettingsView(
                     Text(
                         "Simbot Codegen",
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium
+                        style = when (windowSize) {
+                            WindowSize.Mobile -> MaterialTheme.typography.headlineSmall
+                            else -> MaterialTheme.typography.headlineMedium
+                        }
                     )
                 }
             )
@@ -101,9 +104,9 @@ fun GradleSettingsView(
                     .padding(innerPaddings)
                     .padding(top = 8.dp, bottom = 8.dp)
                     .verticalScroll(scrollState),
-                    // .onClick {
-                    //     focusManager.clearFocus()
-                    // },
+                // .onClick {
+                //     focusManager.clearFocus()
+                // },
                 contentAlignment = Alignment.TopCenter,
             ) {
                 SettingViewContent(projectViewModel, loadingCounter)
@@ -118,27 +121,61 @@ private fun SettingViewContent(
     project: GradleProjectViewModel,
     loadingCounter: LoadingCounter,
 ) {
+    val windowSize = rememberWindowSize()
+
     Box(
-        modifier = Modifier.fillMaxWidth(.45f)
+        modifier = Modifier.fillMaxWidth(
+            when (windowSize) {
+                WindowSize.Mobile -> 0.95f
+                WindowSize.Tablet -> 0.75f
+                WindowSize.Desktop -> 0.45f
+            }
+        )
     ) {
-        SettingsForm(project, loadingCounter)
+        SettingsForm(project, loadingCounter, windowSize)
     }
 }
 
 @Composable
-private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: LoadingCounter) {
+private fun SettingsForm(
+    project: GradleProjectViewModel,
+    loadingCounter: LoadingCounter,
+    windowSize: WindowSize
+) {
     Column(
         modifier = Modifier
             .focusGroup()
-            .padding(16.dp)
+            .padding(
+                // 移动端使用更小的内边距
+                when (windowSize) {
+                    WindowSize.Mobile -> 8.dp
+                    else -> 16.dp
+                }
+
+            )
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(16.dp)
             )
-            .padding(24.dp),
+            .padding(
+                // 移动端使用更小的内边距
+                when (windowSize) {
+                    WindowSize.Mobile -> 16.dp
+                    else -> 24.dp
+                }
+
+            ),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
+        verticalArrangement = Arrangement.spacedBy(
+            // 移动端使用更小的间距
+            when (windowSize) {
+                WindowSize.Mobile -> 12.dp
+                else -> 20.dp
+            },
+            Alignment.Top
+
+        ),
     )
     {
         Text(
@@ -155,15 +192,15 @@ private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: Loadin
         SimbotVersion(project, loadingCounter)
         GradleVersion(project)
         WithSpring(project)
-        ComponentSelection(project, loadingCounter)
+        ComponentSelection(project, loadingCounter, windowSize)
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Do download
-        DoDownload(project, loadingCounter)
-        
+        DoDownload(project, loadingCounter, windowSize)
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Footer at the bottom of the content
         HorizontalDivider(
             thickness = 1.dp,
@@ -171,7 +208,7 @@ private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: Loadin
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -184,7 +221,7 @@ private fun SettingsForm(project: GradleProjectViewModel, loadingCounter: Loadin
                 withLink(text = "Simple Robot", url = "https://github.com/simple-robot")
                 append(" All rights reserved.")
             }
-            
+
             Text(
                 text = textWithLink,
                 style = MaterialTheme.typography.bodySmall,
@@ -218,7 +255,7 @@ private fun ProjectName(project: GradleProjectViewModel) {
                 Text("建议仅包含大小写英文、数字和下划线，不以数字为开头，且长度不可大于60。")
                 AnimatedVisibility(isDanger) {
                     Text(
-                        "项目名称不可为空！", 
+                        "项目名称不可为空！",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -365,7 +402,7 @@ private fun SimbotVersion(
         label = "simbot版本",
         enabled = !isLoading,
         trailingIcon = {
-        AnimatedVisibility(isLoading) {
+            AnimatedVisibility(isLoading) {
                 SearchingIcon()
             }
         },
@@ -399,7 +436,7 @@ private fun GradleVersion(project: GradleProjectViewModel) {
         isError = isDanger,
         singleLine = true,
         supportingText = {
-        Column {
+            Column {
                 Text(
                     "输入一个要使用的Gradle版本"
                 )
@@ -470,7 +507,11 @@ private fun WithSpring(project: GradleProjectViewModel) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: LoadingCounter) {
+private fun ComponentSelection(
+    project: GradleProjectViewModel,
+    loadingCounter: LoadingCounter,
+    windowSize: WindowSize
+) {
     val components = project.components
 
     Column(
@@ -510,9 +551,25 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         ) {
             FlowRow(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(
+                    // 移动设备使用更小的内边距
+                    when (windowSize) {
+                        WindowSize.Mobile -> 8.dp
+                        else -> 16.dp
+                    }
+                ),
+                horizontalArrangement = Arrangement.spacedBy(
+                    when (windowSize) {
+                        WindowSize.Mobile -> 8.dp
+                        else -> 12.dp
+                    }
+                ),
+                verticalArrangement = Arrangement.spacedBy(
+                    when (windowSize) {
+                        WindowSize.Mobile -> 8.dp
+                        else -> 12.dp
+                    }
+                ),
             ) {
                 SimbotComponent.entries.forEach { simbotComponent ->
                     val isSelected = components.any { it.component == simbotComponent }
@@ -617,12 +674,12 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
                     val component = componentWithVersion.component
                     val version = componentWithVersion.version
 
-            var loadingVersion by remember(component) { mutableStateOf(false) }
+                    var loadingVersion by remember(component) { mutableStateOf(false) }
 
-            val versionDisplay = when (version) {
-                ComponentVersion.UNKNOWN -> ""
-                is ComponentVersion.Value -> version.value
-            }
+                    val versionDisplay = when (version) {
+                        ComponentVersion.UNKNOWN -> ""
+                        is ComponentVersion.Value -> version.value
+                    }
 
                     if (version is ComponentVersion.UNKNOWN) {
                         LaunchedEffect(component) {
@@ -631,7 +688,8 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
                             try {
                                 withTimeout(5.seconds) {
                                     val latest = fetchLatest(component.owner, component.repo)
-                                    componentWithVersion.version = ComponentVersion.Value(latest.tagName.removePrefix("v"))
+                                    componentWithVersion.version =
+                                        ComponentVersion.Value(latest.tagName.removePrefix("v"))
                                 }
                             } catch (e: Throwable) {
                                 e.printStackTrace()
@@ -702,7 +760,8 @@ private fun ComponentSelection(project: GradleProjectViewModel, loadingCounter: 
 @Composable
 private fun DoDownload(
     project: GradleProjectViewModel,
-    loadingCounter: LoadingCounter
+    loadingCounter: LoadingCounter,
+    windowSize: WindowSize,
 ) {
     val scope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
@@ -723,7 +782,14 @@ private fun DoDownload(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp).shadow(
+            .height(
+                // 移动设备使用更大的高度以便于触摸
+                when (windowSize) {
+                    WindowSize.Mobile -> 64.dp
+                    else -> 56.dp
+                }
+            )
+            .shadow(
                 elevation = if (isPressed) 0.dp else 4.dp,
                 shape = RoundedCornerShape(12.dp),
                 spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
@@ -841,9 +907,10 @@ private fun EnhancedTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
+    val windowSize = rememberWindowSize()
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-    
+
     val borderColor by animateColorAsState(
         targetValue = when {
             isError -> MaterialTheme.colorScheme.error
@@ -853,16 +920,16 @@ private fun EnhancedTextField(
         animationSpec = tween(durationMillis = 200),
         label = "边框颜色动画"
     )
-    
+
     val backgroundColor by animateColorAsState(
         targetValue = when {
-            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            isFocused -> MaterialTheme.colorScheme.surfaceVariant // .copy(alpha = 0.3f)
             else -> MaterialTheme.colorScheme.surface
         },
         animationSpec = tween(durationMillis = 200),
         label = "背景颜色动画"
     )
-    
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -874,11 +941,16 @@ private fun EnhancedTextField(
                     stiffness = Spring.StiffnessLow
                 )
             ),
-        label = { 
+        label = {
             Text(
                 text = label,
-                fontWeight = if (isFocused) FontWeight.Medium else FontWeight.Normal
-            ) 
+                fontWeight = if (isFocused) FontWeight.Medium else FontWeight.Normal,
+                // 在移动设备上使用更小的字体
+                fontSize = when (windowSize) {
+                    WindowSize.Mobile -> 14.sp
+                    else -> 16.sp
+                }
+            )
         },
         placeholder = placeholder?.let { { Text(it) } },
         supportingText = supportingText,
@@ -888,7 +960,13 @@ private fun EnhancedTextField(
         interactionSource = interactionSource,
         trailingIcon = trailingIcon,
         leadingIcon = leadingIcon,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(
+            // 在移动设备上使用更小的圆角
+            when (windowSize) {
+                WindowSize.Mobile -> 8.dp
+                else -> 12.dp
+            }
+        ),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = borderColor,
             unfocusedBorderColor = borderColor.copy(alpha = 0.7f),
@@ -905,4 +983,37 @@ private fun EnhancedTextField(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
         ),
     )
+}
+
+@Composable
+fun rememberWindowSize(): WindowSize {
+    var windowSize by remember { mutableStateOf(WindowSize.Desktop) }
+
+    DisposableEffect(Unit) {
+        val resizeListener: (JsAny?) -> Unit = {
+            val width = window.innerWidth
+            windowSize = when {
+                width < 600 -> WindowSize.Mobile
+                width < 840 -> WindowSize.Tablet
+                else -> WindowSize.Desktop
+            }
+        }
+
+        // 初始化窗口大小
+        resizeListener(null)
+
+        // 添加窗口调整大小的监听器
+        window.addEventListener("resize", resizeListener)
+
+        // 清理监听器
+        onDispose {
+            window.removeEventListener("resize", resizeListener)
+        }
+    }
+
+    return windowSize
+}
+
+enum class WindowSize {
+    Mobile, Tablet, Desktop
 }
