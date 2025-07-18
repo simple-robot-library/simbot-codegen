@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -45,7 +44,6 @@ kotlin {
     }
 
     sourceSets {
-
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -64,11 +62,6 @@ kotlin {
             // implementation(libs.androidx.lifecycle)
             implementation(libs.kotlinpoet)
             implementation(libs.kotlin.coroutine)
-            val ktor = "3.1.3"
-            implementation("io.ktor:ktor-client-core:$ktor")
-            implementation("io.ktor:ktor-client-content-negotiation:$ktor")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor")
-            implementation("io.ktor:ktor-client-core:$ktor")
 
             implementation(libs.kotlin.serialization.core)
             implementation(libs.kotlin.serialization.json)

@@ -1,10 +1,5 @@
 package love.forte.simbot.codegen.versions
 
-import io.ktor.client.*
-import io.ktor.client.engine.js.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -23,58 +18,17 @@ private val json = Json {
     allowTrailingComma = true
 }
 
-val Client by lazy {
-    createClient()
-}
-
-fun createClient(): HttpClient {
-    return HttpClient(JsClient()) {
-        engine {
-            this.pipelining = true
-        }
-        install(ContentNegotiation) {
-            json(json)
-        }
-    }
-}
-
-suspend fun queryLatest(owner: String, repo: String): GitHubRelease? {
-    return createClient().use {
-        // val resp = it.get("https://api.github.com/repos/$owner/$repo/releases/latest") {
-        val resp = it.get("https://api.forte.love/me/description?code=1") {
-            // headers {
-            //     this["X-GitHub-Api-Version"] = "2022-11-28"
-            // }
-        }
-
-        null
-    }
-}
-
 suspend fun fetchLatest(owner: String, repo: String): GitHubRelease {
     val req = Request(input = "https://api.github.com/repos/$owner/$repo/releases/latest".toJsString())
     req.headers.append("X-GitHub-Api-Version", "2022-11-28")
 
     val fetchResponse = window.fetch(input = req)
         .await<Response>()
-    println(fetchResponse)
+    // println(fetchResponse)
     val fetchBody = fetchResponse.text().await<JsString>()
-    println(fetchBody)
+    // println(fetchBody)
     return json.decodeFromString(fetchBody.toString())
-
-    // return createClient().use {
-    //     it.get("https://api.github.com/repos/$owner/$repo/releases/latest") {
-    //         headers {
-    //             this["X-GitHub-Api-Version"] = "2022-11-28"
-    //         }
-    //     }.body<GitHubRelease>()
-    // }
 }
-
-private fun toJSON(o: JsAny): String =
-    js("JSON.stringify(o)")
-
-// private fun
 
 @Serializable
 data class GitHubRelease(
