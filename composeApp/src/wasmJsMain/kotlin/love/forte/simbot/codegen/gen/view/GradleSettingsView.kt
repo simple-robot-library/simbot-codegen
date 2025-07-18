@@ -68,7 +68,7 @@ operator fun LoadingCounter.dec(): LoadingCounter = apply { removeLoading() }
  * Composable function to display the view for configuring Gradle project settings.
  *
  * This view allows users to manage settings related to a*/
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GradleSettingsView(
     projectViewModel: GradleProjectViewModel = viewModel { GradleProjectViewModel() },
