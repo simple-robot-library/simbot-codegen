@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -96,17 +97,20 @@ fun GradleSettingsView(
             )
         },
         content = { innerPaddings ->
-            // val focusManager = LocalFocusManager.current
+            val focusManager = LocalFocusManager.current
             val scrollState = rememberScrollState()
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPaddings)
                     .padding(top = 8.dp, bottom = 8.dp)
-                    .verticalScroll(scrollState),
-                // .onClick {
-                //     focusManager.clearFocus()
-                // },
+                    .verticalScroll(scrollState)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        focusManager.clearFocus()
+                    },
                 contentAlignment = Alignment.TopCenter,
             ) {
                 SettingViewContent(projectViewModel, loadingCounter)
