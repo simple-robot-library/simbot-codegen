@@ -7,8 +7,10 @@ import kotlinx.dom.clear
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    document.getElementById("codegen-root-load-script")?.remove()
+    document.getElementById("codegen-root")?.clear()
+
     val root = document.body!!
-    root.clear()
 
     ComposeViewport(root) {
         App()
