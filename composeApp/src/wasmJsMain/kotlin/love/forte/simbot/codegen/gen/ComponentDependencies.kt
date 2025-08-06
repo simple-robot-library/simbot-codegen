@@ -7,7 +7,7 @@ const val SIMBOT_COMPONENT_GROUP = "love.forte.simbot.component"
 
 val SIMBOT_VERSION = GradleCatalogVersion(
     name = "simbot",
-    version = "4.6.0" // copy to change
+    version = "4.13.0" // TODO copy to change
 )
 
 val KOTLIN_VERSION = GradleCatalogVersion(
