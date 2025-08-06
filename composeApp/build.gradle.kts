@@ -35,7 +35,7 @@ kotlin {
 
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
-        outputModuleName = "composeApp"
+        //outputModuleName = "composeApp"
         useEsModules()
         browser {
             val projectDirPath = project.projectDir.path
@@ -77,6 +77,10 @@ kotlin {
             implementation(libs.kotlin.serialization.json)
         }
 
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
         wasmJsMain.dependencies {
             implementation(project(":common"))
             // implementation(project(":jszip-kotlin"))
@@ -97,6 +101,10 @@ kotlin {
 
             // implementation(project(":code-generator"))
             // implementation(npm(dir))
+        }
+        
+        wasmJsTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }
