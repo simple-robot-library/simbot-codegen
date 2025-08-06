@@ -14,14 +14,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import js.objects.unsafeJso
+import js.promise.await
+import jszip.JSZipGeneratorOptions
+import jszip.OutputType
+import jszip.blob
 import kotlinx.browser.window
-import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import love.forte.simbot.codegen.filesaver.saveAs
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.gen.doGenerate
-import love.forte.simbot.codegen.jszip.JsZipFileGenerateOptions
-import org.w3c.files.Blob
+import web.blob.Blob
 
 /**
  * 下载按钮组件，用于生成并下载项目
@@ -101,9 +104,12 @@ private suspend fun doDownload(
 ) {
     val name = project.projectName
     val zip = doGenerate(project)
-    val blob = zip.generateAsync(
-        options = JsZipFileGenerateOptions("blob"),
-    ).await<Blob>()
+    val options = unsafeJso<JSZipGeneratorOptions<Blob>> {
+        type = OutputType.blob
+    }
+
+    // TODO onUpdate?
+    val blob = zip.generateAsync(options).await()
 
     saveAs(blob, "$name.zip")
 }

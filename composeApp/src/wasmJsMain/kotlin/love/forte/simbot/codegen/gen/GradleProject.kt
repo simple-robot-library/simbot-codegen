@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import jszip.JSZip
 import love.forte.simbot.codegen.gen.SimbotComponent.KOOK
 import love.forte.simbot.codegen.gen.SimbotComponent.OB
 import love.forte.simbot.codegen.gen.SimbotComponent.QQ
-import love.forte.simbot.codegen.JsDate
-import love.forte.simbot.codegen.jszip.JSZip
+import love.forte.codegen.common.JsDate
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import simbot_codegen.composeapp.generated.resources.Res
 
@@ -231,16 +231,16 @@ fun genREADME(
 
 
 /**
- * 生成并得到 [JSZip]
+ * 生成并得到 [JSZipApi]
  */
 suspend fun doGenerate(project: GradleProjectViewModel): JSZip {
     val name = project.projectName
     val pack = project.projectPackage
 
     val root = JSZip()
-    val rootDir = root.folder(project.projectName)
-    val sourceDir = rootDir.folder("src/main/kotlin")
-    val resourceDir = rootDir.folder("src/main/resources")
+    val rootDir = root.folder(project.projectName)!!
+    val sourceDir = rootDir.folder("src/main/kotlin")!!
+    val resourceDir = rootDir.folder("src/main/resources")!!
 
     val simbotVersion = project.simbotVersion?.let { SIMBOT_VERSION.copy(version = it) } ?: SIMBOT_VERSION
     val gradleVersion = project.gradleSettings.version

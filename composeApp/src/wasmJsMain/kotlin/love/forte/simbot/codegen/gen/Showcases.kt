@@ -1,19 +1,9 @@
 package love.forte.simbot.codegen.gen
 
-import love.forte.simbot.codegen.gen.SimbotComponent.KOOK
-import love.forte.simbot.codegen.gen.SimbotComponent.OB
-import love.forte.simbot.codegen.gen.SimbotComponent.QQ
-import com.squareup.kotlinpoet.ARRAY
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.STRING
-import love.forte.simbot.codegen.jszip.JSZip
+import jszip.JSZip
+import love.forte.simbot.codegen.gen.SimbotComponent.*
 
 
 /**
@@ -57,7 +47,7 @@ fun emitSpringShowcases(
 
     // 配置文件
     if (components.isNotEmpty()) {
-        val botsFolder = resources.folder("simbot-bots")
+        val botsFolder = resources.folder("simbot-bots")!!
         components.forEach {
             val configJson = genComponentConfigShowcases(it)
             botsFolder.file("${it.simpleId}-example.bot.json", configJson)

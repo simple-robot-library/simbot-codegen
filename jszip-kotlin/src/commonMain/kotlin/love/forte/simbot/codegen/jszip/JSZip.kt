@@ -1,17 +1,22 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package love.forte.simbot.codegen.jszip
 
-import love.forte.simbot.codegen.JsDate
-import love.forte.simbot.codegen.RegExp
+
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint8Array
 import org.w3c.files.Blob
+import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.JsAny
+import kotlin.js.JsModule
 import kotlin.js.Promise
+import kotlin.js.definedExternally
 
 @JsModule("jszip")
-external class JSZip : JsAny {
+external class JSZip {
 
     fun file(name: String): ZipObject?
-    fun file(name: RegExp): ZipObject?
+    // fun file(name: RegExp): ZipObject?
 
     /**
      * @param data String/ArrayBuffer/Uint8Array/Buffer/Blob/Promise/Nodejs stream
@@ -23,14 +28,13 @@ external class JSZip : JsAny {
     fun file(name: String, data: Promise<*>, options: JsZipFileOptions = definedExternally): ZipObject?
 
     fun folder(name: String): JSZip
-    fun folder(name: RegExp): JSZip
+    // TODO fun folder(name: RegExp): JSZip
 
     fun forEach(callback: (relativePath: String, file: ZipObject) -> Unit)
 
     fun filter(predicate: (relativePath: String, file: ZipObject) -> Unit)
 
     fun remove(name: String)
-
 
     /**
      * ```js
@@ -82,9 +86,11 @@ external interface JsZipFileOptions : JsAny {
     var binary: Boolean?
         get() = definedExternally
         set(value) = definedExternally
-    var date: JsDate?
-        get() = definedExternally
-        set(value) = definedExternally
+
+    // TODO
+    //  var date: JsDate?
+    //      get() = definedExternally
+    //      set(value) = definedExternally
     var compression: String?
         get() = definedExternally
         set(value) = definedExternally
@@ -146,15 +152,22 @@ external interface JsZipFileGenerateOptions : JsAny {
 external class ZipObject : JsAny {
     val name: String
     val dir: Boolean
-    val date: JsDate
+
+    // TODO val date: JsDate
     val comment: String?
     val unixPermissions: Int
     val dosPermissions: Int
     val options: JsAny?
 }
 
-fun JsZipFileGenerateOptions(
-    type: String,
-): JsZipFileGenerateOptions {
-    js("return { type }")
+expect fun createJsZipFileGenerateOptions(type: String): JsZipFileGenerateOptions
+
+fun createJsZipFileGenerateOptions1(type: String): JsZipFileGenerateOptions {
+    TODO()
 }
+
+// fun JsZipFileGenerateOptions(
+//     type: String,
+// ): JsZipFileGenerateOptions {
+//     js("return { type }")
+// }

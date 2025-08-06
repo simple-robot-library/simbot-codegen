@@ -25,8 +25,6 @@ fun App() {
     @OptIn(ExperimentalResourceApi::class)
     val font by preloadFont(resource = Res.font.LXGWNeoXiHeiScreen)
     val fm = font?.let { FontFamily(it) }
-    // val fm = FontFamily(Font(Res.font.LXGWNeoXiHeiScreen))
-    // preloadFont()
 
     val darkTheme = isSystemInDarkTheme()
 
@@ -95,25 +93,3 @@ fun App() {
         }
     }
 }
-//
-// private suspend fun doDownload(gradleModel: GradleProjectViewModel) {
-//     gradleModel.components.addAll(SimbotComponent.entries.map { SimbotComponentWithVersion(it) })
-//
-//     val zip = doGenerate(gradleModel)
-//     log(zip)
-//
-//     val opt = JsZipFileGenerateOptions("blob")
-//     log(opt)
-//
-//     val promise = zip.generateAsync(opt)
-//
-//     promise.then { blob ->
-//         log(blob)
-//         saveAs(blob.unsafeCast<Blob>(), "file.zip")
-//         null
-//     }
-//
-//     // val blob = promise.await<JsAny>().unsafeCast<Blob>()
-//     // log(blob)
-//     // saveAs(blob.unsafeCast<Blob>(), "zip.zip")
-// }

@@ -8,6 +8,12 @@ plugins {
 }
 
 repositories {
+    mavenLocal {
+        mavenContent {
+            snapshotsOnly()
+            includeGroup("love.forte.codegentle")
+        }
+    }
     google()
     mavenCentral()
     // maven {
@@ -16,6 +22,9 @@ repositories {
     // }
     maven {
         url = rootDir.resolve("libs").toURI()
+        mavenContent {
+            includeGroup("com.squareup")
+        }
     }
 }
 
@@ -61,19 +70,18 @@ kotlin {
             // implementation(libs.androidx.lifecycle.runtime)
             // implementation(libs.androidx.lifecycle)
             implementation(libs.kotlinpoet)
+            implementation(libs.codegentle.kotlin)
             implementation(libs.kotlin.coroutine)
 
             implementation(libs.kotlin.serialization.core)
             implementation(libs.kotlin.serialization.json)
-
         }
 
         wasmJsMain.dependencies {
-            // https://stuk.github.io/jszip/
-            implementation(npm("jszip", "^3.10.1"))
-            // FileSaver
-            // https://github.com/eligrey/FileSaver.js
-            implementation(npm("file-saver", "^2.0.4"))
+            implementation(project(":common"))
+            // implementation(project(":jszip-kotlin"))
+            implementation(kotlinWrappers.jszip)
+            implementation(project(":file-saver-kotlin"))
             // implementation("io.ktor:ktor-client-core:3.0.0-beta-2")
             // implementation("io.ktor:ktor-client-js:3.0.0-beta-2")
 

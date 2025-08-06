@@ -1,9 +1,13 @@
 package love.forte.simbot.codegen.filesaver
 
-import org.w3c.dom.url.URL
-import org.w3c.files.Blob
-import org.w3c.files.File
+import js.date.Date
+import web.blob.Blob
+import web.file.File
+import web.url.URL
+import kotlin.js.JsModule
+import kotlin.js.definedExternally
 
+// External declarations for file-saver library - simplified for wasmJs
 @JsModule("file-saver")
 external fun saveAs(
     file: File,
@@ -32,11 +36,6 @@ external fun saveTextAs(
     charset: String = definedExternally
 )
 
-external interface FileSaverSaveAsOptions : JsAny {
+expect interface FileSaverSaveAsOptions {
     var autoBom: Boolean
 }
-
-/*
-import { saveAs } from 'file-saver';
-FileSaver saveAs(Blob/File/Url, optional DOMString filename, optional Object { autoBom })
- */
