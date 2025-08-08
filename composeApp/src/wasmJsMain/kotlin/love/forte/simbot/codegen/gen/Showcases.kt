@@ -3,6 +3,15 @@ package love.forte.simbot.codegen.gen
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import jszip.JSZip
+import love.forte.codegentle.common.code.addDoc
+import love.forte.codegentle.common.code.emitType
+import love.forte.codegentle.common.ref.addAnnotation
+import love.forte.codegentle.kotlin.KotlinFile
+import love.forte.codegentle.kotlin.addSimpleClassType
+import love.forte.codegentle.kotlin.naming.KotlinClassNames
+import love.forte.codegentle.kotlin.spec.addFunction
+import love.forte.simbot.codegen.codegen.naming.SimbotNames
+import love.forte.simbot.codegen.codegen.naming.SpringNames
 import love.forte.simbot.codegen.gen.SimbotComponent.*
 
 
@@ -61,7 +70,22 @@ fun genSpringMainFile(
 ): FileSpec {
     val name = "MainApplication"
 
-    val mainFile = fileSpec(projectPackage, "MainApplication") {
+    // TODO
+    // val mainFile1 = KotlinFile(projectPackage) {
+    //     addSimpleClassType(name) {
+    //         addAnnotation(SimbotNames.enableSimbotAno)
+    //         addAnnotation(SpringNames.springBootApplicationAno)
+    //         addDoc("Spring程序的入口注解类。添加 [%V] 注解来标记启用 simbot 相关的功能。") {
+    //             emitType(SimbotNames.enableSimbotAno)
+    //         }
+    //     }
+    //
+    //     addFunction("main", KotlinClassNames.UNIT) {
+    //
+    //     }
+    // }
+
+    val mainFile = fileSpec(projectPackage, name) {
         // Main Application class
         addClass(name) {
             val simbotAno = ClassName("love.forte.simbot.spring", "EnableSimbot")

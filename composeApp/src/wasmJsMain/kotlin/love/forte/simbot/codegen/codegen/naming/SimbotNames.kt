@@ -1,16 +1,16 @@
 package love.forte.simbot.codegen.codegen.naming
 
 import love.forte.codegentle.common.naming.ClassName
-import love.forte.codegentle.common.naming.PackageName
 import love.forte.codegentle.common.naming.parseToPackageName
-import love.forte.codegentle.common.naming.plus
 
 // TODO
+
+@Suppress("unused")
 object SimbotNames {
     val simbotPkg = "love.forte.simbot".parseToPackageName()
-    val simbotEventPkg = simbotPkg + "event"
-    val simbotSpringPkg = simbotPkg + "spring"
-    val simbotQuantcatCommonAnoPkg = simbotPkg + "quantcat" + "common" + "annotations"
+    val simbotEventPkg = "love.forte.simbot.event".parseToPackageName()
+    val simbotSpringPkg = "love.forte.simbot.spring".parseToPackageName()
+    val simbotQuantcatCommonAnoPkg = "love.forte.simbot.quantcat.common.annotations".parseToPackageName()
 
     val listenerAno = ClassName(simbotQuantcatCommonAnoPkg, "Listener")
     val filterAno = ClassName(simbotQuantcatCommonAnoPkg, "Filter")
