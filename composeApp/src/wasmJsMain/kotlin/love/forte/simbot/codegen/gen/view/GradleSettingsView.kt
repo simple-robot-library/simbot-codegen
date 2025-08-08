@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import love.forte.codegen.common.JsDate
+import js.date.Date
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.withLink
 
@@ -176,7 +176,7 @@ private fun SettingsForm(
         ) {
             val textWithLink = buildAnnotatedString {
                 append("© ")
-                append(JsDate().getFullYear().toString())
+                append(Date().getFullYear().toString())
                 append(" ")
                 withLink(text = "Simple Robot", url = "https://github.com/simple-robot")
                 append(" All rights reserved.")

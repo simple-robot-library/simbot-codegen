@@ -82,7 +82,7 @@ kotlin {
         }
 
         wasmJsMain.dependencies {
-            implementation(project(":common"))
+            // implementation(project(":common"))
             // implementation(project(":jszip-kotlin"))
             implementation(kotlinWrappers.jszip)
             implementation(project(":file-saver-kotlin"))

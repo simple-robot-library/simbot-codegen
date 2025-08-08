@@ -5,11 +5,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import js.date.Date
 import jszip.JSZip
-import love.forte.simbot.codegen.gen.SimbotComponent.KOOK
-import love.forte.simbot.codegen.gen.SimbotComponent.OB
-import love.forte.simbot.codegen.gen.SimbotComponent.QQ
-import love.forte.codegen.common.JsDate
+import love.forte.simbot.codegen.gen.SimbotComponent.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import simbot_codegen.composeapp.generated.resources.Res
 
@@ -100,7 +98,7 @@ fun genGradleWrapperProperties(
     version: String
 ): String {
     return """
-        # ${JsDate().toISOString()}
+        # ${Date().toISOString()}
         distributionBase=GRADLE_USER_HOME
         distributionPath=wrapper/dists
         distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-${version}-bin.zip
@@ -202,16 +200,20 @@ fun genREADME(
             appendLine()
             appendLine("Spring Boot 的版本不确保是最新的。如有需要, 可自行修改 Spring Boot 的 Gradle 插件版本。")
             appendLine()
-            appendLine("如果你不添加一些可以确保程序保持运行的 Spring 组件 (例如 `spring-web`), " +
-                    "那么你需要修改一下配置文件 `application.yml` 来确保 simbot 可以在后台线程中保持运行: ")
-            appendLine("""
+            appendLine(
+                "如果你不添加一些可以确保程序保持运行的 Spring 组件 (例如 `spring-web`), " +
+                        "那么你需要修改一下配置文件 `application.yml` 来确保 simbot 可以在后台线程中保持运行: "
+            )
+            appendLine(
+                """
                 ```yml
                 simbot:
                   application:
                     # 使用一个独立的非守护线程保持程序活跃。
                     application-launch-mode: thread
                 ```
-            """.trimIndent())
+            """.trimIndent()
+            )
             appendLine()
         }
 
@@ -359,7 +361,8 @@ fun doGenerateSpring(
     )
 }
 
-private val REPLACE_REGEX = Regex("^( *public +(class|interface|(abstract|sealed) class|(suspend )?fun|const val|val|var)).*")
+private val REPLACE_REGEX =
+    Regex("^( *public +(class|interface|(abstract|sealed) class|(suspend )?fun|const val|val|var)).*")
 
 /**
  * 清理所有的public访问修饰符：
