@@ -7,6 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import js.date.Date
 import jszip.JSZip
+import love.forte.codegentle.common.code.CodePart
+import love.forte.codegentle.common.naming.PackageName
+import love.forte.codegentle.common.writer.InternalWriterApi
+import love.forte.codegentle.kotlin.KotlinFile
+import love.forte.codegentle.kotlin.writeToKotlinString
 import love.forte.simbot.codegen.gen.SimbotComponent.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import simbot_codegen.composeapp.generated.resources.Res
@@ -113,6 +118,12 @@ fun genGradleBuildScript(
     plugins: Iterable<GradleCatalogPlugin>,
     dependencies: Iterable<GradleCatalogVersionDependency>,
 ): String {
+        // TODO
+    KotlinFile {
+        // TODO
+    }
+
+
     return fileScriptSpec("build.gradle") {
         inControlFlow("plugins") {
             plugins.forEach { plugin ->
@@ -156,10 +167,9 @@ fun genGradleBuildScript(
 fun genGradleSettingsScript(
     name: String,
 ): String {
-    return fileScriptSpec("settings.gradle") {
-        // rootProject.name = "compose-html-demo"
-        addStatement("rootProject.name = %S", name)
-    }.toString()
+    return KotlinFile {
+        addStatement("rootProject.name = %V", CodePart.string(name))
+    }.writeToKotlinString()
 }
 
 fun genREADME(
