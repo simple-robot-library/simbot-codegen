@@ -58,7 +58,7 @@ fun emitSpringShowcases(
     resources.file("application.yml", genSpringApplicationConfig())
 }
 
-fun genSpringMainFile(
+fun genKotlinSpringMainFile(
     name: String,
     projectPackage: String
 ): KotlinFile {
@@ -82,24 +82,6 @@ fun genSpringMainFile(
         }
     }
 
-    // val mainFile = fileSpec(projectPackage, name) {
-    //     // Main Application class
-    //     addClass(name) {
-    //         val simbotAno = ClassName("love.forte.simbot.spring", "EnableSimbot")
-    //         addAnnotation(simbotAno)
-    //         addAnnotation(ClassName("org.springframework.boot.autoconfigure", "SpringBootApplication"))
-    //         addKdoc("Spring程序的入口注解类。添加 [%T] 注解来标记启用 simbot 相关的功能。", simbotAno)
-    //     }
-    //
-    //     // Main function
-    //     addFunction("main") {
-    //         addParameter("args", ARRAY.parameterizedBy(STRING))
-    //         val ram = MemberName("org.springframework.boot", "runApplication")
-    //         addStatement("%M<%L>(*args)", ram, name)
-    //     }
-    //
-    // }
-
     return mainFile
 }
 
@@ -107,18 +89,17 @@ fun emitSpringMainFile(
     projectPackage: String,
     sourceSets: JSZip
 ) {
-    val file = genSpringMainFile(projectPackage, "MainApplication")
+    val file = genKotlinSpringMainFile("MainApplication", projectPackage)
     sourceSets.file(file.toRelativePath(), file.writeToKotlinString())
 }
 
-fun genSpringListenerShowcases(
+fun genKotlinSpringListenerShowcases(
     projectPackage: String,
     components: Collection<SimbotComponent>
 ): KotlinFile {
     var showcaseCount = 1
     val handlePackage = "$projectPackage.handle"
 
-    // TODO
     val myHandleFile = KotlinFile(handlePackage) {
         // Text + Message
         addStaticImport("love.forte.simbot.message.plus")
@@ -186,10 +167,10 @@ fun genSpringListenerShowcases(
 
                 addParameter("event", SimbotNames.contactMsgEventClassName)
                 addComment("基于事件回复一句\"你好\"")
-                addStatement("event.reply(%S)", CodePart.string("你好"))
+                addStatement("event.reply(%V)", CodePart.string("你好"))
                 addStatement("")
                 addComment("或直接根据 content 发送一句\"你又好\"")
-                addStatement("event.content().send(%S)", CodePart.string("你又好"))
+                addStatement("event.content().send(%V)", CodePart.string("你又好"))
                 addStatement("")
                 addComment("可以发送文本(字符串)、消息元素/消息链和事件中的消息正文。")
                 addStatement("")
@@ -200,8 +181,8 @@ fun genSpringListenerShowcases(
                 addComment("更多有关消息链和可用的消息元素，请参考文档：")
                 addComment("https://simbot.forte.love/basic-messages.html")
                 addStatement(
-                    "val messages = %M { %S } + " +
-                            "%M(%S).%M()"
+                    "val messages = %V { %V } + " +
+                            "%V(%V).%V()"
                 ) {
                     emitType(MemberName("love.forte.simbot.message", "Text"))
                     emitString("图片: ")
@@ -213,95 +194,6 @@ fun genSpringListenerShowcases(
             }
         }
     }
-
-    // val myHandleFile = fileSpec(handlePackage, "MyEventHandles") {
-    //     addClass("MyEventHandles") {
-    //         // addAnnotation(componentAno)
-    //         // addKdoc("一个用于承载监听函数的事件处理器类。\n\n")
-    //         // addKdoc("将它标记为 [%T] 以交由Spring进行管理，\n", componentAno)
-    //         // addKdoc("simbot-spring 会解析其中标记了 [%T] 的函数们。", listenerAno)
-    //         //
-    //         // // 1, 监听所有事件，然后控制台输出
-    //         // addFunction("handleAllAndPrint") {
-    //         //     addAnnotation(listenerAno)
-    //         //     addModifiers(KModifier.SUSPEND)
-    //         //     addKdoc("示例${showcaseCount++}: 监听所有的事件，然后将它们输出到控制台。\n\n")
-    //         //     addKdoc("@param event 你要监听的事件的类型。\n")
-    //         //     addKdoc("必须是一个 [%T] 类型的子类", eventClassName)
-    //         //
-    //         //     addParameter("event", eventClassName)
-    //         //     addStatement("println(%P)", "收到事件: \$event")
-    //         // }
-    //         //
-    //         // // 2, 过滤消息事件
-    //         // addFunction("handleMessageEvent") {
-    //         //     addAnnotation(listenerAno)
-    //         //     addAnnotation(AnnotationSpec.builder(filterAno).apply {
-    //         //         addMember("%S", "你好.*")
-    //         //     }.build())
-    //         //     addAnnotation(contentTrimAno)
-    //         //     addModifiers(KModifier.SUSPEND)
-    //         //     addKdoc("示例${showcaseCount++}: 监听所有 **文本内容** 开头为 `\"你好\"` 的消息事件，\n")
-    //         //     addKdoc("然后在控制台输出它的消息链内容。\n\n")
-    //         //     addKdoc("这里通过 [%T] 来以注解的风格便捷的匹配消息内容并过滤, \n", filterAno)
-    //         //     addKdoc("并配合使用 [%T] 在匹配前优先处理掉匹配文本的前后空字符，避免匹配失效。\n", contentTrimAno)
-    //         //
-    //         //     addParameter("event", msgEventClassName)
-    //         //     addStatement("println(%P)", "收到消息事件: \$event")
-    //         //     addStatement("")
-    //         //
-    //         //     addCode(CodeBlock.builder().apply {
-    //         //         inControlFlow("for·((index,·element)·in·event.messageContent.messages.withIndex())") {
-    //         //             addStatement("println(%P)", "\\t消息元素[\$index]: \$element")
-    //         //         }
-    //         //     }.build())
-    //         // }
-    //         //
-    //         // // 3, 组件专属
-    //         // // 挑其中一个组件
-    //         // val oneOfComponent = components.firstOrNull()
-    //         // if (oneOfComponent != null) {
-    //         //     addFunction(componentShowcase(showcaseCount++, oneOfComponent))
-    //         // }
-    //
-    //         // 4, 回复消息
-    //         addFunction("handleAndReply") {
-    //             addAnnotation(listenerAno)
-    //             addModifiers(KModifier.SUSPEND)
-    //
-    //             addKdoc("示例${showcaseCount++}: 监听所有 **文本内容** 开头为 `\"你好\"` 的消息事件，\n")
-    //
-    //             addParameter("event", contactMsgEventClassName)
-    //             addComment("基于事件回复一句\"你好\"")
-    //             addStatement("event.reply(%S)", "你好")
-    //             addStatement("")
-    //             addComment("或直接根据 content 发送一句\"你好\"")
-    //             addStatement("event.content().send(%S)", "你好")
-    //             addStatement("")
-    //             addComment("可以发送文本(字符串)、消息元素/消息链和事件中的消息正文。")
-    //             addStatement("")
-    //
-    //             addComment("下面的示例是发送一个消息链，其中包括一个文字消息和一个图片, ")
-    //             addComment("它们二者直接使用 + 拼接。")
-    //             addComment("你也可以使用 buildMessages { ... } 来构建消息链。")
-    //             addComment("更多有关消息链和可用的消息元素，请参考文档：")
-    //             addComment("https://simbot.forte.love/basic-messages.html")
-    //             addStatement(
-    //                 "val messages = %M { %S } + " +
-    //                         "%M(%S).%M()",
-    //                 MemberName("love.forte.simbot.message", "Text"),
-    //                 "图片: ",
-    //                 MemberName("kotlin.io.path", "Path"),
-    //                 "image.png",
-    //                 MemberName("love.forte.simbot.message.OfflinePathImage.Companion", "toOfflineImage")
-    //             )
-    //             addStatement("event.reply(messages)")
-    //         }
-    //
-    //         // Text + Image 消息拼接的操作符
-    //         addImport("love.forte.simbot.message", "plus")
-    //     }
-    // }
 
     return myHandleFile
 }
@@ -364,7 +256,7 @@ fun emitSpringListenerShowcases(
     components: Collection<SimbotComponent>,
     sourceSets: JSZip
 ) {
-    val file = genSpringListenerShowcases(projectPackage, components)
+    val file = genKotlinSpringListenerShowcases(projectPackage, components)
     sourceSets.file(file.toRelativePath(), file.writeToKotlinString())
 }
 

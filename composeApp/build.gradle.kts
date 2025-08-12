@@ -16,10 +16,6 @@ repositories {
     }
     google()
     mavenCentral()
-    // maven {
-    //     // https://ktor.io/eap/
-    //     url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
-    // }
     maven {
         url = rootDir.resolve("libs").toURI()
         mavenContent {
@@ -71,6 +67,7 @@ kotlin {
             // implementation(libs.androidx.lifecycle)
             implementation(libs.kotlinpoet)
             implementation(libs.codegentle.kotlin)
+            implementation(libs.codegentle.java)
             implementation(libs.kotlin.coroutine)
 
             implementation(libs.kotlin.serialization.core)
@@ -82,27 +79,10 @@ kotlin {
         }
 
         wasmJsMain.dependencies {
-            // implementation(project(":common"))
-            // implementation(project(":jszip-kotlin"))
             implementation(kotlinWrappers.jszip)
             implementation(project(":file-saver-kotlin"))
-            // implementation("io.ktor:ktor-client-core:3.0.0-beta-2")
-            // implementation("io.ktor:ktor-client-js:3.0.0-beta-2")
-
-            // implementation(npm(File(projectDir, "simbot-codegen-code-generator")))
-
-            // val dir = rootProject.project("code-generator").projectDir
-            //     .resolve("build/dist/js/productionLibrary")
-
-            // val dir = File(
-            //     rootProject.project(":code-generator").projectDir,
-            //     "build/dist/js/productionLibrary"
-            // )
-
-            // implementation(project(":code-generator"))
-            // implementation(npm(dir))
         }
-        
+
         wasmJsTest.dependencies {
             implementation(libs.kotlin.test)
         }

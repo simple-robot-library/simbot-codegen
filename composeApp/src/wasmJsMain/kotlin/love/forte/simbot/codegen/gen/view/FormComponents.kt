@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.gen.SIMBOT_VERSION
+import love.forte.simbot.codegen.gen.core.JavaStyle
+import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
 import love.forte.simbot.codegen.versions.fetchLatest
 import love.forte.simbot.codegen.withLink
 
@@ -90,47 +92,156 @@ fun ProjectPackage(project: GradleProjectViewModel) {
 }
 
 /**
- * 语言选择组件，目前固定为 Kotlin
+ * 语言选择组件，支持 Kotlin 和 Java
  */
 @Composable
 fun LanguageSelection(
     project: GradleProjectViewModel,
 ) {
-    OutlinedCard(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        ),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        )
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            ),
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            )
         ) {
-            RadioButton(
-                selected = true,
-                enabled = false,
-                onClick = {},
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = MaterialTheme.colorScheme.primary
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "编程语言",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
-            )
-
-            Text(
-                "Kotlin",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
+                
+                // Kotlin 选项
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    RadioButton(
+                        selected = project.programmingLanguage is ProgrammingLanguage.Kotlin,
+                        onClick = {
+                            project.programmingLanguage = ProgrammingLanguage.Kotlin(project.kotlinVersion)
+                        },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    Text(
+                        "Kotlin",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                // Java 选项
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    RadioButton(
+                        selected = project.programmingLanguage is ProgrammingLanguage.Java,
+                        onClick = {
+                            project.programmingLanguage = ProgrammingLanguage.Java("21", project.javaStyle)
+                        },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                    Text(
+                        "Java",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                // Java 样式选择（仅在选择 Java 时显示）
+                AnimatedVisibility(project.programmingLanguage is ProgrammingLanguage.Java) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            "Java 编程风格",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            RadioButton(
+                                selected = project.javaStyle == JavaStyle.BLOCKING,
+                                onClick = {
+                                    project.javaStyle = JavaStyle.BLOCKING
+                                    // 更新 programmingLanguage 以反映新的样式
+                                    if (project.programmingLanguage is ProgrammingLanguage.Java) {
+                                        project.programmingLanguage = ProgrammingLanguage.Java("21", JavaStyle.BLOCKING)
+                                    }
+                                },
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = MaterialTheme.colorScheme.secondary
+                                )
+                            )
+                            Text(
+                                "阻塞式 (Blocking)",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            RadioButton(
+                                selected = project.javaStyle == JavaStyle.ASYNC,
+                                onClick = {
+                                    project.javaStyle = JavaStyle.ASYNC
+                                    // 更新 programmingLanguage 以反映新的样式
+                                    if (project.programmingLanguage is ProgrammingLanguage.Java) {
+                                        project.programmingLanguage = ProgrammingLanguage.Java("21", JavaStyle.ASYNC)
+                                    }
+                                },
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = MaterialTheme.colorScheme.secondary
+                                )
+                            )
+                            Text(
+                                "异步式 (Async)",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 版本输入组件
+        when (project.programmingLanguage) {
+            is ProgrammingLanguage.Kotlin -> KotlinVersion(project)
+            is ProgrammingLanguage.Java -> JavaVersion(project)
         }
     }
-    KotlinVersion(project)
 }
 
 /**
@@ -140,12 +251,44 @@ fun LanguageSelection(
 fun KotlinVersion(project: GradleProjectViewModel) {
     EnhancedTextField(
         value = project.kotlinVersion,
-        onValueChange = { project.kotlinVersion = it.trim() },
+        onValueChange = { 
+            project.kotlinVersion = it.trim()
+            // 同步更新 programmingLanguage 中的版本
+            if (project.programmingLanguage is ProgrammingLanguage.Kotlin) {
+                project.programmingLanguage = ProgrammingLanguage.Kotlin(it.trim())
+            }
+        },
         label = "Kotlin 版本",
         trailingIcon = null,
         supportingText = {
             Column {
                 Text("输入一个要使用的 Kotlin 版本。请尽可能与对应的 simbot 所使用的 Kotlin 版本对应。")
+            }
+        }
+    )
+}
+
+/**
+ * Java 版本输入组件
+ */
+@Composable
+fun JavaVersion(project: GradleProjectViewModel) {
+    val javaLanguage = project.programmingLanguage as? ProgrammingLanguage.Java
+    val javaVersion = javaLanguage?.version ?: "21"
+    
+    EnhancedTextField(
+        value = javaVersion,
+        onValueChange = { newVersion ->
+            val trimmedVersion = newVersion.trim()
+            // 更新 programmingLanguage 中的版本
+            project.programmingLanguage = ProgrammingLanguage.Java(trimmedVersion, project.javaStyle)
+        },
+        label = "Java 版本",
+        trailingIcon = null,
+        supportingText = {
+            Column {
+                Text("输入要使用的 Java 版本。推荐使用 Java 17 或更高版本以获得更好的性能和功能支持。")
+                Text("常用版本：17, 21")
             }
         }
     )

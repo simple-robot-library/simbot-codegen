@@ -199,8 +199,8 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
                 }
             }
 
-            addStatement("group = %S", pkg)
-            addStatement("version = %S", "1.0-SNAPSHOT")
+            addStatement("group = %V", pkg)
+            addStatement("version = %V", "1.0-SNAPSHOT")
             addStatement("")
 
             inControlFlow("java") {
@@ -221,7 +221,7 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
 
             inControlFlow("kotlin") {
                 inControlFlow("compilerOptions") {
-                    addStatement("freeCompilerArgs.addAll(%S)", "-Xjsr305=strict")
+                    addStatement("freeCompilerArgs.addAll(%V)", "-Xjsr305=strict")
                 }
             }
 
@@ -240,7 +240,7 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
      */
     private fun genGradleSettingsScript(name: String): String {
         return fileScriptSpec("settings.gradle") {
-            addStatement("rootProject.name = %S", name)
+            addStatement("rootProject.name = %V", name)
         }.toString().removeAllPublicModifier()
     }
 

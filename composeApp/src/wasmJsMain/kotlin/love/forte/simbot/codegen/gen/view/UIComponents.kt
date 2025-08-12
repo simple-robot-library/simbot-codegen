@@ -161,7 +161,7 @@ fun rememberWindowSize(): WindowSize {
     var windowSize by remember { mutableStateOf(WindowSize.Desktop) }
 
     DisposableEffect(Unit) {
-        val resizeListener: (JsAny?) -> Unit = {
+        val resizeListener: (Any?) -> Unit = {
             val width = window.innerWidth
             windowSize = when {
                 width < 600 -> WindowSize.Mobile

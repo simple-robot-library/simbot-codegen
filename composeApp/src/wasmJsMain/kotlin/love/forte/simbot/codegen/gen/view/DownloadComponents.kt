@@ -31,6 +31,7 @@ import web.console.console
 /**
  * 下载按钮组件，用于生成并下载项目
  */
+@OptIn(ExperimentalWasmJsInterop::class)
 @Composable
 fun DoDownload(
     project: GradleProjectViewModel,
@@ -49,6 +50,7 @@ fun DoDownload(
                 kotlin.runCatching {
                     doDownload(project)
                 }.onFailure { err ->
+                    err.printStackTrace()
                     console.error("生成失败".toJsString(), err.toJsErrorLike())
                     window.alert("生成失败QAQ")
                 }

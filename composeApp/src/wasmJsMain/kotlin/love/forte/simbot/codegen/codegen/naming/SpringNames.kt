@@ -33,10 +33,13 @@ object SpringNames {
     val requestParamAno = ClassName(springBindPkg, "RequestParam")
 
     // Spring Boot annotations
+    private val subPackageAutoconfigureCondition = "autoconfigure.condition".parseToPackageName()
+    private val springBootAutoconfigureCondition = springBootPkg + subPackageAutoconfigureCondition
+
     val springBootApplicationAno = ClassName(springBootPkg, "SpringBootApplication")
     val enableAutoConfigurationAno = ClassName(springBootPkg, "EnableAutoConfiguration")
-    val conditionalOnMissingBeanAno = ClassName(springBootPkg + "autoconfigure.condition", "ConditionalOnMissingBean")
-    val conditionalOnBeanAno = ClassName(springBootPkg + "autoconfigure.condition", "ConditionalOnBean")
-    val conditionalOnPropertyAno = ClassName(springBootPkg + "autoconfigure.condition", "ConditionalOnProperty")
-    val conditionalOnClassAno = ClassName(springBootPkg + "autoconfigure.condition", "ConditionalOnClass")
+    val conditionalOnMissingBeanAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnMissingBean")
+    val conditionalOnBeanAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnBean")
+    val conditionalOnPropertyAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnProperty")
+    val conditionalOnClassAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnClass")
 }

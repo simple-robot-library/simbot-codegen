@@ -2,7 +2,7 @@
 androidx-lifecycle = "2.9.0"
 compose-plugin = "1.8.2"
 junit = "4.13.2"
-kotlin = "2.2.20-Beta1"
+kotlin = "2.2.20-Beta2"
 kotlin-coroutine = "1.10.2"
 kotlin-browser = "0.4"
 kotlin-serialization = "1.9.0"
@@ -39,6 +39,7 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 
 # CodeGentle
 codegentle-kotlin = { module = "love.forte.codegentle:codegentle-kotlin", version.ref = "codegentle" }
+codegentle-java = { module = "love.forte.codegentle:codegentle-java", version.ref = "codegentle" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

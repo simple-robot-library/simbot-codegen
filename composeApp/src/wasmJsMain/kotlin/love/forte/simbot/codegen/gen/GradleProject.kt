@@ -7,12 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import js.date.Date
 import jszip.JSZip
-import love.forte.codegentle.common.code.CodePart
-import love.forte.codegentle.common.naming.PackageName
-import love.forte.codegentle.common.writer.InternalWriterApi
+import love.forte.codegentle.common.code.*
 import love.forte.codegentle.kotlin.KotlinFile
 import love.forte.codegentle.kotlin.writeToKotlinString
 import love.forte.simbot.codegen.gen.SimbotComponent.*
+import love.forte.simbot.codegen.gen.core.JavaStyle
+import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import simbot_codegen.composeapp.generated.resources.Res
 
@@ -52,6 +52,12 @@ class GradleProjectViewModel : ViewModel() {
 
     var simbotVersion: String? by mutableStateOf(null)
     var kotlinVersion: String by mutableStateOf("2.1.20") // TODO initial able?
+    
+    // 编程语言选择
+    var programmingLanguage: ProgrammingLanguage by mutableStateOf(ProgrammingLanguage.Kotlin("2.1.20"))
+    
+    // Java 样式选择（仅在选择 Java 语言时有效）
+    var javaStyle: JavaStyle by mutableStateOf(JavaStyle.BLOCKING)
 
     // TODO generate
     // var withSpring: Boolean by mutableStateOf(false)
@@ -118,50 +124,65 @@ fun genGradleBuildScript(
     plugins: Iterable<GradleCatalogPlugin>,
     dependencies: Iterable<GradleCatalogVersionDependency>,
 ): String {
-        // TODO
-    KotlinFile {
-        // TODO
-    }
-
-
-    return fileScriptSpec("build.gradle") {
-        inControlFlow("plugins") {
-            plugins.forEach { plugin ->
-                addStatement("alias(libs.plugins.%L)", plugin.libRefPath)
+    return KotlinFile {
+        addCode {
+            inControlFlow("plugins") {
+                plugins.forEach { plugin ->
+                    addStatement("alias(libs.plugins.%V)") {
+                        emitLiteral(plugin.libRefPath)
+                    }
+                }
             }
         }
 
-        addStatement("group = %S", pkg)
-        addStatement("version = %S", "1.0-SNAPSHOT")
+        addStatement("group = %V") { emitString(pkg) }
+        addStatement("version = %V") { emitString("0.0.1-SNAPSHOT") }
         addStatement("")
 
-        inControlFlow("java") {
-            addStatement("sourceCompatibility = JavaVersion.VERSION_21")
+        // Java config
+        addCode {
+            inControlFlow("java") {
+                inControlFlow("toolchain") {
+                    addStatement("languageVersion = JavaLanguageVersion.of(21)")
+                }
+            }
         }
 
         // repositories
-        inControlFlow("repositories") {
-            addStatement("mavenCentral()")
+        addCode {
+            inControlFlow("repositories") {
+                addStatement("mavenCentral()")
+            }
         }
 
         // dependencies
-        inControlFlow("dependencies") {
-            dependencies.forEach { dependency ->
-                addStatement("%L(libs.%L)", dependency.configName, dependency.libRefPath)
+        addCode {
+            inControlFlow("dependencies") {
+                dependencies.forEach { dependency ->
+                    addStatement("%V(libs.%V)") {
+                        emitLiteral(dependency.configName)
+                        emitLiteral(dependency.libRefPath)
+                    }
+                }
             }
         }
 
-        inControlFlow("kotlin") {
-            inControlFlow("compilerOptions") {
-                addStatement("freeCompilerArgs.addAll(%S)", "-Xjsr305=strict")
+        addCode {
+            inControlFlow("kotlin") {
+                inControlFlow("compilerOptions") {
+                    addStatement("freeCompilerArgs.addAll(%V)") {
+                        emitString("-Xjsr305=strict")
+                    }
+                }
             }
         }
 
-        inControlFlow("tasks.withType<Test>") {
-            addStatement("useJUnitPlatform()")
+        addCode {
+            inControlFlow("tasks.withType<Test>") {
+                addStatement("useJUnitPlatform()")
+            }
         }
-
-    }.toString()
+    }.writeToKotlinString()
 }
 
 fun genGradleSettingsScript(
@@ -179,7 +200,10 @@ fun genREADME(
 ): String {
     return buildString {
         appendLine("# $name")
-        appendLine("这是一个 [Simple Robot](https://github.com/simple-robot) 项目, 通过 [Simbot Codegen](https://codegen.simbot.forte.love/) 构建生成。")
+        appendLine(
+            "这是一个 [Simple Robot](https://github.com/simple-robot) 项目, " +
+                    "通过 [Simbot Codegen](https://codegen.simbot.forte.love/) 构建生成。"
+        )
         appendLine()
         // 组件说明
         appendLine("## 组件")

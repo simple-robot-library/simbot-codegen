@@ -37,7 +37,7 @@ class ViewModelBridge(
         val context = createGenerationContext {
             projectName = viewModel.projectName
             packageName = viewModel.projectPackage
-            language = ProgrammingLanguage.Kotlin(viewModel.kotlinVersion)
+            language = viewModel.programmingLanguage
             framework = if (viewModel.withSpring) {
                 Framework.Spring("3.3.3") // 使用默认版本，后续可以从视图模型中获取
             } else {
