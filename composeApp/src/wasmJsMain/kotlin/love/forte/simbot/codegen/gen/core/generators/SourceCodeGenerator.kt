@@ -96,9 +96,9 @@ interface LanguageSpecificSourceCodeGenerator<L : ProgrammingLanguage> : SourceC
     suspend fun generateEventHandlers(packageDir: JSZip, context: GenerationContext)
     
     override suspend fun generateSourceCode(sourceDir: JSZip, context: GenerationContext) {
-        val packageDir = createPackageDirectories(sourceDir, context.packageName)
-        generateApplicationEntry(packageDir, context)
-        generateEventHandlers(packageDir, context)
+        // sourceDir already points to the correct package directory from createSourceDirectory
+        generateApplicationEntry(sourceDir, context)
+        generateEventHandlers(sourceDir, context)
     }
 }
 

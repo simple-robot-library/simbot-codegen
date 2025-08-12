@@ -24,7 +24,14 @@ import kotlinx.browser.window
 import kotlinx.coroutines.launch
 import love.forte.simbot.codegen.filesaver.saveAs
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
-import love.forte.simbot.codegen.gen.doGenerate
+import love.forte.simbot.codegen.gen.bridge.ViewModelBridge
+import love.forte.simbot.codegen.gen.core.generators.CompositeGenerator
+import love.forte.simbot.codegen.gen.core.generators.LanguageAndFrameworkBasedGeneratorFactory
+import love.forte.simbot.codegen.gen.core.generators.gradle.GradleProjectGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.kotlin.KotlinSourceCodeGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.java.JavaSourceCodeGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.spring.SpringConfigurationGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.core.CoreConfigurationGeneratorImpl
 import web.blob.Blob
 import web.console.console
 
@@ -107,7 +114,22 @@ private suspend fun doDownload(
     project: GradleProjectViewModel
 ) {
     val name = project.projectName
-    val zip = doGenerate(project)
+    
+    // 创建生成器工厂
+    val generatorFactory = LanguageAndFrameworkBasedGeneratorFactory(
+        projectGeneratorFactory = { GradleProjectGeneratorImpl() },
+        kotlinSourceGeneratorFactory = { KotlinSourceCodeGeneratorImpl() },
+        javaSourceGeneratorFactory = { JavaSourceCodeGeneratorImpl() },
+        springConfigGeneratorFactory = { SpringConfigurationGeneratorImpl() },
+        coreConfigGeneratorFactory = { CoreConfigurationGeneratorImpl() }
+    )
+    
+    // 创建视图模型桥接器
+    val bridge = ViewModelBridge(generatorFactory)
+    
+    // 生成项目
+    val zip = bridge.generateProject(project)
+    
     val options = unsafeJso<JSZipGeneratorOptions<Blob>> {
         type = OutputType.blob
     }

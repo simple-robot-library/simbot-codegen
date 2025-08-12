@@ -48,7 +48,7 @@ class ViewModelBridge(
             packageName = viewModel.projectPackage
             
             // 语言
-            language = ProgrammingLanguage.Kotlin(viewModel.kotlinVersion)
+            language = viewModel.programmingLanguage
             
             // 框架
             framework = if (viewModel.withSpring) {
