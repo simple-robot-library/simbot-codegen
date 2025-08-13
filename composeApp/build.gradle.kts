@@ -24,6 +24,13 @@ repositories {
     }
 }
 
+// 刷新snapshot
+configurations.all {
+    resolutionStrategy {
+        cacheChangingModulesFor(1, TimeUnit.MINUTES)
+    }
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-parameters")
