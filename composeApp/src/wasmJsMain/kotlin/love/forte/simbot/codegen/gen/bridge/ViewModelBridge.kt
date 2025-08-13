@@ -8,6 +8,7 @@ import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
 import love.forte.simbot.codegen.gen.core.context.ComponentImpl
 import love.forte.simbot.codegen.gen.core.context.DependencyImpl
 import love.forte.simbot.codegen.gen.core.context.createGenerationContext
+import love.forte.simbot.codegen.gen.core.context.toDependency
 import love.forte.simbot.codegen.gen.core.generators.ProjectGeneratorFactory
 
 /**
@@ -61,53 +62,20 @@ class ViewModelBridge(
             
             // 添加依赖
             dependencies.addAll(viewModel.dependencies.map { dependency ->
-                DependencyImpl(
-                    group = dependency.group,
-                    name = dependency.name,
-                    version = dependency.version?.version ?: "latest",
-                    configurationName = dependency.configName
-                )
+                dependency.toDependency()
             })
             
             // 添加必要的 simbot 依赖
             if (framework is Framework.Spring) {
                 // Spring 相关依赖
-                dependencies.add(
-                    DependencyImpl(
-                        group = SPRING_STARTER.group,
-                        name = SPRING_STARTER.name,
-                        version = SPRING_VERSION.version,
-                        configurationName = SPRING_STARTER.configName
-                    )
-                )
+                dependencies.add(SPRING_STARTER.toDependency())
                 
-                dependencies.add(
-                    DependencyImpl(
-                        group = KOTLIN_REFLECT.group,
-                        name = KOTLIN_REFLECT.name,
-                        version = KOTLIN_REFLECT.version?.version ?: "latest",
-                        configurationName = KOTLIN_REFLECT.configName
-                    )
-                )
+                dependencies.add(KOTLIN_REFLECT.toDependency())
                 
-                dependencies.add(
-                    DependencyImpl(
-                        group = SIMBOT_SPRING.group,
-                        name = SIMBOT_SPRING.name,
-                        version = viewModel.simbotVersion ?: SIMBOT_SPRING.version?.version ?: "latest",
-                        configurationName = SIMBOT_SPRING.configName
-                    )
-                )
+                dependencies.add(SIMBOT_SPRING.toDependency(viewModel.simbotVersion))
             } else {
                 // 核心库依赖
-                dependencies.add(
-                    DependencyImpl(
-                        group = SIMBOT_CORE.group,
-                        name = SIMBOT_CORE.name,
-                        version = viewModel.simbotVersion ?: SIMBOT_CORE.version?.version ?: "latest",
-                        configurationName = SIMBOT_CORE.configName
-                    )
-                )
+                dependencies.add(SIMBOT_CORE.toDependency(viewModel.simbotVersion))
             }
             
             // 添加组件依赖
@@ -119,25 +87,13 @@ class ViewModelBridge(
                 }
                 
                 dependencies.add(
-                    DependencyImpl(
-                        group = componentDependency.group,
-                        name = componentDependency.name,
-                        version = (componentVersion as? ComponentVersion.Value)?.value ?: componentDependency.version?.version ?: "latest",
-                        configurationName = componentDependency.configName
-                    )
+                    componentDependency.toDependency((componentVersion as? ComponentVersion.Value)?.value)
                 )
             }
             
             // 如果有组件需要 Ktor，添加 Ktor 依赖
             if (viewModel.components.any { it.component.ktorRequired }) {
-                dependencies.add(
-                    DependencyImpl(
-                        group = KTOR_CLIENT_JAVA.group,
-                        name = KTOR_CLIENT_JAVA.name,
-                        version = KTOR_CLIENT_JAVA.version?.version ?: "latest",
-                        configurationName = "runtimeOnly"
-                    )
-                )
+                dependencies.add(KTOR_CLIENT_JAVA.toDependency())
             }
         }
         

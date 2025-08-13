@@ -17,19 +17,6 @@ import love.forte.simbot.codegen.codegen.naming.SimbotNames
 import love.forte.simbot.codegen.codegen.naming.SpringNames
 import love.forte.simbot.codegen.gen.SimbotComponent.*
 
-/**
- * 生成使用核心库时的示例们到 sourceSets 中。
- */
-fun genCoreSourceShowcases(
-    projectName: String,
-    projectPackage: String,
-    sourceSets: JSZip,
-    resources: JSZip
-) {
-    // Main, 构建App、加载组件
-    TODO()
-
-}
 
 /**
  * 生成使用Spring时的示例们到 sourceSets 中。

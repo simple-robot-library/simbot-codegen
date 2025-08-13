@@ -162,11 +162,34 @@ fun LanguageSelection(
                             selectedColor = MaterialTheme.colorScheme.primary
                         )
                     )
-                    Text(
-                        "Java",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            "Java",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                        // Beta 标签
+                        Surface(
+                            modifier = Modifier,
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+                            )
+                        ) {
+                            Text(
+                                text = "Beta",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
                 }
                 
                 // Java 样式选择（仅在选择 Java 时显示）

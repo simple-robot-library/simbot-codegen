@@ -65,17 +65,17 @@ class GradleProjectViewModel : ViewModel() {
         get() = true
         set(value) {}
 
-    var components: MutableList<SimbotComponentWithVersion> = mutableStateListOf()
+    val components: MutableList<SimbotComponentWithVersion> = mutableStateListOf()
 
     /**
      * 额外依赖
      */
-    var dependencies: MutableList<GradleCatalogVersionDependency> = mutableStateListOf()
+    val dependencies: MutableList<GradleCatalogVersionDependency> = mutableStateListOf()
 
     /**
      * 插件，默认先带一个 Kotlin
      */
-    var plugins: MutableList<GradleCatalogPlugin> = mutableStateListOf(PLUGIN_KOTLIN)
+    val plugins: MutableList<GradleCatalogPlugin> = mutableStateListOf(PLUGIN_KOTLIN)
 }
 
 class SimbotComponentWithVersion(

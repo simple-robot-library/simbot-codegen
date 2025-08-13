@@ -1,5 +1,7 @@
 package love.forte.simbot.codegen.gen.core.context
 
+import love.forte.simbot.codegen.gen.GradleCatalogVersion
+import love.forte.simbot.codegen.gen.GradleCatalogVersionDependency
 import love.forte.simbot.codegen.gen.core.*
 
 /**
@@ -114,5 +116,22 @@ data class DependencyImpl(
     override val group: String,
     override val name: String,
     override val version: String,
-    override val configurationName: String = "implementation"
+    override val configurationName: String = "implementation",
+    override val catalog: GradleCatalogVersionDependency?
 ) : Dependency
+
+fun GradleCatalogVersionDependency.toDependency(
+    version: String? = null,
+    configurationName: String? = null
+): DependencyImpl =
+    DependencyImpl(
+        group = group,
+        name = name,
+        version = version ?: this.version?.version ?: "?",
+        configurationName = configurationName ?: configName,
+        catalog = if (version == null) {
+            this
+        } else {
+            this.copy(version = GradleCatalogVersion(this.version?.name, version))
+        }
+    )

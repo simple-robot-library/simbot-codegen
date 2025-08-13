@@ -72,7 +72,6 @@ kotlin {
             // implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-rc03")
             // implementation(libs.androidx.lifecycle.runtime)
             // implementation(libs.androidx.lifecycle)
-            implementation(libs.kotlinpoet)
             implementation(libs.codegentle.kotlin)
             implementation(libs.codegentle.java)
             implementation(libs.kotlin.coroutine)

@@ -1,6 +1,7 @@
 package love.forte.simbot.codegen.gen.core
 
 import jszip.JSZip
+import love.forte.simbot.codegen.gen.GradleCatalogVersionDependency
 
 /**
  * 代码生成器的核心接口。
@@ -193,4 +194,6 @@ interface Dependency {
      * 依赖的配置名称，例如 implementation、api 等
      */
     val configurationName: String
+
+    val catalog: GradleCatalogVersionDependency?
 }

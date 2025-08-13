@@ -2,7 +2,7 @@ package love.forte.simbot.codegen.gen
 
 // libs.versions.toml
 data class GradleCatalogVersionDependency(
-    val dependencyName: String, // [dependencies]
+    val dependencyName: String, // use in [dependencies]
     val group: String,
     val name: String,
     val version: GradleCatalogVersion?,
@@ -45,9 +45,9 @@ fun genGradleCatalogVersion(
             appendLine("[libraries]")
             dependencies.forEach { dependency ->
                 append(dependency.dependencyName)
-                // junit = { group = "junit", name = "junit", version.ref = "junit" }
-                append(" = { group = \"").append(dependency.group)
-                append("\", name = \"").append(dependency.name)
+                // junit = { module = "junit:junit", version.ref = "junit" }
+                append(" = { module = \"")
+                    .append(dependency.group).append(":").append(dependency.name)
                 append('"')
 
                 val dependencyVersion = dependency.version

@@ -54,7 +54,7 @@ val COMPONENT_QQ = GradleCatalogVersionDependency(
     name = "simbot-component-qq-guild-core",
     version = GradleCatalogVersion(
         name = "simbot-qq",
-        version = "4.0.1"
+        version = "4.2.2"
     )
 )
 
@@ -64,7 +64,7 @@ val COMPONENT_KOOK = GradleCatalogVersionDependency(
     name = "simbot-component-kook-core",
     version = GradleCatalogVersion(
         name = "simbot-kook",
-        version = "4.0.2"
+        version = "4.1.5"
     )
 )
 
@@ -74,7 +74,7 @@ val COMPONENT_OB_11 = GradleCatalogVersionDependency(
     name = "simbot-component-onebot-v11-core",
     version = GradleCatalogVersion(
         name = "simbot-onebot",
-        version = "1.4.0"
+        version = "1.8.2"
     )
 )
 
@@ -84,7 +84,7 @@ val SPRING_STARTER = GradleCatalogVersionDependency(
     dependencyName = "spring-boot-starter",
     group = "org.springframework.boot",
     name = "spring-boot-starter",
-    version = null
+    version = SPRING_VERSION
 )
 
 // Ktor

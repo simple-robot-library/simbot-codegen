@@ -6,6 +6,7 @@ import love.forte.simbot.codegen.gen.core.*
 import love.forte.simbot.codegen.gen.core.context.ComponentImpl
 import love.forte.simbot.codegen.gen.core.context.DependencyImpl
 import love.forte.simbot.codegen.gen.core.context.createGenerationContext
+import love.forte.simbot.codegen.gen.core.context.toDependency
 import love.forte.simbot.codegen.gen.core.generators.ProjectGeneratorFactory
 
 /**
@@ -73,65 +74,23 @@ class ViewModelBridge(
             
             // 依赖
             dependencies = viewModel.dependencies.map { dependency ->
-                DependencyImpl(
-                    group = dependency.group,
-                    name = dependency.name,
-                    version = dependency.version?.version ?: "latest",
-                    configurationName = dependency.configName
-                )
+                dependency.toDependency()
             }.toMutableList()
             
             // 添加必要的依赖
             if (framework is Framework.Spring) {
                 // Spring 相关依赖
-                dependencies.add(
-                    DependencyImpl(
-                        group = SPRING_STARTER.group,
-                        name = SPRING_STARTER.name,
-                        version = SPRING_VERSION.version,
-                        configurationName = SPRING_STARTER.configName
-                    )
-                )
-                
-                dependencies.add(
-                    DependencyImpl(
-                        group = KOTLIN_REFLECT.group,
-                        name = KOTLIN_REFLECT.name,
-                        version = KOTLIN_VERSION.version,
-                        configurationName = KOTLIN_REFLECT.configName
-                    )
-                )
-                
-                dependencies.add(
-                    DependencyImpl(
-                        group = SIMBOT_SPRING.group,
-                        name = SIMBOT_SPRING.name,
-                        version = viewModel.simbotVersion ?: SIMBOT_VERSION.version,
-                        configurationName = SIMBOT_SPRING.configName
-                    )
-                )
+                dependencies.add(SPRING_STARTER.toDependency())
+                dependencies.add(KOTLIN_REFLECT.toDependency())
+                dependencies.add(SIMBOT_SPRING.toDependency(viewModel.simbotVersion))
             } else {
                 // 核心库依赖
-                dependencies.add(
-                    DependencyImpl(
-                        group = SIMBOT_CORE.group,
-                        name = SIMBOT_CORE.name,
-                        version = viewModel.simbotVersion ?: SIMBOT_VERSION.version,
-                        configurationName = SIMBOT_CORE.configName
-                    )
-                )
+                dependencies.add(SIMBOT_CORE.toDependency(viewModel.simbotVersion))
             }
             
             // 如果有组件需要 Ktor，添加 Ktor 依赖
             if (viewModel.components.any { it.component.ktorRequired }) {
-                dependencies.add(
-                    DependencyImpl(
-                        group = KTOR_CLIENT_JAVA.group,
-                        name = KTOR_CLIENT_JAVA.name,
-                        version = KTOR_VERSION.version,
-                        configurationName = "runtimeOnly"
-                    )
-                )
+                dependencies.add(KTOR_CLIENT_JAVA.toDependency(configurationName = "runtimeOnly"))
             }
         }
     }

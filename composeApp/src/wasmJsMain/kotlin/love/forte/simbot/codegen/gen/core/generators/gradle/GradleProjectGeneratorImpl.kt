@@ -3,7 +3,6 @@ package love.forte.simbot.codegen.gen.core.generators.gradle
 import js.date.Date
 import jszip.JSZip
 import love.forte.simbot.codegen.gen.*
-import love.forte.simbot.codegen.gen.core.Dependency
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.generators.GradleProjectGenerator
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -26,16 +25,16 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
     override suspend fun generateBuildScript(rootDir: JSZip, context: GenerationContext) {
         // 将 Dependency 转换为 GradleCatalogVersionDependency
         val catalogDependencies = context.dependencies.map { dependency ->
-            love.forte.simbot.codegen.gen.GradleCatalogVersionDependency(
-                dependencyName = dependency.name.replace('-', '.'),
+            dependency.catalog ?: GradleCatalogVersionDependency(
+                dependencyName = dependency.name.replace('.', '-'),
                 group = dependency.group,
                 name = dependency.name,
-                version = love.forte.simbot.codegen.gen.GradleCatalogVersion(null, dependency.version),
+                version = GradleCatalogVersion(null, dependency.version),
                 configName = dependency.configurationName
             )
         }
 
-        val buildScript = love.forte.simbot.codegen.gen.genGradleBuildScript(
+        val buildScript = genGradleBuildScript(
             pkg = context.packageName,
             plugins = getPlugins(context),
             dependencies = catalogDependencies
@@ -85,11 +84,11 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
      */
     override suspend fun generateVersionCatalog(rootDir: JSZip, context: GenerationContext) {
         val catalogDependencies = context.dependencies.map { dependency ->
-            GradleCatalogVersionDependency(
-                dependencyName = dependency.name.replace('-', '.'),
+            dependency.catalog ?: GradleCatalogVersionDependency(
+                dependencyName = dependency.name.replace('.', '-'),
                 group = dependency.group,
                 name = dependency.name,
-                version = love.forte.simbot.codegen.gen.GradleCatalogVersion(null, dependency.version),
+                version = GradleCatalogVersion(null, dependency.version),
                 configName = dependency.configurationName
             )
         }
@@ -102,35 +101,20 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
     }
 
     /**
-     * 生成 README 文件。
-     *
-     * @param rootDir 项目根目录的 JSZip 对象
-     * @param context 代码生成的上下文信息
-     */
-    suspend fun generateReadme(rootDir: JSZip, context: GenerationContext) {
-        val readme = genREADME(
-            name = context.projectName,
-            withSpring = context.framework is love.forte.simbot.codegen.gen.core.Framework.Spring,
-            components = context.components
-        )
-        rootDir.file("README.md", readme)
-    }
-
-    /**
      * 获取插件列表。
      *
      * @param context 代码生成的上下文信息
      * @return 插件列表
      */
-    private fun getPlugins(context: GenerationContext): List<love.forte.simbot.codegen.gen.GradleCatalogPlugin> {
-        val plugins = mutableListOf<love.forte.simbot.codegen.gen.GradleCatalogPlugin>()
+    private fun getPlugins(context: GenerationContext): List<GradleCatalogPlugin> {
+        val plugins = mutableListOf<GradleCatalogPlugin>()
 
         // 基础插件
         plugins.add(
-            love.forte.simbot.codegen.gen.GradleCatalogPlugin(
+            GradleCatalogPlugin(
                 pluginName = "kotlin-jvm",
                 id = "org.jetbrains.kotlin.jvm",
-                version = love.forte.simbot.codegen.gen.GradleCatalogVersion("kotlin", getKotlinVersion(context))
+                version = GradleCatalogVersion("kotlin", getKotlinVersion(context))
             )
         )
 
@@ -139,26 +123,26 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
             val springVersion = (context.framework as love.forte.simbot.codegen.gen.core.Framework.Spring).version
 
             plugins.add(
-                love.forte.simbot.codegen.gen.GradleCatalogPlugin(
+                GradleCatalogPlugin(
                     pluginName = "kotlin-plugin-spring",
                     id = "org.jetbrains.kotlin.plugin.spring",
-                    version = love.forte.simbot.codegen.gen.GradleCatalogVersion("kotlin", getKotlinVersion(context))
+                    version = GradleCatalogVersion("kotlin", getKotlinVersion(context))
                 )
             )
 
             plugins.add(
-                love.forte.simbot.codegen.gen.GradleCatalogPlugin(
+                GradleCatalogPlugin(
                     pluginName = "spring",
                     id = "org.springframework.boot",
-                    version = love.forte.simbot.codegen.gen.GradleCatalogVersion("spring", springVersion)
+                    version = GradleCatalogVersion("spring", springVersion)
                 )
             )
 
             plugins.add(
-                love.forte.simbot.codegen.gen.GradleCatalogPlugin(
+                GradleCatalogPlugin(
                     pluginName = "spring-management",
                     id = "io.spring.dependency-management",
-                    version = love.forte.simbot.codegen.gen.GradleCatalogVersion("spring-management", "1.1.6")
+                    version = GradleCatalogVersion("spring-management", "1.1.6")
                 )
             )
         }
@@ -177,71 +161,6 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
             is love.forte.simbot.codegen.gen.core.ProgrammingLanguage.Kotlin -> language.version
             else -> "2.1.20" // 默认版本
         }
-    }
-
-    /**
-     * 生成 Gradle 构建脚本。
-     *
-     * @param pkg 包名
-     * @param plugins 插件列表
-     * @param dependencies 依赖列表
-     * @return 构建脚本内容
-     */
-    private fun genGradleBuildScript(
-        pkg: String,
-        plugins: List<GradleCatalogPlugin>,
-        dependencies: List<Dependency>
-    ): String {
-        return fileScriptSpec("build.gradle") {
-            inControlFlow("plugins") {
-                plugins.forEach { plugin ->
-                    addStatement("alias(libs.plugins.%L)", plugin.libRefPath)
-                }
-            }
-
-            addStatement("group = %V", pkg)
-            addStatement("version = %V", "1.0-SNAPSHOT")
-            addStatement("")
-
-            inControlFlow("java") {
-                addStatement("sourceCompatibility = JavaVersion.VERSION_21")
-            }
-
-            // repositories
-            inControlFlow("repositories") {
-                addStatement("mavenCentral()")
-            }
-
-            // dependencies
-            inControlFlow("dependencies") {
-                dependencies.forEach { dependency ->
-                    addStatement("%L(libs.%L)", dependency.configurationName, dependency.name.replace('-', '.'))
-                }
-            }
-
-            inControlFlow("kotlin") {
-                inControlFlow("compilerOptions") {
-                    addStatement("freeCompilerArgs.addAll(%V)", "-Xjsr305=strict")
-                }
-            }
-
-            inControlFlow("tasks.withType<Test>") {
-                addStatement("useJUnitPlatform()")
-            }
-
-        }.toString().removeAllPublicModifier()
-    }
-
-    /**
-     * 生成 Gradle 设置脚本。
-     *
-     * @param name 项目名称
-     * @return 设置脚本内容
-     */
-    private fun genGradleSettingsScript(name: String): String {
-        return fileScriptSpec("settings.gradle") {
-            addStatement("rootProject.name = %V", name)
-        }.toString().removeAllPublicModifier()
     }
 
     /**

@@ -26,13 +26,12 @@ class JavaMainClassGenerator {
         val javaLanguage = context.language as ProgrammingLanguage.Java
         val mainClassName = JavaTemplates.DEFAULT_MAIN_CLASS_NAME
         
-        val javaCode = when (context.framework) {
-            is Framework.Spring -> generateSpringMainClass(
+        val javaFile = when (context.framework) {
+            is Framework.Spring -> JavaTemplates.createSpringMainClassFile(
                 packageName = context.packageName,
-                className = mainClassName,
-                javaStyle = javaLanguage.style
+                className = mainClassName
             )
-            is Framework.Core -> generateCoreMainClass(
+            is Framework.Core -> JavaTemplates.createCoreMainClassFile(
                 packageName = context.packageName,
                 className = mainClassName,
                 javaStyle = javaLanguage.style
@@ -41,38 +40,7 @@ class JavaMainClassGenerator {
         
         // 生成文件
         val fileName = JavaTemplates.getMainClassFileName(mainClassName)
-        packageDir.file(fileName, javaCode)
+        packageDir.file(fileName, javaFile.toString())
     }
     
-    /**
-     * 生成 Spring Boot 主应用类代码。
-     * 
-     * @param packageName 包名
-     * @param className 类名
-     * @param javaStyle Java 编程风格（对于主类，风格不影响生成结果）
-     * @return 生成的代码
-     */
-    private fun generateSpringMainClass(
-        packageName: String,
-        className: String,
-        javaStyle: JavaStyle
-    ): String {
-        return JavaTemplates.springMainClassTemplate(packageName, className)
-    }
-    
-    /**
-     * 生成核心库主应用类代码。
-     * 
-     * @param packageName 包名
-     * @param className 类名
-     * @param javaStyle Java 编程风格
-     * @return 生成的代码
-     */
-    private fun generateCoreMainClass(
-        packageName: String,
-        className: String,
-        javaStyle: JavaStyle
-    ): String {
-        return JavaTemplates.coreMainClassTemplate(packageName, className, javaStyle)
-    }
 }
