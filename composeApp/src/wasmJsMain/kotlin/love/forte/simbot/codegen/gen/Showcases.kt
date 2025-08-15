@@ -18,6 +18,7 @@ import love.forte.simbot.codegen.codegen.SimbotComponent
 import love.forte.simbot.codegen.codegen.naming.SimbotNames
 import love.forte.simbot.codegen.codegen.naming.SpringNames
 import love.forte.simbot.codegen.codegen.SimbotComponent.*
+import love.forte.simbot.codegen.toRelativePath0
 
 
 /**
@@ -78,7 +79,7 @@ fun emitSpringMainFile(
     sourceDir: JSZip
 ) {
     val file = genKotlinSpringMainFile("MainApplication", projectPackage)
-    sourceDir.file(file.toRelativePath(), file.writeToKotlinString())
+    sourceDir.file(file.toRelativePath0(), file.writeToKotlinString())
 }
 
 fun genKotlinSpringListenerShowcases(
@@ -245,7 +246,7 @@ fun emitSpringListenerShowcases(
     sourceDir: JSZip
 ) {
     val file = genKotlinSpringListenerShowcases(projectPackage, components)
-    sourceDir.file(file.toRelativePath(), file.writeToKotlinString())
+    sourceDir.file(file.toRelativePath0(), file.writeToKotlinString())
 }
 
 /**

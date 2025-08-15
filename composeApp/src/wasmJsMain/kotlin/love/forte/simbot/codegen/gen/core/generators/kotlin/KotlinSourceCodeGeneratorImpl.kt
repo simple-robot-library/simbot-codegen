@@ -26,6 +26,8 @@ class KotlinSourceCodeGeneratorImpl : KotlinSourceCodeGenerator {
     override suspend fun generateApplicationEntry(sourceDir: JSZip, context: GenerationContext) {
         when (context.framework) {
             is Framework.Spring -> {
+                // sourceDir 已经指向 src/main/kotlin，直接调用 emitSpringMainFile
+                // emitSpringMainFile 内部会通过 toRelativePath() 创建正确的包目录结构
                 emitSpringMainFile(context.packageName, sourceDir)
             }
             is Framework.Core -> {

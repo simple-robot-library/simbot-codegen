@@ -84,7 +84,7 @@ interface LanguageSpecificSourceCodeGenerator<L : ProgrammingLanguage> : SourceC
     /**
      * 生成应用程序入口文件。
      * 
-     * @param sourceDir 包目录的 JSZip 对象
+     * @param sourceDir 语言源代码目录的 JSZip 对象（如 src/main/kotlin 或 src/main/java）
      * @param context 代码生成的上下文信息
      */
     suspend fun generateApplicationEntry(sourceDir: JSZip, context: GenerationContext)
@@ -92,13 +92,14 @@ interface LanguageSpecificSourceCodeGenerator<L : ProgrammingLanguage> : SourceC
     /**
      * 生成事件处理器文件。
      * 
-     * @param sourceDir 包目录的 JSZip 对象
+     * @param sourceDir 语言源代码目录的 JSZip 对象（如 src/main/kotlin 或 src/main/java）
      * @param context 代码生成的上下文信息
      */
     suspend fun generateEventHandlers(sourceDir: JSZip, context: GenerationContext)
     
     override suspend fun generateSourceCode(sourceDir: JSZip, context: GenerationContext) {
-        // sourceDir already points to the correct package directory from createSourceDirectory
+        // sourceDir 指向语言级别的目录（如 src/main/kotlin），而不是包目录
+        // 具体的包目录结构由各个生成方法内部处理
         generateApplicationEntry(sourceDir, context)
         generateEventHandlers(sourceDir, context)
     }

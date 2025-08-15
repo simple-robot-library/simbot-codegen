@@ -6,6 +6,7 @@ import love.forte.codegentle.java.toRelativePath
 import love.forte.simbot.codegen.gen.core.Framework
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
+import love.forte.simbot.codegen.toRelativePath0
 
 /**
  * Java 事件处理器生成器。
@@ -44,7 +45,7 @@ class JavaEventHandlerGenerator {
 //        val handleDir = sourceDir.folder(JavaTemplates.HANDLER_PACKAGE_SUFFIX)
 //            ?: throw IllegalStateException("无法创建 ${JavaTemplates.HANDLER_PACKAGE_SUFFIX} 目录")
 //        val fileName = JavaTemplates.getHandlerFileName()
-        sourceDir.file(handlerFile.toRelativePath(), handlerFile.toString())
+        sourceDir.file(handlerFile.toRelativePath0(), handlerFile.toString())
     }
     
 }

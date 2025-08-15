@@ -1,9 +1,11 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package love.forte.simbot.codegen.filesaver
 
-import js.date.Date
 import web.blob.Blob
 import web.file.File
 import web.url.URL
+import kotlin.js.ExperimentalWasmJsInterop
 import kotlin.js.JsModule
 import kotlin.js.definedExternally
 

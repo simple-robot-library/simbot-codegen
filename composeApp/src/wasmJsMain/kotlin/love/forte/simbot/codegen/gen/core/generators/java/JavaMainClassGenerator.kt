@@ -6,6 +6,7 @@ import love.forte.simbot.codegen.gen.core.Framework
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.JavaStyle
 import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
+import love.forte.simbot.codegen.toRelativePath0
 
 /**
  * Java 主应用类生成器。
@@ -41,7 +42,7 @@ class JavaMainClassGenerator {
         
         // 生成文件
 //        val fileName = JavaTemplates.getMainClassFileName(mainClassName)
-        packageDir.file(javaFile.toRelativePath(), javaFile.toString())
+        packageDir.file(javaFile.toRelativePath0(), javaFile.toString())
     }
     
 }
