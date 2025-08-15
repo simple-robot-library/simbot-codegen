@@ -3,11 +3,11 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        maven {
-            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
-        }
-        google()
+//        maven {
+//            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+//        }
         mavenCentral()
+        google()
         gradlePluginPortal()
     }
 }
@@ -15,11 +15,11 @@ pluginManagement {
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
-        maven {
-            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
-        }
-        google()
+//        maven {
+//            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+//        }
         mavenCentral()
+        google()
         mavenLocal()
     }
 
