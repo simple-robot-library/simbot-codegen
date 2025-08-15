@@ -3,7 +3,6 @@ package love.forte.simbot.codegen.gen.view
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -18,6 +17,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import js.date.Date
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
+import love.forte.simbot.codegen.components.GroupCard
+import love.forte.simbot.codegen.components.GroupGrid
+import love.forte.simbot.codegen.components.WindowSize
+import love.forte.simbot.codegen.components.rememberWindowSize
 import love.forte.simbot.codegen.withLink
 
 
@@ -111,48 +114,54 @@ private fun SettingsForm(
                     WindowSize.Mobile -> 8.dp
                     else -> 16.dp
                 }
-
-            )
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(
-                // 移动端使用更小的内边距
-                when (windowSize) {
-                    WindowSize.Mobile -> 16.dp
-                    else -> 24.dp
-                }
-
             ),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(
-            // 移动端使用更小的间距
-            when (windowSize) {
-                WindowSize.Mobile -> 12.dp
-                else -> 20.dp
-            },
-            Alignment.Top
-
-        ),
-    )
-    {
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 页面标题
         Text(
             "项目配置",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // 使用 GroupGrid 进行响应式布局
+        GroupGrid(windowSize = windowSize) {
+            // 项目信息组
+            GroupCard(
+                title = "项目信息",
+                subtitle = "配置项目的基本信息"
+            ) {
+                ProjectName(project)
+                ProjectPackage(project)
+            }
 
-        ProjectName(project)
-        ProjectPackage(project)
-        LanguageSelection(project)
-        SimbotVersion(project, loadingCounter)
-        GradleVersion(project)
-        WithSpring(project)
-        ComponentSelection(project, loadingCounter, windowSize)
+            // 语言风格组
+            GroupCard(
+                title = "语言风格",
+                subtitle = "选择编程语言和API风格"
+            ) {
+                LanguageSelectionContent(project)
+            }
+
+            // 框架集成组
+            GroupCard(
+                title = "框架集成",
+                subtitle = "选择是否集成Spring框架"
+            ) {
+                WithSpringContent(project)
+            }
+
+            // 组件配置组
+            GroupCard(
+                title = "组件配置",
+                subtitle = "配置simbot核心库版本和组件"
+            ) {
+                SimbotVersion(project, loadingCounter)
+                GradleVersion(project)
+                ComponentSelection(project, loadingCounter, windowSize)
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

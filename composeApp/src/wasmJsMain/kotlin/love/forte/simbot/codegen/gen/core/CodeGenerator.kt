@@ -56,6 +56,11 @@ interface GenerationContext {
      * 项目依赖
      */
     val dependencies: List<Dependency>
+
+    /**
+     * Gradle 版本
+     */
+    val gradleVersion: String
 }
 
 /**

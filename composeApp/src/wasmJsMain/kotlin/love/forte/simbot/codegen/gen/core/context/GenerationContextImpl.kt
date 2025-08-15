@@ -17,7 +17,8 @@ data class GenerationContextImpl(
     override val language: ProgrammingLanguage,
     override val framework: Framework,
     override val components: List<Component>,
-    override val dependencies: List<Dependency>
+    override val dependencies: List<Dependency>,
+    override val gradleVersion: String
 ) : GenerationContext
 
 /**
@@ -53,7 +54,12 @@ class GenerationContextBuilder {
      * 项目依赖
      */
     var dependencies: MutableList<Dependency> = mutableListOf()
-    
+
+    /**
+     * 项目依赖
+     */
+    var gradleVersion: String = "8.8"
+
     /**
      * 构建 [GenerationContextImpl]。
      */
@@ -64,7 +70,8 @@ class GenerationContextBuilder {
             language = language,
             framework = framework,
             components = components.toList(),
-            dependencies = dependencies.toList()
+            dependencies = dependencies.toList(),
+            gradleVersion = gradleVersion,
         )
     }
 }

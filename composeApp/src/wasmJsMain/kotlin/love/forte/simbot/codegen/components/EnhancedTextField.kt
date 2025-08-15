@@ -1,24 +1,26 @@
-package love.forte.simbot.codegen.gen.view
+package love.forte.simbot.codegen.components
 
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.browser.window
+
 
 /**
  * 定制化的输入框组件，提供统一的样式和交互体验
@@ -53,7 +55,7 @@ fun EnhancedTextField(
 
     val backgroundColor by animateColorAsState(
         targetValue = when {
-            isFocused -> MaterialTheme.colorScheme.surfaceVariant // .copy(alpha = 0.3f)
+            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
             else -> MaterialTheme.colorScheme.surface
         },
         animationSpec = tween(durationMillis = 200),
@@ -113,81 +115,4 @@ fun EnhancedTextField(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
         ),
     )
-}
-
-/**
- * 带动画效果的搜索图标组件
- */
-@Composable
-fun SearchingIcon(
-    initialColor: Color = LocalContentColor.current,
-    targetColor: Color = LocalContentColor.current.copy(alpha = .2f),
-    animationSpec: InfiniteRepeatableSpec<Color> = infiniteRepeatable(
-        tween(durationMillis = 600, delayMillis = 200),
-        repeatMode = RepeatMode.Reverse
-    ),
-    label: String = "SearchIconColorAnimation"
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "SearchIconTransition")
-    val color by infiniteTransition.animateColor(
-        initialValue = initialColor,
-        targetValue = targetColor,
-        animationSpec = animationSpec,
-        label = label
-    )
-    val size by infiniteTransition.animateFloat(
-        initialValue = 24f,
-        targetValue = 28f,
-        animationSpec = infiniteRepeatable(
-            tween(durationMillis = 800, delayMillis = 100),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "IconSizeAnimation"
-    )
-
-    Icon(
-        Icons.Outlined.Search,
-        "Searching",
-        tint = color,
-        modifier = Modifier.size(size.dp)
-    )
-}
-
-/**
- * 记住当前窗口大小的 Composable 函数
- */
-@Composable
-fun rememberWindowSize(): WindowSize {
-    var windowSize by remember { mutableStateOf(WindowSize.Desktop) }
-
-    DisposableEffect(Unit) {
-        val resizeListener: (Any?) -> Unit = {
-            val width = window.innerWidth
-            windowSize = when {
-                width < 600 -> WindowSize.Mobile
-                width < 840 -> WindowSize.Tablet
-                else -> WindowSize.Desktop
-            }
-        }
-
-        // 初始化窗口大小
-        resizeListener(null)
-
-        // 添加窗口调整大小的监听器
-        window.addEventListener("resize", resizeListener)
-
-        // 清理监听器
-        onDispose {
-            window.removeEventListener("resize", resizeListener)
-        }
-    }
-
-    return windowSize
-}
-
-/**
- * 窗口大小枚举类
- */
-enum class WindowSize {
-    Mobile, Tablet, Desktop
 }

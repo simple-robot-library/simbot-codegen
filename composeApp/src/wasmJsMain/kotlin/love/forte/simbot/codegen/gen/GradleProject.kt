@@ -94,7 +94,7 @@ sealed class ComponentVersion {
 }
 
 class GradleSettings {
-    var version: String by mutableStateOf("8.8")
+    var version: String by mutableStateOf("8.10")
 }
 
 

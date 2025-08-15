@@ -36,6 +36,7 @@ class ViewModelBridge(
             projectName = viewModel.projectName
             packageName = viewModel.projectPackage
             language = viewModel.programmingLanguage
+            gradleVersion = viewModel.gradleSettings.version
             framework = if (viewModel.withSpring) {
                 Framework.Spring("3.3.3") // 使用默认版本，后续可以从视图模型中获取
             } else {

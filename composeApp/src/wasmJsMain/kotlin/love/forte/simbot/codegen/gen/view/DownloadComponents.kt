@@ -22,10 +22,10 @@ import jszip.OutputType
 import jszip.blob
 import kotlinx.browser.window
 import kotlinx.coroutines.launch
+import love.forte.simbot.codegen.components.WindowSize
 import love.forte.simbot.codegen.filesaver.saveAs
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.gen.bridge.ViewModelBridge
-import love.forte.simbot.codegen.gen.core.generators.CompositeGenerator
 import love.forte.simbot.codegen.gen.core.generators.LanguageAndFrameworkBasedGeneratorFactory
 import love.forte.simbot.codegen.gen.core.generators.gradle.GradleProjectGeneratorImpl
 import love.forte.simbot.codegen.gen.core.generators.kotlin.KotlinSourceCodeGeneratorImpl

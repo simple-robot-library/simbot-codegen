@@ -1,13 +1,10 @@
 package love.forte.simbot.codegen.versions
 
-import kotlinx.browser.window
-import kotlinx.coroutines.await
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.Request
-import org.w3c.fetch.Response
+import web.http.*
 
 // https://docs.github.com/zh/rest/releases/releases?apiVersion=2022-11-28#get-the-latest-release
 
@@ -20,27 +17,25 @@ private val json = Json {
 
 @OptIn(ExperimentalWasmJsInterop::class)
 suspend fun fetchLatest(owner: String, repo: String): GitHubRelease {
-    val req = Request(input = "https://api.github.com/repos/$owner/$repo/releases/latest".toJsString())
+    val req = Request(url = "https://api.github.com/repos/$owner/$repo/releases/latest")
     req.headers.append("X-GitHub-Api-Version", "2022-11-28")
     req.headers.append("Accept", "application/vnd.github.v3+json")
     req.headers.append("User-Agent", "simbot-codegen/1.0")
 
-    val fetchResponse = window.fetch(input = req)
-        .await<Response>()
-    
+    val fetchResponse = fetch(req)
+
     // Check if response is ok
     if (!fetchResponse.ok) {
         throw RuntimeException("GitHub API request failed: ${fetchResponse.status} ${fetchResponse.statusText}")
     }
-    
-    val fetchBody = fetchResponse.text().await<JsString>()
-    val responseText = fetchBody.toString()
-    
+
+    val responseText = fetchResponse.text()
+
     // Check if we got valid JSON
     if (responseText.isBlank()) {
         throw RuntimeException("Empty response from GitHub API")
     }
-    
+
     return json.decodeFromString(responseText)
 }
 

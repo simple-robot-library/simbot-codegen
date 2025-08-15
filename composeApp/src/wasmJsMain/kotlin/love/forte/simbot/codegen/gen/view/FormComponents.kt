@@ -15,6 +15,8 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import love.forte.simbot.codegen.components.EnhancedTextField
+import love.forte.simbot.codegen.components.SearchingIcon
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.gen.SIMBOT_VERSION
 import love.forte.simbot.codegen.gen.core.JavaStyle
@@ -124,7 +126,7 @@ fun LanguageSelection(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 // Kotlin 选项
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -146,7 +148,7 @@ fun LanguageSelection(
                         fontWeight = FontWeight.Medium
                     )
                 }
-                
+
                 // Java 选项
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -191,7 +193,7 @@ fun LanguageSelection(
                         }
                     }
                 }
-                
+
                 // Java 样式选择（仅在选择 Java 时显示）
                 AnimatedVisibility(project.programmingLanguage is ProgrammingLanguage.Java) {
                     Column(
@@ -206,7 +208,7 @@ fun LanguageSelection(
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -230,7 +232,7 @@ fun LanguageSelection(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -258,7 +260,162 @@ fun LanguageSelection(
                 }
             }
         }
-        
+
+        // 版本输入组件
+        when (project.programmingLanguage) {
+            is ProgrammingLanguage.Kotlin -> KotlinVersion(project)
+            is ProgrammingLanguage.Java -> JavaVersion(project)
+        }
+    }
+}
+
+/**
+ * 语言选择组件内容 (无卡片样式，用于GroupCard)
+ */
+@Composable
+fun LanguageSelectionContent(project: GradleProjectViewModel) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // 语言选择部分 - 移除了OutlinedCard，保留内部内容
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Kotlin 选项
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RadioButton(
+                    selected = project.programmingLanguage is ProgrammingLanguage.Kotlin,
+                    onClick = {
+                        project.programmingLanguage = ProgrammingLanguage.Kotlin(project.kotlinVersion)
+                    },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Text(
+                    "Kotlin",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
+            // Java 选项
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RadioButton(
+                    selected = project.programmingLanguage is ProgrammingLanguage.Java,
+                    onClick = {
+                        project.programmingLanguage = ProgrammingLanguage.Java("21", project.javaStyle)
+                    },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = MaterialTheme.colorScheme.primary
+                    )
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        "Java",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    // Beta 标签
+                    Surface(
+                        modifier = Modifier,
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+                        )
+                    ) {
+                        Text(
+                            text = "Beta",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+
+            // Java 样式选择（仅在选择 Java 时显示）
+            AnimatedVisibility(project.programmingLanguage is ProgrammingLanguage.Java) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        "Java 编程风格",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = project.javaStyle == JavaStyle.BLOCKING,
+                            onClick = {
+                                project.javaStyle = JavaStyle.BLOCKING
+                                // 更新 programmingLanguage 以反映新的样式
+                                if (project.programmingLanguage is ProgrammingLanguage.Java) {
+                                    project.programmingLanguage = ProgrammingLanguage.Java("21", JavaStyle.BLOCKING)
+                                }
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                        Text(
+                            "阻塞式 (Blocking)",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = project.javaStyle == JavaStyle.ASYNC,
+                            onClick = {
+                                project.javaStyle = JavaStyle.ASYNC
+                                // 更新 programmingLanguage 以反映新的样式
+                                if (project.programmingLanguage is ProgrammingLanguage.Java) {
+                                    project.programmingLanguage = ProgrammingLanguage.Java("21", JavaStyle.ASYNC)
+                                }
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                        Text(
+                            "异步式 (Async)",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+        }
+
         // 版本输入组件
         when (project.programmingLanguage) {
             is ProgrammingLanguage.Kotlin -> KotlinVersion(project)
@@ -274,7 +431,7 @@ fun LanguageSelection(
 fun KotlinVersion(project: GradleProjectViewModel) {
     EnhancedTextField(
         value = project.kotlinVersion,
-        onValueChange = { 
+        onValueChange = {
             project.kotlinVersion = it.trim()
             // 同步更新 programmingLanguage 中的版本
             if (project.programmingLanguage is ProgrammingLanguage.Kotlin) {
@@ -298,7 +455,7 @@ fun KotlinVersion(project: GradleProjectViewModel) {
 fun JavaVersion(project: GradleProjectViewModel) {
     val javaLanguage = project.programmingLanguage as? ProgrammingLanguage.Java
     val javaVersion = javaLanguage?.version ?: "21"
-    
+
     EnhancedTextField(
         value = javaVersion,
         onValueChange = { newVersion ->
@@ -402,7 +559,7 @@ fun GradleVersion(project: GradleProjectViewModel) {
 }
 
 /**
- * Spring Boot 集成选择组件
+ * Spring Boot 集成选择组件 (带卡片样式)
  */
 @Composable
 fun WithSpring(project: GradleProjectViewModel) {
@@ -452,5 +609,34 @@ fun WithSpring(project: GradleProjectViewModel) {
                 fontWeight = if (project.withSpring) FontWeight.Medium else FontWeight.Normal
             )
         }
+    }
+}
+
+/**
+ * Spring Boot 集成选择组件内容 (无卡片样式，用于GroupCard)
+ */
+@Composable
+fun WithSpringContent(project: GradleProjectViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Checkbox(
+            checked = project.withSpring,
+            onCheckedChange = {
+                project.withSpring = it
+            },
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.primary,
+                uncheckedColor = MaterialTheme.colorScheme.outline
+            )
+        )
+
+        Text(
+            "集成 Spring Boot",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (project.withSpring) FontWeight.Medium else FontWeight.Normal
+        )
     }
 }
