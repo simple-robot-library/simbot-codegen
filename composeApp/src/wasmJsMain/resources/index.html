@@ -8,11 +8,13 @@
     <link type="text/css" rel="stylesheet" href="styles.css">
     <!-- vercel -->
     <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        window.va = window.va || function () {
+            (window.vaq = window.vaq || []).push(arguments);
+        };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-<!--        <script async type="application/javascript" src="composeApp.js"></script>-->
-<!--    <script type="module" src="composeApp.js"></script>-->
+    <!--        <script async type="application/javascript" src="composeApp.js"></script>-->
+    <!--    <script type="module" src="composeApp.js"></script>-->
     <style>
         /* 基础样式 */
         :root {
@@ -246,10 +248,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, 
-                rgba(255, 255, 255, 0) 0%, 
-                rgba(255, 255, 255, 0.5) 50%, 
-                rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0) 100%);
             transform: translateX(-100%);
             animation: shine 1.5s infinite;
         }
@@ -297,20 +299,20 @@
         }
 
         @keyframes typing {
-            0%, 100% { 
-                width: 0; 
+            0%, 100% {
+                width: 0;
             }
-            50%, 90% { 
-                width: 100%; 
+            50%, 90% {
+                width: 100%;
             }
         }
 
         @keyframes blink-caret {
-            from, to { 
-                border-color: transparent; 
+            from, to {
+                border-color: transparent;
             }
-            50% { 
-                border-color: var(--primary-color); 
+            50% {
+                border-color: var(--primary-color);
             }
         }
 
@@ -337,11 +339,11 @@
         .tag:nth-child(1) {
             animation-delay: 0.2s;
         }
-        
+
         .tag:nth-child(2) {
             animation-delay: 0.4s;
         }
-        
+
         .tag:nth-child(3) {
             animation-delay: 0.6s;
         }
@@ -373,14 +375,14 @@
     <div class="loading-container" id="loading-container">
         <!-- 浮动粒子背景 -->
         <div class="floating-particles" id="floating-particles"></div>
-        
+
         <!-- 加载器 -->
         <div class="loader">
             <!-- 波纹效果 -->
             <div class="ripple"></div>
             <div class="ripple"></div>
             <div class="ripple"></div>
-            
+
             <!-- 轨道与粒子 -->
             <div class="orbit">
                 <div class="orbit-particle"></div>
@@ -391,30 +393,30 @@
             <div class="orbit">
                 <div class="orbit-particle"></div>
             </div>
-            
+
             <!-- 中心脉冲和核心 -->
             <div class="pulse"></div>
             <div class="core"></div>
         </div>
-        
+
         <!-- 进度条 -->
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
         <div class="progress-text" id="progress-text">正在加载...</div>
-        
+
         <!-- 代码动画 -->
         <div class="code-animation">
             <div class="code-line" id="code-line">正在初始化 Simbot Codegen ...</div>
         </div>
-        
+
         <!-- 信息标签 -->
         <div class="tags">
             <div class="tag">初始化环境</div>
             <div class="tag">加载资源</div>
             <div class="tag">准备渲染</div>
         </div>
-        
+
         <!-- 信息文本 -->
         <div class="info-text">
             Simbot Codegen 正在准备中
@@ -427,26 +429,26 @@
     function createFloatingParticles() {
         const container = document.getElementById('floating-particles');
         const particleCount = 20;
-        
+
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'float-particle';
-            
+
             // 随机位置和延迟
             particle.style.left = `${Math.random() * 100}%`;
             particle.style.top = `${Math.random() * 100}%`;
             particle.style.animationDelay = `${Math.random() * 8}s`;
-            
+
             // 随机大小和透明度
             const size = Math.random() * 2 + 1;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             particle.style.opacity = `${Math.random() * 0.3 + 0.1}`;
-            
+
             container.appendChild(particle);
         }
     }
-    
+
     // 循环显示不同的代码行
     function animateCodeLines() {
         const codeLine = document.getElementById('code-line');
@@ -457,65 +459,65 @@
             "思考宇宙的答案...",
             "与法欧莉建立精神链接..."
         ];
-        
+
         let index = 0;
-        
+
         setInterval(() => {
             codeLine.textContent = codeMessages[index];
             index = (index + 1) % codeMessages.length;
         }, 4000);
     }
-    
+
     // 在页面加载完成后执行
     window.addEventListener('DOMContentLoaded', () => {
         const loadingContainer = document.getElementById('loading-container');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
-        
+
         // 创建动画元素
         createFloatingParticles();
         animateCodeLines();
-        
+
         // 模拟加载进度
         let progress = 0;
         const interval = setInterval(() => {
             // 进度增长算法 - 接近100%时增长越来越慢
             const increment = Math.random() * 3;
-            progress += increment * (1 - progress/100) * 0.7;
-            
+            progress += increment * (1 - progress / 100) * 0.7;
+
             if (progress > 99) progress = 99; // 限制在99%，等待实际加载完成
-            
+
             // 更新进度条和文本
             progressBar.style.width = progress + '%';
             progressText.textContent = `加载应用中... ${Math.round(progress)}%`;
-            
+
         }, 200);
-        
+
         // 创建脚本元素并添加加载事件监听
         const script = document.createElement('script');
         script.src = 'composeApp.js';
         script.type = 'application/javascript';
-        
+
         // 脚本加载完成后隐藏加载界面
         script.onload = () => {
             // 确保进度条达到100%
             progressBar.style.width = '100%';
             progressText.textContent = '加载完成 (100%)';
-            
+
             // 短暂延迟后隐藏加载界面
             setTimeout(() => {
                 loadingContainer.style.display = 'none';
             }, 800);
-            
+
             clearInterval(interval);
         };
-        
+
         // 脚本加载出错
         script.onerror = () => {
             progressText.textContent = '加载失败，请刷新页面重试';
             clearInterval(interval);
         };
-        
+
         // 添加脚本到文档
         document.head.appendChild(script);
     });

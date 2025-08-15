@@ -7,7 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -27,11 +30,11 @@ import love.forte.simbot.codegen.filesaver.saveAs
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.gen.bridge.ViewModelBridge
 import love.forte.simbot.codegen.gen.core.generators.LanguageAndFrameworkBasedGeneratorFactory
-import love.forte.simbot.codegen.gen.core.generators.gradle.GradleProjectGeneratorImpl
-import love.forte.simbot.codegen.gen.core.generators.kotlin.KotlinSourceCodeGeneratorImpl
-import love.forte.simbot.codegen.gen.core.generators.java.JavaSourceCodeGeneratorImpl
-import love.forte.simbot.codegen.gen.core.generators.spring.SpringConfigurationGeneratorImpl
 import love.forte.simbot.codegen.gen.core.generators.core.CoreConfigurationGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.gradle.GradleProjectGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.java.JavaSourceCodeGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.kotlin.KotlinSourceCodeGeneratorImpl
+import love.forte.simbot.codegen.gen.core.generators.spring.SpringConfigurationGeneratorImpl
 import web.blob.Blob
 import web.console.console
 
@@ -114,7 +117,7 @@ private suspend fun doDownload(
     project: GradleProjectViewModel
 ) {
     val name = project.projectName
-    
+
     // 创建生成器工厂
     val generatorFactory = LanguageAndFrameworkBasedGeneratorFactory(
         projectGeneratorFactory = { GradleProjectGeneratorImpl() },
@@ -123,13 +126,13 @@ private suspend fun doDownload(
         springConfigGeneratorFactory = { SpringConfigurationGeneratorImpl() },
         coreConfigGeneratorFactory = { CoreConfigurationGeneratorImpl() }
     )
-    
+
     // 创建视图模型桥接器
     val bridge = ViewModelBridge(generatorFactory)
-    
+
     // 生成项目
     val zip = bridge.generateProject(project)
-    
+
     val options = unsafeJso<JSZipGeneratorOptions<Blob>> {
         type = OutputType.blob
     }

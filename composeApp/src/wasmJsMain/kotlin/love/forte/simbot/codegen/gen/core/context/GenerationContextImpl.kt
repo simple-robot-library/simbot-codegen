@@ -6,9 +6,9 @@ import love.forte.simbot.codegen.gen.core.*
 
 /**
  * [GenerationContext] 的实现类。
- * 
+ *
  * 用于存储项目配置数据并传递给代码生成器。
- * 
+ *
  * @author ForteScarlet
  */
 data class GenerationContextImpl(
@@ -29,27 +29,27 @@ class GenerationContextBuilder {
      * 项目名称
      */
     var projectName: String = "simbotProject"
-    
+
     /**
      * 项目包名
      */
     var packageName: String = "com.example"
-    
+
     /**
      * 项目语言
      */
     var language: ProgrammingLanguage = ProgrammingLanguage.Kotlin("2.1.20")
-    
+
     /**
      * 项目框架
      */
     var framework: Framework = Framework.Spring("3.3.3")
-    
+
     /**
      * 项目组件
      */
     var components: MutableList<Component> = mutableListOf()
-    
+
     /**
      * 项目依赖
      */
@@ -78,7 +78,7 @@ class GenerationContextBuilder {
 
 /**
  * 创建一个 [GenerationContextImpl]。
- * 
+ *
  * @param block 配置构建器的代码块
  * @return 创建的 [GenerationContextImpl]
  */
@@ -90,7 +90,7 @@ fun createGenerationContext(block: GenerationContextBuilder.() -> Unit): Generat
 
 /**
  * [Component] 的实现类。
- * 
+ *
  * @property name 组件的名称
  * @property version 组件的版本
  * @property simpleId 组件的简单标识符
@@ -113,7 +113,7 @@ data class ComponentImpl(
 
 /**
  * [Dependency] 的实现类。
- * 
+ *
  * @property group 依赖的组 ID
  * @property name 依赖的名称
  * @property version 依赖的版本

@@ -8,16 +8,19 @@ import love.forte.codegentle.common.naming.MemberName
 import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.common.ref.addAnnotation
 import love.forte.codegentle.common.ref.ref
-import love.forte.codegentle.kotlin.*
+import love.forte.codegentle.kotlin.KotlinFile
+import love.forte.codegentle.kotlin.addSimpleClassType
+import love.forte.codegentle.kotlin.modifiers
 import love.forte.codegentle.kotlin.naming.KotlinClassNames
 import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.spec.addFunction
 import love.forte.codegentle.kotlin.spec.addMainFunction
 import love.forte.codegentle.kotlin.spec.addParameter
+import love.forte.codegentle.kotlin.writeToKotlinString
 import love.forte.simbot.codegen.codegen.SimbotComponent
+import love.forte.simbot.codegen.codegen.SimbotComponent.*
 import love.forte.simbot.codegen.codegen.naming.SimbotNames
 import love.forte.simbot.codegen.codegen.naming.SpringNames
-import love.forte.simbot.codegen.codegen.SimbotComponent.*
 import love.forte.simbot.codegen.toRelativePath0
 
 

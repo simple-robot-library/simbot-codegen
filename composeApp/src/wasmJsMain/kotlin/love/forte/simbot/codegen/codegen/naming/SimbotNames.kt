@@ -20,7 +20,7 @@ object SimbotNames {
     val eventClassName = ClassName(simbotEventPkg, "Event")
     val msgEventClassName = ClassName(simbotEventPkg, "MessageEvent")
     val contactMsgEventClassName = ClassName(simbotEventPkg, "ContactMessageEvent")
-    
+
     // Application classes for Core framework
     val application = ClassName(simbotApplicationPkg, "Application")
     val applicationBuilder = ClassName(simbotApplicationPkg, "ApplicationBuilder")

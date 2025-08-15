@@ -143,7 +143,7 @@ fun SpringComponentSelector(project: GradleProjectViewModel) {
                                             rememberSharedContentState(key = springComponent),
                                             animatedVisibilityScope = this,
 
-                                        ),
+                                            ),
                                         interactionSource = interactionSource,
                                         colors = FilterChipDefaults.filterChipColors(
                                             containerColor = backgroundColor,

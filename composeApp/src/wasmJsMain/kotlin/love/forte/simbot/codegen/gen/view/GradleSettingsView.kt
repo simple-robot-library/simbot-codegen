@@ -1,11 +1,11 @@
 package love.forte.simbot.codegen.gen.view
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import js.date.Date
-import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.components.GroupCard
 import love.forte.simbot.codegen.components.GroupGrid
 import love.forte.simbot.codegen.components.WindowSize
 import love.forte.simbot.codegen.components.rememberWindowSize
+import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.withLink
 
 

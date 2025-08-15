@@ -54,10 +54,10 @@ class GradleProjectViewModel : ViewModel() {
 
     var simbotVersion: String? by mutableStateOf(null)
     var kotlinVersion: String by mutableStateOf("2.1.20") // TODO initial able?
-    
+
     // 编程语言选择
     var programmingLanguage: ProgrammingLanguage by mutableStateOf(ProgrammingLanguage.Kotlin("2.1.20"))
-    
+
     // Java 样式选择（仅在选择 Java 语言时有效）
     var javaStyle: JavaStyle by mutableStateOf(JavaStyle.BLOCKING)
 

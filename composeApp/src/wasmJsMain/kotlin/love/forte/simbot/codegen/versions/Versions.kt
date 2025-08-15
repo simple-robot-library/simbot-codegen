@@ -4,7 +4,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import web.http.*
+import web.http.Request
+import web.http.fetch
+import web.http.text
 
 // https://docs.github.com/zh/rest/releases/releases?apiVersion=2022-11-28#get-the-latest-release
 

@@ -7,15 +7,15 @@ import love.forte.simbot.codegen.gen.core.generators.CoreConfigurationGenerator
 
 /**
  * 核心库配置文件生成器的实现类。
- * 
+ *
  * 负责生成核心库（非 Spring）的配置文件，包括组件配置文件。
- * 
+ *
  * @author ForteScarlet
  */
 class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
     /**
      * 生成核心库配置文件。
-     * 
+     *
      * @param resourceDir 资源目录的 JSZip 对象
      * @param context 代码生成的上下文信息
      */
@@ -23,22 +23,26 @@ class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
         // 核心库目前不需要特殊的配置文件
         // 如果将来需要，可以在这里添加
     }
-    
+
     /**
      * 生成特定组件的配置文件。
-     * 
+     *
      * @param botsDir simbot-bots 目录的 JSZip 对象
      * @param component 组件
      * @param context 代码生成的上下文信息
      */
-    override suspend fun generateComponentConfiguration(botsDir: JSZip, component: Component, context: GenerationContext) {
+    override suspend fun generateComponentConfiguration(
+        botsDir: JSZip,
+        component: Component,
+        context: GenerationContext
+    ) {
         val configJson = genComponentConfigForComponent(component)
         botsDir.file("${component.name.lowercase()}-example.bot.json", configJson)
     }
-    
+
     /**
      * 为特定组件生成配置文件内容。
-     * 
+     *
      * @param component 组件
      * @return 生成的配置文件内容
      */
@@ -51,10 +55,10 @@ class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
             else -> genDefaultComponentConfig(component)
         }
     }
-    
+
     /**
      * 生成 QQ 组件的配置文件内容。
-     * 
+     *
      * @param component 组件
      * @return 生成的配置文件内容
      */
@@ -73,10 +77,10 @@ class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
             |}
         """.trimMargin()
     }
-    
+
     /**
      * 生成 KOOK 组件的配置文件内容。
-     * 
+     *
      * @param component 组件
      * @return 生成的配置文件内容
      */
@@ -91,10 +95,10 @@ class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
             |}
         """.trimMargin()
     }
-    
+
     /**
      * 生成 OneBot 组件的配置文件内容。
-     * 
+     *
      * @param component 组件
      * @return 生成的配置文件内容
      */
@@ -110,10 +114,10 @@ class CoreConfigurationGeneratorImpl : CoreConfigurationGenerator {
             |}
         """.trimMargin()
     }
-    
+
     /**
      * 生成默认组件的配置文件内容。
-     * 
+     *
      * @param component 组件
      * @return 生成的配置文件内容
      */

@@ -8,8 +8,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -87,7 +92,7 @@ fun GroupCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                
+
                 subtitle?.let {
                     Text(
                         text = it,
@@ -96,7 +101,7 @@ fun GroupCard(
                     )
                 }
             }
-            
+
             // 内容区域
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -109,7 +114,7 @@ fun GroupCard(
 
 /**
  * 轻量级的分组容器，用于不需要卡片样式的简单分组
- * 
+ *
  * @param title 分组标题
  * @param modifier 修饰符
  * @param subtitle 可选的副标题
@@ -136,7 +141,7 @@ fun GroupContainer(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             subtitle?.let {
                 Text(
                     text = it,
@@ -145,7 +150,7 @@ fun GroupContainer(
                 )
             }
         }
-        
+
         // 内容区域
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -157,7 +162,7 @@ fun GroupContainer(
 
 /**
  * 响应式的分组网格，用于在不同屏幕尺寸下展示分组
- * 
+ *
  * @param modifier 修饰符
  * @param windowSize 窗口尺寸
  * @param content 分组内容
