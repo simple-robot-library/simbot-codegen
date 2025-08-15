@@ -10,7 +10,9 @@ import jszip.JSZip
 import love.forte.codegentle.common.code.*
 import love.forte.codegentle.kotlin.KotlinFile
 import love.forte.codegentle.kotlin.writeToKotlinString
-import love.forte.simbot.codegen.gen.SimbotComponent.*
+import love.forte.simbot.codegen.codegen.SimbotComponent
+import love.forte.simbot.codegen.codegen.SimbotComponent.*
+import love.forte.simbot.codegen.codegen.SpringComponent
 import love.forte.simbot.codegen.gen.core.JavaStyle
 import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -66,6 +68,43 @@ class GradleProjectViewModel : ViewModel() {
         set(value) {}
 
     val components: MutableList<SimbotComponentWithVersion> = mutableStateListOf()
+
+//    /**
+//     * SpringBoot 组件选择
+//     */
+//    val selectedSpringComponents: MutableList<SpringComponent> = mutableStateListOf()
+
+    /**
+     * SpringBoot 组件选择
+     */
+    private var selectedSpringComponents: Int by mutableStateOf(0)
+
+    val selectedSpringComponentMask: SpringComponentMask
+        get() = SpringComponentMask(selectedSpringComponents)
+
+    value class SpringComponentMask(val mask: Int) {
+        operator fun contains(component: SpringComponent): Boolean {
+            return (mask and (1 shl component.ordinal)) != 0
+        }
+
+        fun count(): Int {
+            return mask.countOneBits()
+        }
+
+        fun components(): List<SpringComponent> {
+            return SpringComponent.entries.filter { component ->
+                component in this
+            }
+        }
+    }
+
+    fun addSelectedSpringComponent(component: SpringComponent) {
+        selectedSpringComponents = selectedSpringComponents or (1 shl component.ordinal)
+    }
+
+    fun removeSelectedSpringComponent(component: SpringComponent) {
+        selectedSpringComponents = selectedSpringComponents and (1 shl component.ordinal).inv()
+    }
 
     /**
      * 额外依赖
@@ -361,7 +400,6 @@ fun doGenerateSpring(
 
     // 示例的配置文件、代码
     emitSpringShowcases(
-        projectName = name,
         projectPackage = pkg,
         components = components.map { it.component },
         sourceSets = sourceDir,

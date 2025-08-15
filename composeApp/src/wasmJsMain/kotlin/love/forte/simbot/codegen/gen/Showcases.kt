@@ -5,6 +5,7 @@ import love.forte.codegentle.common.code.*
 import love.forte.codegentle.common.naming.ArrayTypeName
 import love.forte.codegentle.common.naming.ClassName
 import love.forte.codegentle.common.naming.MemberName
+import love.forte.codegentle.common.naming.parseToPackageName
 import love.forte.codegentle.common.ref.addAnnotation
 import love.forte.codegentle.common.ref.ref
 import love.forte.codegentle.kotlin.*
@@ -13,16 +14,16 @@ import love.forte.codegentle.kotlin.spec.KotlinFunctionSpec
 import love.forte.codegentle.kotlin.spec.addFunction
 import love.forte.codegentle.kotlin.spec.addMainFunction
 import love.forte.codegentle.kotlin.spec.addParameter
+import love.forte.simbot.codegen.codegen.SimbotComponent
 import love.forte.simbot.codegen.codegen.naming.SimbotNames
 import love.forte.simbot.codegen.codegen.naming.SpringNames
-import love.forte.simbot.codegen.gen.SimbotComponent.*
+import love.forte.simbot.codegen.codegen.SimbotComponent.*
 
 
 /**
  * 生成使用Spring时的示例们到 sourceSets 中。
  */
 fun emitSpringShowcases(
-    projectName: String,
     projectPackage: String,
     components: Collection<SimbotComponent>,
     sourceSets: JSZip,
@@ -49,7 +50,7 @@ fun genKotlinSpringMainFile(
     name: String,
     projectPackage: String
 ): KotlinFile {
-    val mainFile = KotlinFile(projectPackage) {
+    val mainFile = KotlinFile(projectPackage.parseToPackageName()) {
         addSimpleClassType(name) {
             addAnnotation(SimbotNames.enableSimbotAno)
             addAnnotation(SpringNames.springBootApplicationAno)
@@ -74,10 +75,10 @@ fun genKotlinSpringMainFile(
 
 fun emitSpringMainFile(
     projectPackage: String,
-    sourceSets: JSZip
+    sourceDir: JSZip
 ) {
     val file = genKotlinSpringMainFile("MainApplication", projectPackage)
-    sourceSets.file(file.toRelativePath(), file.writeToKotlinString())
+    sourceDir.file(file.toRelativePath(), file.writeToKotlinString())
 }
 
 fun genKotlinSpringListenerShowcases(
@@ -87,7 +88,7 @@ fun genKotlinSpringListenerShowcases(
     var showcaseCount = 1
     val handlePackage = "$projectPackage.handle"
 
-    val myHandleFile = KotlinFile(handlePackage) {
+    val myHandleFile = KotlinFile(handlePackage.parseToPackageName()) {
         // Text + Message
         addStaticImport("love.forte.simbot.message.plus")
 
@@ -241,10 +242,10 @@ fun componentShowcase(
 fun emitSpringListenerShowcases(
     projectPackage: String,
     components: Collection<SimbotComponent>,
-    sourceSets: JSZip
+    sourceDir: JSZip
 ) {
     val file = genKotlinSpringListenerShowcases(projectPackage, components)
-    sourceSets.file(file.toRelativePath(), file.writeToKotlinString())
+    sourceDir.file(file.toRelativePath(), file.writeToKotlinString())
 }
 
 /**

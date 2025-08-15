@@ -1,5 +1,8 @@
 package love.forte.simbot.codegen.gen.view
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -150,6 +153,7 @@ private fun SettingsForm(
                 subtitle = "选择是否集成Spring框架"
             ) {
                 WithSpringContent(project)
+                SpringComponentSelector(project)
             }
 
             // 组件配置组

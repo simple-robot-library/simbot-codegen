@@ -1,5 +1,7 @@
 package love.forte.simbot.codegen
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import simbot_codegen.composeapp.generated.resources.LXGWNeoXiHeiScreen
 import simbot_codegen.composeapp.generated.resources.Res
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun App() {
     @OptIn(ExperimentalResourceApi::class)

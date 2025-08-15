@@ -121,6 +121,16 @@ val KOTLIN_REFLECT = GradleCatalogVersionDependency(
     version = KOTLIN_VERSION
 )
 
+val JACKSON_MODULE_KOTLIN = GradleCatalogVersionDependency(
+    dependencyName = "jackson-module-kotlin",
+    group = "com.fasterxml.jackson.module",
+    name = "jackson-module-kotlin",
+    version = GradleCatalogVersion(
+        name = "jackson",
+        version = "2.15.2"
+    )
+)
+
 // plugins
 
 val PLUGIN_KOTLIN = GradleCatalogPlugin(

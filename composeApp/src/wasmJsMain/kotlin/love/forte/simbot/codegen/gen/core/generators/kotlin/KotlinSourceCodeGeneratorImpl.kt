@@ -1,7 +1,7 @@
 package love.forte.simbot.codegen.gen.core.generators.kotlin
 
 import jszip.JSZip
-import love.forte.simbot.codegen.gen.SimbotComponent
+import love.forte.simbot.codegen.codegen.SimbotComponent
 import love.forte.simbot.codegen.gen.core.Framework
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.context.ComponentImpl
@@ -20,13 +20,13 @@ class KotlinSourceCodeGeneratorImpl : KotlinSourceCodeGenerator {
     /**
      * 生成应用程序入口文件。
      * 
-     * @param packageDir 包目录的JSZip对象
+     * @param sourceDir 包目录的JSZip对象
      * @param context 代码生成的上下文信息
      */
-    override suspend fun generateApplicationEntry(packageDir: JSZip, context: GenerationContext) {
+    override suspend fun generateApplicationEntry(sourceDir: JSZip, context: GenerationContext) {
         when (context.framework) {
             is Framework.Spring -> {
-                emitSpringMainFile(context.packageName, packageDir)
+                emitSpringMainFile(context.packageName, sourceDir)
             }
             is Framework.Core -> {
                 // TODO: 实现Core框架的主类生成
@@ -38,10 +38,10 @@ class KotlinSourceCodeGeneratorImpl : KotlinSourceCodeGenerator {
     /**
      * 生成事件处理器文件。
      * 
-     * @param packageDir 包目录的JSZip对象
+     * @param sourceDir 包目录的JSZip对象
      * @param context 代码生成的上下文信息
      */
-    override suspend fun generateEventHandlers(packageDir: JSZip, context: GenerationContext) {
+    override suspend fun generateEventHandlers(sourceDir: JSZip, context: GenerationContext) {
         // 转换组件列表
         val components = context.components.map { component ->
             val componentImpl = component as ComponentImpl
@@ -56,7 +56,7 @@ class KotlinSourceCodeGeneratorImpl : KotlinSourceCodeGenerator {
         
         when (context.framework) {
             is Framework.Spring -> {
-                emitSpringListenerShowcases(context.packageName, components, packageDir)
+                emitSpringListenerShowcases(context.packageName, components, sourceDir)
             }
             is Framework.Core -> {
                 // TODO: 实现Core框架的事件处理器生成

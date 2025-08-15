@@ -36,8 +36,9 @@ object SpringNames {
     private val subPackageAutoconfigureCondition = "autoconfigure.condition".parseToPackageName()
     private val springBootAutoconfigureCondition = springBootPkg + subPackageAutoconfigureCondition
 
-    val enableAutoConfigurationAno = ClassName(springBootAutoconfigureCondition, "EnableAutoConfiguration")
-    val springBootApplicationAno = ClassName(springBootAutoconfigureCondition, "SpringBootApplication")
+    val springBootApplicationAno = ClassName(springBootPkg + "autoconfigure", "SpringBootApplication")
+    val enableAutoConfigurationAno = ClassName(springBootPkg + "autoconfigure", "EnableAutoConfiguration")
+
     val conditionalOnMissingBeanAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnMissingBean")
     val conditionalOnBeanAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnBean")
     val conditionalOnPropertyAno = ClassName(springBootAutoconfigureCondition, "ConditionalOnProperty")

@@ -49,7 +49,7 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
      * @param context 代码生成的上下文信息
      */
     override suspend fun generateSettingsScript(rootDir: JSZip, context: GenerationContext) {
-        val settingsScript = love.forte.simbot.codegen.gen.genGradleSettingsScript(context.projectName)
+        val settingsScript = genGradleSettingsScript(context.projectName)
         rootDir.file("settings.gradle.kts", settingsScript)
     }
 
@@ -60,7 +60,7 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
      * @param context 代码生成的上下文信息
      */
     override suspend fun generateGradleWrapper(rootDir: JSZip, context: GenerationContext) {
-        val gradleVersion = "8.8" // 默认版本，可以从上下文中获取
+        val gradleVersion = context.gradleVersion
         rootDir.file("gradle/wrapper/gradle-wrapper.properties", genGradleWrapperProperties(gradleVersion))
         rootDir.file("gradlew", readGradlew())
         rootDir.file("gradlew.bat", readGradlewBat())
@@ -178,70 +178,6 @@ class GradleProjectGeneratorImpl : GradleProjectGenerator {
             zipStoreBase=GRADLE_USER_HOME
             zipStorePath=wrapper/dists
         """.trimIndent()
-    }
-
-    /**
-     * 生成 README 文件。
-     *
-     * @param name 项目名称
-     * @param withSpring 是否使用 Spring
-     * @param components 组件列表
-     * @return README 文件内容
-     */
-    private fun genREADME(
-        name: String,
-        withSpring: Boolean,
-        components: List<love.forte.simbot.codegen.gen.core.Component>
-    ): String {
-        return buildString {
-            appendLine("# $name")
-            appendLine("这是一个 [Simple Robot](https://github.com/simple-robot) 项目, 通过 [Simbot Codegen](https://codegen.simbot.forte.love/) 构建生成。")
-            appendLine()
-            // 组件说明
-            appendLine("## 组件")
-            appendLine("添加的组件: ")
-            components.forEach { component ->
-                appendLine("- [${component.name}](https://github.com/${component.name})")
-            }
-            appendLine()
-
-            // spring 说明
-            if (withSpring) {
-                appendLine("## Spring")
-                appendLine("你选择添加了 [Spring Boot](https://spring.io/projects/spring-boot) 来与simbot集成。")
-                appendLine("你可以在 [集成 Spring Boot](https://simbot.forte.love/spring-boot.html) 中了解更多有关集成 Spring Boot 的信息与说明。")
-                appendLine()
-                appendLine("默认情况下, 依赖中仅添加了一个 `spring-boot-starter` 依赖, 如有需要可自行添加其他所需依赖。")
-                appendLine()
-                appendLine("Spring Boot 的版本不确保是最新的。如有需要, 可自行修改 Spring Boot 的 Gradle 插件版本。")
-                appendLine()
-                appendLine(
-                    "如果你不添加一些可以确保程序保持运行的 Spring 组件 (例如 `spring-web`), " +
-                            "那么你需要修改一下配置文件 `application.yml` 来确保 simbot 可以在后台线程中保持运行: "
-                )
-                appendLine(
-                    """
-                    ```yml
-                    simbot:
-                      application:
-                        # 使用一个独立的非守护线程保持程序活跃。
-                        application-launch-mode: thread
-                    ```
-                """.trimIndent()
-                )
-                appendLine()
-            }
-
-            appendLine("## 更多参考")
-            appendLine("- 有关 simbot 的更多内容, 你可以前往 [simbot应用手册](https://simbot.forte.love) 了解更多。")
-            appendLine("- [文档引导站](https://docs.simbot.forte.love/) 有包括API文档和上述手册在内的所有文档站点的引导。")
-            appendLine("- 不熟悉 Kotlin? 前往 [Kotlin 官方文档](https://kotlinlang.org/docs/) 了解学习！")
-            appendLine("- simbot 支持 [Kotlin 多平台](https://kotlinlang.org/docs/multiplatform.html) 。")
-            appendLine("  如有需要, 可修改为多平台项目。")
-            if (withSpring) {
-                appendLine("- [Spring Boot](https://spring.io/projects/spring-boot)")
-            }
-        }
     }
 
     /**

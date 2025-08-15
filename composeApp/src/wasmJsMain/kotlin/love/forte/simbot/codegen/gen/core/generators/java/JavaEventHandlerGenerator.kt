@@ -2,9 +2,7 @@ package love.forte.simbot.codegen.gen.core.generators.java
 
 import jszip.JSZip
 import love.forte.codegentle.java.InternalJavaCodeGentleApi
-import love.forte.codegentle.java.strategy.DefaultJavaWriteStrategy
-import love.forte.codegentle.java.writer.JavaCodeWriter
-import love.forte.codegentle.java.writer.writeToJavaString
+import love.forte.codegentle.java.toRelativePath
 import love.forte.simbot.codegen.gen.core.Framework
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.ProgrammingLanguage
@@ -22,11 +20,11 @@ class JavaEventHandlerGenerator {
     /**
      * 生成事件处理器类。
      * 
-     * @param packageDir 包目录
+     * @param sourceDir 包目录
      * @param context 生成上下文
      */
     @OptIn(InternalJavaCodeGentleApi::class)
-    suspend fun generateEventHandlers(packageDir: JSZip, context: GenerationContext) {
+    fun generateEventHandlers(sourceDir: JSZip, context: GenerationContext) {
         val javaLanguage = context.language as ProgrammingLanguage.Java
         
         val handlerFile = when (context.framework) {
@@ -43,11 +41,10 @@ class JavaEventHandlerGenerator {
         }
         
         // 创建 handle 子包目录并生成文件
-        val handleDir = packageDir.folder(JavaTemplates.HANDLER_PACKAGE_SUFFIX) 
-            ?: throw IllegalStateException("无法创建 ${JavaTemplates.HANDLER_PACKAGE_SUFFIX} 目录")
-        val fileName = JavaTemplates.getHandlerFileName()
-        JavaCodeWriter
-        handleDir.file(fileName, handlerFile.writeToJavaString(DefaultJavaWriteStrategy()))
+//        val handleDir = sourceDir.folder(JavaTemplates.HANDLER_PACKAGE_SUFFIX)
+//            ?: throw IllegalStateException("无法创建 ${JavaTemplates.HANDLER_PACKAGE_SUFFIX} 目录")
+//        val fileName = JavaTemplates.getHandlerFileName()
+        sourceDir.file(handlerFile.toRelativePath(), handlerFile.toString())
     }
     
 }

@@ -44,11 +44,13 @@ interface SourceCodeGenerator : CodeGenerator {
         return when (context.language) {
             is ProgrammingLanguage.Kotlin -> {
                 val kotlinDir = mainDir.folder("kotlin") ?: throw IllegalStateException("无法创建 kotlin 目录")
-                createPackageDirectories(kotlinDir, context.packageName)
+//                createPackageDirectories(kotlinDir, context.packageName)
+                kotlinDir
             }
             is ProgrammingLanguage.Java -> {
                 val javaDir = mainDir.folder("java") ?: throw IllegalStateException("无法创建 java 目录")
-                createPackageDirectories(javaDir, context.packageName)
+//                createPackageDirectories(javaDir, context.packageName)
+                javaDir
             }
         }
     }
@@ -82,18 +84,18 @@ interface LanguageSpecificSourceCodeGenerator<L : ProgrammingLanguage> : SourceC
     /**
      * 生成应用程序入口文件。
      * 
-     * @param packageDir 包目录的 JSZip 对象
+     * @param sourceDir 包目录的 JSZip 对象
      * @param context 代码生成的上下文信息
      */
-    suspend fun generateApplicationEntry(packageDir: JSZip, context: GenerationContext)
+    suspend fun generateApplicationEntry(sourceDir: JSZip, context: GenerationContext)
     
     /**
      * 生成事件处理器文件。
      * 
-     * @param packageDir 包目录的 JSZip 对象
+     * @param sourceDir 包目录的 JSZip 对象
      * @param context 代码生成的上下文信息
      */
-    suspend fun generateEventHandlers(packageDir: JSZip, context: GenerationContext)
+    suspend fun generateEventHandlers(sourceDir: JSZip, context: GenerationContext)
     
     override suspend fun generateSourceCode(sourceDir: JSZip, context: GenerationContext) {
         // sourceDir already points to the correct package directory from createSourceDirectory

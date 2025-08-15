@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.withTimeout
+import love.forte.simbot.codegen.codegen.SimbotComponent
 import love.forte.simbot.codegen.components.EnhancedTextField
 import love.forte.simbot.codegen.components.SearchingIcon
 import love.forte.simbot.codegen.components.WindowSize

@@ -1,5 +1,4 @@
-package love.forte.simbot.codegen.gen
-
+package love.forte.simbot.codegen.codegen
 
 /**
  *

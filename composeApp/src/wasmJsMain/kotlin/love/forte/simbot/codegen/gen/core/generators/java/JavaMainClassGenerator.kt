@@ -1,6 +1,7 @@
 package love.forte.simbot.codegen.gen.core.generators.java
 
 import jszip.JSZip
+import love.forte.codegentle.java.toRelativePath
 import love.forte.simbot.codegen.gen.core.Framework
 import love.forte.simbot.codegen.gen.core.GenerationContext
 import love.forte.simbot.codegen.gen.core.JavaStyle
@@ -39,8 +40,8 @@ class JavaMainClassGenerator {
         }
         
         // 生成文件
-        val fileName = JavaTemplates.getMainClassFileName(mainClassName)
-        packageDir.file(fileName, javaFile.toString())
+//        val fileName = JavaTemplates.getMainClassFileName(mainClassName)
+        packageDir.file(javaFile.toRelativePath(), javaFile.toString())
     }
     
 }

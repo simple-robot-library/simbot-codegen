@@ -21,12 +21,12 @@ class JavaSourceCodeGeneratorImpl : JavaSourceCodeGenerator {
     private val mainClassGenerator = JavaMainClassGenerator()
     private val eventHandlerGenerator = JavaEventHandlerGenerator()
     
-    override suspend fun generateApplicationEntry(packageDir: JSZip, context: GenerationContext) {
-        mainClassGenerator.generateMainClass(packageDir, context)
+    override suspend fun generateApplicationEntry(sourceDir: JSZip, context: GenerationContext) {
+        mainClassGenerator.generateMainClass(sourceDir, context)
     }
     
-    override suspend fun generateEventHandlers(packageDir: JSZip, context: GenerationContext) {
-        eventHandlerGenerator.generateEventHandlers(packageDir, context)
+    override suspend fun generateEventHandlers(sourceDir: JSZip, context: GenerationContext) {
+        eventHandlerGenerator.generateEventHandlers(sourceDir, context)
     }
     
 }
