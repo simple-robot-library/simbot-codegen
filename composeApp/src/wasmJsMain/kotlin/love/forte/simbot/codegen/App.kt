@@ -20,6 +20,7 @@ import org.jetbrains.compose.resources.preloadFont
 import simbot_codegen.composeapp.generated.resources.LXGWNeoXiHeiScreen
 import simbot_codegen.composeapp.generated.resources.Res
 
+////
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
