@@ -39,7 +39,6 @@ kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
         //outputModuleName = "composeApp"
-        useEsModules()
         browser {
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
