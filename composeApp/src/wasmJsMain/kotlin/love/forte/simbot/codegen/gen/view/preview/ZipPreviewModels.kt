@@ -2,10 +2,6 @@ package love.forte.simbot.codegen.gen.view.preview
 
 import jszip.JSZip
 import jszip.JSZipObject
-import jszip.JSZipGeneratorOptions
-import jszip.OutputType
-import js.objects.unsafeJso
-import js.promise.await
 import jszip.text
 
 /**
@@ -225,19 +221,6 @@ class FileContentLoader {
         if (node.isDirectory || node.zipObject == null) return null
 
         return try {
-            // TODO: 调试正确的 JSZipObject API 用法
-            // 暂时使用占位符，显示文件信息而不是实际内容
-            val placeholder = """
-                文件路径: ${node.path}
-                文件名称: ${node.name}
-                文件扩展名: ${node.extension}
-                
-                注意: 文件内容读取功能正在开发中
-                这是一个占位符内容，用于测试预览功能的基本结构。
-                
-                实际的文件内容将在 JSZipObject API 调试完成后显示。
-            """.trimIndent()
-            
             val content = node.zipObject.text()
             val mimeType = FileContent.inferMimeType(node.name)
             val isBinary = false

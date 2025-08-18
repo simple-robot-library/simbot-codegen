@@ -29,8 +29,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
+ * 计算应该自动展开的路径
+ * 递归展开只有唯一子目录的目录
+ */
+private fun calculateAutoExpandPaths(nodes: List<ZipFileNode>): Set<String> {
+    val autoExpandPaths = mutableSetOf<String>()
+    
+    fun shouldAutoExpand(node: ZipFileNode): Boolean {
+        if (!node.isDirectory) return false
+        
+        // 统计子目录数量
+        val childDirectories = node.children.filter { it.isDirectory }
+        
+        // 如果只有一个子目录，则应该自动展开
+        return childDirectories.size == 1
+    }
+    
+    fun collectAutoExpandPaths(nodeList: List<ZipFileNode>) {
+        for (node in nodeList) {
+            if (node.isDirectory) {
+                // 如果是顶层目录，总是展开
+                if (node.isTopLevel) {
+                    autoExpandPaths.add(node.path)
+                }
+                
+                // 如果应该自动展开，添加到集合中
+                if (shouldAutoExpand(node)) {
+                    autoExpandPaths.add(node.path)
+                    
+                    // 对唯一的子目录递归处理
+                    val childDir = node.children.first { it.isDirectory }
+                    collectAutoExpandPaths(listOf(childDir))
+                }
+                
+                // 递归处理所有子节点
+                collectAutoExpandPaths(node.children)
+            }
+        }
+    }
+    
+    collectAutoExpandPaths(nodes)
+    return autoExpandPaths
+}
+
+/**
  * 文件树展示组件
- * 支持展开/折叠，默认展开第一层
+ * 支持展开/折叠，默认展开第一层，自动展开只有唯一子目录的目录
  */
 @Composable
 fun FileTreeView(
@@ -39,16 +83,15 @@ fun FileTreeView(
     onFileSelect: (ZipFileNode) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 展开状态管理，默认展开第一层
-    val expandedPaths = remember { 
-        mutableStateOf(
-            nodes.filter { it.isDirectory && it.isTopLevel }.map { it.path }.toSet()
-        ) 
+    // 展开状态管理，默认展开第一层和自动展开单子目录
+    val expandedPaths = remember(nodes) { 
+        mutableStateOf(calculateAutoExpandPaths(nodes))
     }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(nodes) { node ->
             FileTreeNode(
@@ -90,12 +133,12 @@ private fun FileTreeNode(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    } else {
-                        MaterialTheme.colorScheme.surface
+                    color = when {
+                        isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                        node.isDirectory -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        else -> MaterialTheme.colorScheme.surface
                     }
                 )
                 .clickable(
@@ -105,10 +148,10 @@ private fun FileTreeNode(
                     onNodeClick(node)
                 }
                 .padding(
-                    start = (8 + level * 16).dp,
-                    top = 4.dp,
-                    bottom = 4.dp,
-                    end = 8.dp
+                    start = (12 + level * 20).dp,
+                    top = 8.dp,
+                    bottom = 8.dp,
+                    end = 12.dp
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
