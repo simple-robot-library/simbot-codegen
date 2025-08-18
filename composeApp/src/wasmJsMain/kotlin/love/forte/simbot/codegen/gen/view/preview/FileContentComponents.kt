@@ -16,12 +16,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -246,8 +246,7 @@ private fun FileContentBody(content: FileContent) {
                     .verticalScroll(verticalScrollState)
             ) {
                 CodeContent(
-                    content = content.content,
-                    mimeType = content.mimeType
+                    content = content.content
                 )
             }
         }
@@ -307,7 +306,7 @@ private fun LineNumbers(content: String) {
  * 代码内容显示
  */
 @Composable
-private fun CodeContent(content: String, mimeType: String) {
+private fun CodeContent(content: String, lineHeight: TextUnit = 24.sp) {
     val jetBrainsMonoFontFamily = FontFamily(
         Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
     )

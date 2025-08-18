@@ -11,6 +11,9 @@ kotlin-serialization = "1.9.0"
 kotlinpoet = "1.19.0-KMP-SNAPSHOT"
 codegentle = "0.0.1-SNAPSHOT"
 
+# https://github.com/NeoUtils/Highlight
+# 代码高亮
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
