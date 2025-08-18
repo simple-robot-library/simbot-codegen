@@ -1,15 +1,15 @@
 package love.forte.simbot.codegen.gen.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,11 +35,12 @@ import love.forte.simbot.codegen.gen.core.generators.gradle.GradleProjectGenerat
 import love.forte.simbot.codegen.gen.core.generators.java.JavaSourceCodeGeneratorImpl
 import love.forte.simbot.codegen.gen.core.generators.kotlin.KotlinSourceCodeGeneratorImpl
 import love.forte.simbot.codegen.gen.core.generators.spring.SpringConfigurationGeneratorImpl
+import love.forte.simbot.codegen.gen.view.preview.ZipPreviewDialog
 import web.blob.Blob
 import web.console.console
 
 /**
- * 下载按钮组件，用于生成并下载项目
+ * 下载和预览按钮组件，用于生成、预览和下载项目
  */
 @OptIn(ExperimentalWasmJsInterop::class)
 @Composable
@@ -49,27 +50,163 @@ fun DoDownload(
     windowSize: WindowSize,
 ) {
     val scope = rememberCoroutineScope()
+    var showPreview by remember { mutableStateOf(false) }
+    var previewZip by remember { mutableStateOf<jszip.JSZip?>(null) }
+
+    // 生成 ZIP 的通用逻辑
+    suspend fun generateZip(): jszip.JSZip {
+        val generatorFactory = LanguageAndFrameworkBasedGeneratorFactory(
+            projectGeneratorFactory = { GradleProjectGeneratorImpl() },
+            kotlinSourceGeneratorFactory = { KotlinSourceCodeGeneratorImpl() },
+            javaSourceGeneratorFactory = { JavaSourceCodeGeneratorImpl() },
+            springConfigGeneratorFactory = { SpringConfigurationGeneratorImpl() },
+            coreConfigGeneratorFactory = { CoreConfigurationGeneratorImpl() }
+        )
+        val bridge = ViewModelBridge(generatorFactory)
+        return bridge.generateProject(project)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // 按钮组：预览和下载
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // 预览按钮
+            PreviewButton(
+                enabled = !loadingCounter.hasLoading,
+                windowSize = windowSize,
+                onClick = {
+                    loadingCounter.inc()
+                    scope.launch {
+                        kotlin.runCatching {
+                            previewZip = generateZip()
+                            showPreview = true
+                        }.onFailure { err ->
+                            err.printStackTrace()
+                            console.error("生成预览失败".toJsString(), err.toJsErrorLike())
+                            window.alert("生成预览失败QAQ")
+                        }
+                    }.invokeOnCompletion { loadingCounter.dec() }
+                },
+                modifier = Modifier.weight(1f)
+            )
+
+            // 下载按钮
+            DownloadButton(
+                enabled = !loadingCounter.hasLoading,
+                windowSize = windowSize,
+                onClick = {
+                    loadingCounter.inc()
+                    scope.launch {
+                        kotlin.runCatching {
+                            doDownload(project)
+                        }.onFailure { err ->
+                            err.printStackTrace()
+                            console.error("生成失败".toJsString(), err.toJsErrorLike())
+                            window.alert("生成失败QAQ")
+                        }
+                    }.invokeOnCompletion { loadingCounter.dec() }
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+
+    // 预览对话框
+    if (showPreview && previewZip != null) {
+        ZipPreviewDialog(
+            zip = previewZip!!,
+            windowSize = windowSize,
+            onDismiss = {
+                showPreview = false
+                previewZip = null
+            }
+        )
+    }
+}
+
+/**
+ * 预览按钮组件
+ */
+@Composable
+private fun PreviewButton(
+    enabled: Boolean,
+    windowSize: WindowSize,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    OutlinedButton(
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier
+            .height(
+                when (windowSize) {
+                    WindowSize.Mobile -> 64.dp
+                    else -> 56.dp
+                }
+            )
+            .shadow(
+                elevation = if (isPressed) 0.dp else 2.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            ),
+        shape = RoundedCornerShape(12.dp),
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        border = BorderStroke(
+            width = 2.dp,
+            color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                Icons.Default.Visibility,
+                contentDescription = "预览",
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "预览",
+                fontSize = if (windowSize == WindowSize.Mobile) 16.sp else 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+/**
+ * 下载按钮组件
+ */
+@Composable
+private fun DownloadButton(
+    enabled: Boolean,
+    windowSize: WindowSize,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     Button(
-        enabled = !loadingCounter.hasLoading,
-        onClick = {
-            loadingCounter.inc()
-            scope.launch {
-                kotlin.runCatching {
-                    doDownload(project)
-                }.onFailure { err ->
-                    err.printStackTrace()
-                    console.error("生成失败".toJsString(), err.toJsErrorLike())
-                    window.alert("生成失败QAQ")
-                }
-            }.invokeOnCompletion { loadingCounter.dec() }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier
             .height(
-                // 移动设备使用更大的高度以便于触摸
                 when (windowSize) {
                     WindowSize.Mobile -> 64.dp
                     else -> 56.dp
@@ -96,14 +233,12 @@ fun DoDownload(
             Icon(
                 Icons.Default.Download,
                 contentDescription = "下载",
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(end = 8.dp)
+                modifier = Modifier.size(20.dp)
             )
-
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                "生成并下载",
-                fontSize = 18.sp,
+                "下载",
+                fontSize = if (windowSize == WindowSize.Mobile) 16.sp else 16.sp,
                 fontWeight = FontWeight.Bold
             )
         }
