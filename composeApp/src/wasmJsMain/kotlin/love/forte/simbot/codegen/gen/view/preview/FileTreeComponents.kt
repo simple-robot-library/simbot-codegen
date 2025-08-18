@@ -31,51 +31,24 @@ import androidx.compose.ui.unit.sp
 
 /**
  * 计算应该自动展开的路径
- * 递归展开只有唯一子目录的目录
+ * 只展开第一级目录
  */
 private fun calculateAutoExpandPaths(nodes: List<ZipFileNode>): Set<String> {
     val autoExpandPaths = mutableSetOf<String>()
     
-    fun shouldAutoExpand(node: ZipFileNode): Boolean {
-        if (!node.isDirectory) return false
-        
-        // 统计子目录数量
-        val childDirectories = node.children.filter { it.isDirectory }
-        
-        // 如果只有一个子目录，则应该自动展开
-        return childDirectories.size == 1
-    }
-    
-    fun collectAutoExpandPaths(nodeList: List<ZipFileNode>) {
-        for (node in nodeList) {
-            if (node.isDirectory) {
-                // 如果是顶层目录，总是展开
-                if (node.isTopLevel) {
-                    autoExpandPaths.add(node.path)
-                }
-                
-                // 如果应该自动展开，添加到集合中
-                if (shouldAutoExpand(node)) {
-                    autoExpandPaths.add(node.path)
-                    
-                    // 对唯一的子目录递归处理
-                    val childDir = node.children.first { it.isDirectory }
-                    collectAutoExpandPaths(listOf(childDir))
-                }
-                
-                // 递归处理所有子节点
-                collectAutoExpandPaths(node.children)
-            }
+    // 只展开根级别的目录
+    for (node in nodes) {
+        if (node.isDirectory) {
+            autoExpandPaths.add(node.path)
         }
     }
     
-    collectAutoExpandPaths(nodes)
     return autoExpandPaths
 }
 
 /**
  * 文件树展示组件
- * 支持展开/折叠，默认展开第一层，自动展开只有唯一子目录的目录
+ * 支持展开/折叠，默认只展开第一层目录
  */
 @Composable
 fun FileTreeView(
@@ -220,11 +193,11 @@ private fun FileTreeNode(
                 visible = isExpanded,
                 enter = expandVertically(
                     animationSpec = androidx.compose.animation.core.spring(
-                        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy,
-                        stiffness = androidx.compose.animation.core.Spring.StiffnessLow
+                        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+                        stiffness = androidx.compose.animation.core.Spring.StiffnessMedium
                     )
                 ) + fadeIn(
-                    animationSpec = androidx.compose.animation.core.tween(300)
+                    animationSpec = androidx.compose.animation.core.tween(250)
                 ),
                 exit = shrinkVertically(
                     animationSpec = androidx.compose.animation.core.spring(

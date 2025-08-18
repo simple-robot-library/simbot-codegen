@@ -7,6 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Description
@@ -250,6 +252,17 @@ private fun FileContentBody(content: FileContent) {
             }
         }
 
+        // 垂直滚动条
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(verticalScrollState)
+        )
+
+        // 水平滚动条
+        HorizontalScrollbar(
+            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+            adapter = rememberScrollbarAdapter(horizontalScrollState)
+        )
     }
 }
 
@@ -266,21 +279,26 @@ private fun LineNumbers(content: String) {
     val maxLineNumber = lines.size
     val lineNumberWidth = maxLineNumber.toString().length
 
+    val textStyle = MaterialTheme.typography.bodySmall.copy(
+        fontFamily = jetBrainsMonoFontFamily,
+        fontSize = 16.sp,
+        lineHeight = 24.sp // 增加行高以改善对齐
+    )
+
     Column(
         modifier = Modifier.padding(end = 8.dp)
     ) {
         lines.forEachIndexed { index, _ ->
-            Text(
-                text = (index + 1).toString().padStart(lineNumberWidth),
-                // fontFamily = jetBrainsMonoFontFamily,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = jetBrainsMonoFontFamily,
-                    fontSize = 16.sp,
-                    lineHeight = 16.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                modifier = Modifier.padding(vertical = 1.dp)
-            )
+            Box(
+                modifier = Modifier.height(24.dp), // 固定高度确保对齐
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = (index + 1).toString().padStart(lineNumberWidth),
+                    style = textStyle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                )
+            }
         }
     }
 }
@@ -294,16 +312,26 @@ private fun CodeContent(content: String, mimeType: String) {
         Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
     )
 
+    val textStyle = MaterialTheme.typography.bodySmall.copy(
+        fontFamily = jetBrainsMonoFontFamily,
+        fontSize = 16.sp,
+        lineHeight = 24.sp // 与行号保持一致的行高
+    )
+
     SelectionContainer {
-        Text(
-            text = content,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontFamily = jetBrainsMonoFontFamily,
-                fontSize = 16.sp,
-                lineHeight = 16.sp
-            ),
-            modifier = Modifier.padding(vertical = 1.dp),
-        )
+        Column {
+            content.split('\n').forEach { line ->
+                Box(
+                    modifier = Modifier.height(24.dp), // 固定高度确保对齐
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = if (line.isEmpty()) " " else line, // 空行显示空格以保持高度
+                        style = textStyle,
+                    )
+                }
+            }
+        }
     }
 }
 
