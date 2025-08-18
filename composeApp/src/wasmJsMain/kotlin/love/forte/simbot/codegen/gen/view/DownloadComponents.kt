@@ -1,5 +1,6 @@
 package love.forte.simbot.codegen.gen.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -142,50 +143,86 @@ private fun PreviewButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    OutlinedButton(
-        enabled = enabled,
-        onClick = onClick,
-        modifier = modifier
-            .height(
-                when (windowSize) {
-                    WindowSize.Mobile -> 64.dp
-                    else -> 56.dp
-                }
-            )
-            .shadow(
-                elevation = if (isPressed) 0.dp else 2.dp,
-                shape = RoundedCornerShape(12.dp),
-                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+    Box(modifier = modifier) {
+        OutlinedButton(
+            enabled = enabled,
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(
+                    when (windowSize) {
+                        WindowSize.Mobile -> 64.dp
+                        else -> 56.dp
+                    }
+                )
+                .shadow(
+                    elevation = if (isPressed) 0.dp else 2.dp,
+                    shape = RoundedCornerShape(12.dp),
+                    spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                ),
+            shape = RoundedCornerShape(12.dp),
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
-        shape = RoundedCornerShape(12.dp),
-        interactionSource = interactionSource,
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        ),
-        border = BorderStroke(
-            width = 2.dp,
-            color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
-        )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            border = BorderStroke(
+                width = 2.dp,
+                color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+            )
         ) {
-            Icon(
-                Icons.Default.Visibility,
-                contentDescription = "预览",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                "预览",
-                fontSize = if (windowSize == WindowSize.Mobile) 16.sp else 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    Icons.Default.Visibility,
+                    contentDescription = "预览",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "预览",
+                    fontSize = if (windowSize == WindowSize.Mobile) 16.sp else 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
+        
+        // Beta 标记
+        BetaBadge(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 4.dp, y = (-4).dp)
+        )
+    }
+}
+
+/**
+ * Beta 标记组件
+ */
+@Composable
+private fun BetaBadge(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(width = 32.dp, height = 18.dp)
+            .background(
+                color = androidx.compose.ui.graphics.Color(0xFFFF6B35), // 橙红色背景
+                shape = RoundedCornerShape(6.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Beta",
+            color = androidx.compose.ui.graphics.Color.White,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
