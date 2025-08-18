@@ -366,33 +366,48 @@ private fun DesktopLayout(
                 .fillMaxHeight()
                 .padding(8.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = "文件结构",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(12.dp)
-                )
+                // 标题区域
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                            RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = "📁 文件结构",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
                 
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                )
-                
-                FileTreeView(
-                    nodes = fileNodes,
-                    selectedPath = selectedNode?.path,
-                    onFileSelect = onFileSelect,
+                // 文件树内容区域
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp)
-                )
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(4.dp)
+                ) {
+                    FileTreeView(
+                        nodes = fileNodes,
+                        selectedPath = selectedNode?.path,
+                        onFileSelect = onFileSelect,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
         

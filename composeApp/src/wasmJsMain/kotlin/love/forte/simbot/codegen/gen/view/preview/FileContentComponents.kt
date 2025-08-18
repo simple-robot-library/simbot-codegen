@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,9 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -209,24 +207,26 @@ private fun FileHeader(content: FileContent) {
  */
 @Composable
 private fun FileContentBody(content: FileContent) {
-    val horizontalScrollState = rememberScrollState()
     val verticalScrollState = rememberScrollState()
+    val horizontalScrollState = rememberScrollState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f))
     ) {
-        // 内容区域
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .horizontalScroll(horizontalScrollState)
-                .verticalScroll(verticalScrollState)
                 .padding(8.dp)
         ) {
-            // 行号列
-            LineNumbers(content = content.content)
+            // 行号列 - 不参与横向滚动，只跟随纵向滚动
+            Box(
+                modifier = Modifier
+                    .verticalScroll(verticalScrollState)
+            ) {
+                LineNumbers(content = content.content)
+            }
 
             // 分隔线
             VerticalDivider(
@@ -236,12 +236,20 @@ private fun FileContentBody(content: FileContent) {
                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
             )
 
-            // 代码内容
-            CodeContent(
-                content = content.content,
-                mimeType = content.mimeType
-            )
+            // 代码内容区域 - 支持独立的横向和纵向滚动
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .horizontalScroll(horizontalScrollState)
+                    .verticalScroll(verticalScrollState)
+            ) {
+                CodeContent(
+                    content = content.content,
+                    mimeType = content.mimeType
+                )
+            }
         }
+
     }
 }
 
@@ -286,13 +294,9 @@ private fun CodeContent(content: String, mimeType: String) {
         Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
     )
 
-    val highlightedText = remember(content, mimeType) {
-        highlightCode(content, mimeType)
-    }
-
     SelectionContainer {
         Text(
-            text = highlightedText,
+            text = content,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontFamily = jetBrainsMonoFontFamily,
                 fontSize = 16.sp,
@@ -303,163 +307,6 @@ private fun CodeContent(content: String, mimeType: String) {
     }
 }
 
-/**
- * 简单的代码高亮
- */
-private fun highlightCode(content: String, mimeType: String): AnnotatedString {
-    return buildAnnotatedString {
-        append(content)
-
-        // 根据 MIME 类型应用不同的高亮规则
-        when (mimeType) {
-            "text/x-kotlin" -> applyKotlinHighlight(this, content)
-            "text/x-java" -> applyJavaHighlight(this, content)
-            "application/xml" -> applyXmlHighlight(this, content)
-            "application/json" -> applyJsonHighlight(this, content)
-            else -> applyGenericHighlight(this, content)
-        }
-    }
-}
-
-/**
- * Kotlin 语法高亮
- */
-private fun applyKotlinHighlight(builder: AnnotatedString.Builder, content: String) {
-    val keywords = setOf(
-        "class", "interface", "fun", "val", "var", "if", "else", "when", "for",
-        "while", "do", "try", "catch", "finally", "return", "break", "continue",
-        "object", "companion", "data", "sealed", "enum", "annotation", "suspend",
-        "import", "package", "private", "public", "protected", "internal"
-    )
-
-    highlightKeywords(builder, content, keywords, Color(0xFF0000FF)) // 蓝色关键字
-    highlightStrings(builder, content, Color(0xFF008000)) // 绿色字符串
-    highlightComments(builder, content, Color(0xFF808080)) // 灰色注释
-}
-
-/**
- * Java 语法高亮
- */
-private fun applyJavaHighlight(builder: AnnotatedString.Builder, content: String) {
-    val keywords = setOf(
-        "class", "interface", "public", "private", "protected", "static", "final",
-        "abstract", "synchronized", "volatile", "transient", "native", "strictfp",
-        "if", "else", "switch", "case", "default", "for", "while", "do", "try",
-        "catch", "finally", "throw", "throws", "return", "break", "continue",
-        "import", "package", "extends", "implements", "super", "this", "new"
-    )
-
-    highlightKeywords(builder, content, keywords, Color(0xFF0000FF))
-    highlightStrings(builder, content, Color(0xFF008000))
-    highlightComments(builder, content, Color(0xFF808080))
-}
-
-/**
- * XML 语法高亮
- */
-private fun applyXmlHighlight(builder: AnnotatedString.Builder, content: String) {
-    // 简单的 XML 标签高亮
-    val tagRegex = Regex("<[^>]+>")
-    tagRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = Color(0xFF0000FF)),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-}
-
-/**
- * JSON 语法高亮
- */
-private fun applyJsonHighlight(builder: AnnotatedString.Builder, content: String) {
-    // 字符串
-    val stringRegex = Regex("\"[^\"]*\"")
-    stringRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = Color(0xFF008000)),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-
-    // 数字
-    val numberRegex = Regex("\\b\\d+(\\.\\d+)?\\b")
-    numberRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = Color(0xFFFF0000)),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-}
-
-/**
- * 通用高亮
- */
-private fun applyGenericHighlight(builder: AnnotatedString.Builder, content: String) {
-    // 只高亮字符串和注释
-    highlightStrings(builder, content, Color(0xFF008000))
-    highlightComments(builder, content, Color(0xFF808080))
-}
-
-/**
- * 关键字高亮
- */
-private fun highlightKeywords(
-    builder: AnnotatedString.Builder,
-    content: String,
-    keywords: Set<String>,
-    color: Color
-) {
-    keywords.forEach { keyword ->
-        val regex = Regex("\\b$keyword\\b")
-        regex.findAll(content).forEach { match ->
-            builder.addStyle(
-                style = SpanStyle(color = color, fontWeight = FontWeight.Bold),
-                start = match.range.first,
-                end = match.range.last + 1
-            )
-        }
-    }
-}
-
-/**
- * 字符串高亮
- */
-private fun highlightStrings(builder: AnnotatedString.Builder, content: String, color: Color) {
-    val stringRegex = Regex("\"[^\"]*\"|'[^']*'")
-    stringRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = color),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-}
-
-/**
- * 注释高亮
- */
-private fun highlightComments(builder: AnnotatedString.Builder, content: String, color: Color) {
-    val lineCommentRegex = Regex("//.*$", RegexOption.MULTILINE)
-    lineCommentRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = color),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-
-    val blockCommentRegex = Regex("/\\*.*?\\*/", RegexOption.DOT_MATCHES_ALL)
-    blockCommentRegex.findAll(content).forEach { match ->
-        builder.addStyle(
-            style = SpanStyle(color = color),
-            start = match.range.first,
-            end = match.range.last + 1
-        )
-    }
-}
 
 /**
  * 格式化文件大小

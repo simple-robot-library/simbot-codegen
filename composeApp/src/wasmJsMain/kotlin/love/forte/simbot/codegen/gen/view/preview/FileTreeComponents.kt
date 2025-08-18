@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -89,8 +90,10 @@ fun FileTreeView(
     }
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(1.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(nodes) { node ->
@@ -133,12 +136,12 @@ private fun FileTreeNode(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(
                     color = when {
-                        isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                        node.isDirectory -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        else -> MaterialTheme.colorScheme.surface
+                        isSelected -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f)
+                        node.isDirectory -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                        else -> androidx.compose.ui.graphics.Color.Transparent
                     }
                 )
                 .clickable(
@@ -148,10 +151,10 @@ private fun FileTreeNode(
                     onNodeClick(node)
                 }
                 .padding(
-                    start = (12 + level * 20).dp,
-                    top = 8.dp,
-                    bottom = 8.dp,
-                    end = 12.dp
+                    start = (16 + level * 24).dp,
+                    top = 12.dp,
+                    bottom = 12.dp,
+                    end = 16.dp
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -164,35 +167,36 @@ private fun FileTreeNode(
                         Icons.Default.KeyboardArrowRight
                     },
                     contentDescription = if (isExpanded) "折叠" else "展开",
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(6.dp))
             } else {
-                Spacer(modifier = Modifier.width(20.dp))
+                Spacer(modifier = Modifier.width(24.dp))
             }
 
             // 文件/文件夹图标
             Icon(
                 imageVector = getFileIcon(node, isExpanded),
                 contentDescription = if (node.isDirectory) "文件夹" else "文件",
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(20.dp),
                 tint = getFileIconColor(node, isExpanded)
             )
             
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             // 文件/文件夹名称
             Text(
                 text = node.name,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = if (node.isDirectory) FontWeight.Medium else FontWeight.Normal,
-                    fontSize = 14.sp
+                    fontWeight = if (node.isDirectory) FontWeight.SemiBold else FontWeight.Normal,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp
                 ),
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
+                color = when {
+                    isSelected -> MaterialTheme.colorScheme.primary
+                    node.isDirectory -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                 }
             )
 
@@ -201,21 +205,39 @@ private fun FileTreeNode(
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = formatFileSize(node.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 11.sp
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
         }
 
         // 子节点（仅目录且展开时显示）
-        if (node.isDirectory && isExpanded) {
+        if (node.isDirectory) {
             AnimatedVisibility(
-                visible = true,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
+                visible = isExpanded,
+                enter = expandVertically(
+                    animationSpec = androidx.compose.animation.core.spring(
+                        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy,
+                        stiffness = androidx.compose.animation.core.Spring.StiffnessLow
+                    )
+                ) + fadeIn(
+                    animationSpec = androidx.compose.animation.core.tween(300)
+                ),
+                exit = shrinkVertically(
+                    animationSpec = androidx.compose.animation.core.spring(
+                        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+                        stiffness = androidx.compose.animation.core.Spring.StiffnessMedium
+                    )
+                ) + fadeOut(
+                    animationSpec = androidx.compose.animation.core.tween(200)
+                )
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
                     node.children.forEach { childNode ->
                         FileTreeNode(
                             node = childNode,
@@ -249,7 +271,11 @@ private fun getFileIcon(node: ZipFileNode, isExpanded: Boolean): ImageVector {
 @Composable
 private fun getFileIconColor(node: ZipFileNode, isExpanded: Boolean): androidx.compose.ui.graphics.Color {
     return when {
-        node.isDirectory -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+        node.isDirectory -> if (isExpanded) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+        } else {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+        }
         else -> getFileTypeColor(node.extension)
     }
 }
@@ -273,14 +299,19 @@ private fun getFileTypeIcon(extension: String): ImageVector {
 @Composable
 private fun getFileTypeColor(extension: String): androidx.compose.ui.graphics.Color {
     return when (extension.lowercase()) {
-        "kt" -> androidx.compose.ui.graphics.Color(0xFF7C4DFF)      // Kotlin 紫色
-        "java" -> androidx.compose.ui.graphics.Color(0xFFED8B00)     // Java 橙色
-        "xml" -> androidx.compose.ui.graphics.Color(0xFF0277BD)      // XML 蓝色
-        "json" -> androidx.compose.ui.graphics.Color(0xFF2E7D32)     // JSON 绿色
-        "yml", "yaml" -> androidx.compose.ui.graphics.Color(0xFF6A1B9A) // YAML 紫色
-        "md" -> androidx.compose.ui.graphics.Color(0xFF424242)       // Markdown 灰色
-        "gradle" -> androidx.compose.ui.graphics.Color(0xFF00796B)   // Gradle 青色
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+        "kt" -> androidx.compose.ui.graphics.Color(0xFF8B5CF6)      // Kotlin 现代紫色
+        "java" -> androidx.compose.ui.graphics.Color(0xFFFF6B35)     // Java 现代橙色
+        "js", "ts" -> androidx.compose.ui.graphics.Color(0xFFF7DF1E) // JavaScript 黄色
+        "xml" -> androidx.compose.ui.graphics.Color(0xFF3B82F6)      // XML 现代蓝色
+        "json" -> androidx.compose.ui.graphics.Color(0xFF10B981)     // JSON 现代绿色
+        "yml", "yaml" -> androidx.compose.ui.graphics.Color(0xFFEC4899) // YAML 粉色
+        "properties" -> androidx.compose.ui.graphics.Color(0xFF6366F1) // Properties 靛蓝
+        "md" -> androidx.compose.ui.graphics.Color(0xFF64748B)       // Markdown 石板灰
+        "txt" -> androidx.compose.ui.graphics.Color(0xFF94A3B8)      // 文本文件浅灰
+        "gradle" -> androidx.compose.ui.graphics.Color(0xFF059669)   // Gradle 翠绿色
+        "py" -> androidx.compose.ui.graphics.Color(0xFF3776AB)       // Python 蓝色
+        "cpp", "c", "h" -> androidx.compose.ui.graphics.Color(0xFF00599C) // C/C++ 深蓝
+        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
     }
 }
 
