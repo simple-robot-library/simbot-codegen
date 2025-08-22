@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.LocalSystemTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
@@ -25,7 +26,11 @@ import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.BoldHighlight
 import dev.snipme.highlights.model.ColorHighlight
 import dev.snipme.highlights.model.SyntaxLanguage
+import dev.snipme.highlights.model.SyntaxTheme
+import dev.snipme.highlights.model.SyntaxThemes
 import kotlinx.coroutines.launch
+import love.forte.simbot.codegen.ColorMode
+import love.forte.simbot.codegen.LocalAppContext
 import org.jetbrains.compose.resources.Font
 import simbot_codegen.composeapp.generated.resources.JetBrainsMono_Medium
 import simbot_codegen.composeapp.generated.resources.Res
@@ -305,6 +310,48 @@ private fun LineNumbers(content: String) {
     }
 }
 
+// 暗色主题 - 柔和护眼的配色方案
+private val darkSyntaxTheme = SyntaxTheme(
+    key = "custom-dark",    // 主题名称
+    code = 0xABB2BF,       // 浅灰色 - 默认代码颜色
+    keyword = 0xC678DD,     // 柔和紫色 - 关键字（if, for, class等）
+    string = 0x98C379,      // 柔和绿色 - 字符串
+    literal = 0xD19A66,     // 暖橙色 - 数字和字面量
+    comment = 0x5C6370,     // 中灰色 - 注释
+    metadata = 0x61AFEF,    // 柔和蓝色 - 元数据和注解
+    multilineComment = 0x5C6370, // 中灰色 - 多行注释
+    punctuation = 0xABB2BF, // 浅灰色 - 标点符号
+    mark = 0xE5C07B         // 金黄色 - 高亮标记
+)
+
+// 亮色主题 - 清晰明快的配色方案
+private val lightSyntaxTheme = SyntaxTheme(
+    key = "custom-light",   // 主题名称
+    code = 0x24292E,       // 深灰色 - 默认代码颜色
+    keyword = 0x6F42C1,     // 深紫色 - 关键字（if, for, class等）
+    string = 0x032F62,      // 深蓝色 - 字符串
+    literal = 0xE36209,     // 橙色 - 数字和字面量
+    comment = 0x6A737D,     // 灰色 - 注释
+    metadata = 0x005CC5,    // 蓝色 - 元数据和注解
+    multilineComment = 0x6A737D, // 灰色 - 多行注释
+    punctuation = 0x24292E, // 深灰色 - 标点符号
+    mark = 0xB08800         // 深金色 - 高亮标记
+)
+
+/**
+ * 获取自定义的语法高亮主题
+ * 根据明暗模式返回适合的主题，符合Material 3设计规范
+ * 
+ * 设计原则：
+ * - 亮色主题：使用高对比度、清晰明快的颜色，与Material 3亮色调和谐
+ * - 暗色主题：使用柔和、护眼的颜色，与Material 3暗色调协调
+ */
+private fun getCustomSyntaxTheme(darkMode: Boolean) = if (darkMode) {
+    darkSyntaxTheme
+} else {
+    lightSyntaxTheme
+}
+
 /**
  * 代码内容显示
  *
@@ -312,6 +359,7 @@ private fun LineNumbers(content: String) {
  */
 @Composable
 private fun CodeContent(content: String, mimeType: String? = null) {
+    val appContext = LocalAppContext.current
     val jetBrainsMonoFontFamily = FontFamily(
         Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
     )
@@ -334,10 +382,11 @@ private fun CodeContent(content: String, mimeType: String? = null) {
         }
     }
 
-    val contentString = remember(content) {
+    val contentString = remember(content, appContext.colorMode) {
         val highlights = Highlights.Builder()
             .language(lang)
             .code(content)
+            .theme(getCustomSyntaxTheme(appContext.colorMode == ColorMode.DARK))
             .build()
 
         buildAnnotatedString {
@@ -349,7 +398,7 @@ private fun CodeContent(content: String, mimeType: String? = null) {
                         val rgb: Int = highlight.rgb
                         val color = Color(
                             red = rgb shr 16 and 0xFF,
-                            green = rgb shr 8 and 0xFF00,
+                            green = rgb shr 8 and 0xFF,
                             blue = rgb and 0xFF,
                         )
                         addStyle(SpanStyle(color = color), location.start, location.end)

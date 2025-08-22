@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import js.date.Date
 import love.forte.simbot.codegen.components.GroupCard
 import love.forte.simbot.codegen.components.GroupGrid
+import love.forte.simbot.codegen.components.ThemeToggleButton
 import love.forte.simbot.codegen.components.WindowSize
 import love.forte.simbot.codegen.components.rememberWindowSize
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
@@ -55,6 +56,9 @@ fun GradleSettingsView(
                             else -> MaterialTheme.typography.headlineMedium
                         }
                     )
+                },
+                actions = {
+                    ThemeToggleButton()
                 }
             )
         },
