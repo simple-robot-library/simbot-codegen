@@ -9,11 +9,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import kotlinx.browser.localStorage
 import love.forte.simbot.codegen.gen.view.GradleSettingsView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.preloadFont
 import simbot_codegen.composeapp.generated.resources.LXGWNeoXiHeiScreen
 import simbot_codegen.composeapp.generated.resources.Res
+import org.w3c.dom.get
+import org.w3c.dom.set
+import web.console.console
+
+private const val THEME_PREFERENCE_KEY = "simbot_codegen_theme_preference"
+
+/**
+ * 从本地存储加载主题偏好设置
+ */
+private fun loadThemePreference(): ColorMode {
+    return try {
+        val savedTheme = localStorage[THEME_PREFERENCE_KEY]
+        when (savedTheme) {
+            "DARK" -> ColorMode.DARK
+            "LIGHT" -> ColorMode.LIGHT
+            else -> ColorMode.LIGHT // 默认亮色主题
+        }
+    } catch (e: Exception) {
+        ColorMode.LIGHT // 发生错误时使用默认主题
+    }
+}
+
+/**
+ * 保存主题偏好设置到本地存储
+ */
+private fun saveThemePreference(colorMode: ColorMode) {
+    try {
+        localStorage[THEME_PREFERENCE_KEY] = colorMode.name
+    } catch (e: Exception) {
+        // 保存失败时静默处理，不影响用户体验
+    }
+}
 
 @Composable
 fun App() {
@@ -21,12 +54,16 @@ fun App() {
     val lxgwNeo by preloadFont(resource = Res.font.LXGWNeoXiHeiScreen)
     val fm = lxgwNeo?.let { FontFamily(it) }
 
-    // 创建主题状态管理
-    var colorMode by remember { mutableStateOf(ColorMode.LIGHT) }
+    // 创建主题状态管理，从本地存储加载保存的主题偏好
+    var colorMode by remember { mutableStateOf(loadThemePreference()) }
     val appContext = remember(colorMode) {
         AppContext(
             colorMode = colorMode,
-            toggleColorMode = { colorMode = colorMode.toggle() }
+            toggleColorMode = { 
+                val newColorMode = colorMode.toggle()
+                colorMode = newColorMode
+                saveThemePreference(newColorMode)
+            }
         )
     }
 

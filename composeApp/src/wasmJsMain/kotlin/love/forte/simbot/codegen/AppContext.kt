@@ -1,7 +1,8 @@
 package love.forte.simbot.codegen
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -81,9 +82,11 @@ fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
         ColorMode.DARK -> darkColors
     }
     
-    // 为每个颜色添加动画过渡
-    val animationDuration = 300
-    val animationSpec = tween<Color>(durationMillis = animationDuration)
+    // 为每个颜色添加动画过渡 - 使用弹性动画实现更自然的过渡效果
+    val animationSpec = spring<Color>(
+        dampingRatio = Spring.DampingRatioMediumBouncy,
+        stiffness = Spring.StiffnessMedium
+    )
     
     val animatedPrimary by animateColorAsState(targetColors.primary, animationSpec, label = "primary")
     val animatedSecondary by animateColorAsState(targetColors.secondary, animationSpec, label = "secondary")
@@ -100,36 +103,53 @@ fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
     val animatedPrimaryContainer by animateColorAsState(targetColors.primaryContainer, animationSpec, label = "primaryContainer")
     val animatedSecondaryContainer by animateColorAsState(targetColors.secondaryContainer, animationSpec, label = "secondaryContainer")
     
+    // 为剩余的颜色属性添加动画
+    val animatedOnPrimaryContainer by animateColorAsState(targetColors.onPrimaryContainer, animationSpec, label = "onPrimaryContainer")
+    val animatedInversePrimary by animateColorAsState(targetColors.inversePrimary, animationSpec, label = "inversePrimary")
+    val animatedOnSecondaryContainer by animateColorAsState(targetColors.onSecondaryContainer, animationSpec, label = "onSecondaryContainer")
+    val animatedTertiaryContainer by animateColorAsState(targetColors.tertiaryContainer, animationSpec, label = "tertiaryContainer")
+    val animatedOnTertiaryContainer by animateColorAsState(targetColors.onTertiaryContainer, animationSpec, label = "onTertiaryContainer")
+    val animatedOnSurfaceVariant by animateColorAsState(targetColors.onSurfaceVariant, animationSpec, label = "onSurfaceVariant")
+    val animatedSurfaceTint by animateColorAsState(targetColors.surfaceTint, animationSpec, label = "surfaceTint")
+    val animatedInverseSurface by animateColorAsState(targetColors.inverseSurface, animationSpec, label = "inverseSurface")
+    val animatedInverseOnSurface by animateColorAsState(targetColors.inverseOnSurface, animationSpec, label = "inverseOnSurface")
+    val animatedOnError by animateColorAsState(targetColors.onError, animationSpec, label = "onError")
+    val animatedErrorContainer by animateColorAsState(targetColors.errorContainer, animationSpec, label = "errorContainer")
+    val animatedOnErrorContainer by animateColorAsState(targetColors.onErrorContainer, animationSpec, label = "onErrorContainer")
+    val animatedOutline by animateColorAsState(targetColors.outline, animationSpec, label = "outline")
+    val animatedOutlineVariant by animateColorAsState(targetColors.outlineVariant, animationSpec, label = "outlineVariant")
+    val animatedScrim by animateColorAsState(targetColors.scrim, animationSpec, label = "scrim")
+    
     return ColorScheme(
         primary = animatedPrimary,
         onPrimary = animatedOnPrimary,
         primaryContainer = animatedPrimaryContainer,
-        onPrimaryContainer = targetColors.onPrimaryContainer,
-        inversePrimary = targetColors.inversePrimary,
+        onPrimaryContainer = animatedOnPrimaryContainer,
+        inversePrimary = animatedInversePrimary,
         secondary = animatedSecondary,
         onSecondary = animatedOnSecondary,
         secondaryContainer = animatedSecondaryContainer,
-        onSecondaryContainer = targetColors.onSecondaryContainer,
+        onSecondaryContainer = animatedOnSecondaryContainer,
         tertiary = animatedTertiary,
         onTertiary = animatedOnTertiary,
-        tertiaryContainer = targetColors.tertiaryContainer,
-        onTertiaryContainer = targetColors.onTertiaryContainer,
+        tertiaryContainer = animatedTertiaryContainer,
+        onTertiaryContainer = animatedOnTertiaryContainer,
         background = animatedBackground,
         onBackground = animatedOnBackground,
         surface = animatedSurface,
         onSurface = animatedOnSurface,
         surfaceVariant = animatedSurfaceVariant,
-        onSurfaceVariant = targetColors.onSurfaceVariant,
-        surfaceTint = targetColors.surfaceTint,
-        inverseSurface = targetColors.inverseSurface,
-        inverseOnSurface = targetColors.inverseOnSurface,
+        onSurfaceVariant = animatedOnSurfaceVariant,
+        surfaceTint = animatedSurfaceTint,
+        inverseSurface = animatedInverseSurface,
+        inverseOnSurface = animatedInverseOnSurface,
         error = animatedError,
-        onError = targetColors.onError,
-        errorContainer = targetColors.errorContainer,
-        onErrorContainer = targetColors.onErrorContainer,
-        outline = targetColors.outline,
-        outlineVariant = targetColors.outlineVariant,
-        scrim = targetColors.scrim,
+        onError = animatedOnError,
+        errorContainer = animatedErrorContainer,
+        onErrorContainer = animatedOnErrorContainer,
+        outline = animatedOutline,
+        outlineVariant = animatedOutlineVariant,
+        scrim = animatedScrim,
         surfaceBright = targetColors.surfaceBright,
         surfaceDim = targetColors.surfaceDim,
         surfaceContainer = targetColors.surfaceContainer,
