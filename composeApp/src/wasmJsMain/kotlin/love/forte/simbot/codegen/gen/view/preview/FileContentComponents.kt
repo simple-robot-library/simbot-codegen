@@ -1,14 +1,8 @@
 package love.forte.simbot.codegen.gen.view.preview
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Description
@@ -16,18 +10,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.snipme.highlights.Highlights
+import dev.snipme.highlights.model.BoldHighlight
+import dev.snipme.highlights.model.ColorHighlight
+import dev.snipme.highlights.model.SyntaxLanguage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import simbot_codegen.composeapp.generated.resources.JetBrainsMono_Medium
 import simbot_codegen.composeapp.generated.resources.Res
+import web.cssom.CSS.highlights
 
 /**
  * 文件内容预览组件
@@ -246,7 +248,8 @@ private fun FileContentBody(content: FileContent) {
                     .verticalScroll(verticalScrollState)
             ) {
                 CodeContent(
-                    content = content.content
+                    content = content.content,
+                    mimeType = content.mimeType
                 )
             }
         }
@@ -304,9 +307,11 @@ private fun LineNumbers(content: String) {
 
 /**
  * 代码内容显示
+ *
+ * @param mimeType see [FileContent.inferMimeType]
  */
 @Composable
-private fun CodeContent(content: String, lineHeight: TextUnit = 24.sp) {
+private fun CodeContent(content: String, mimeType: String? = null) {
     val jetBrainsMonoFontFamily = FontFamily(
         Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
     )
@@ -317,18 +322,79 @@ private fun CodeContent(content: String, lineHeight: TextUnit = 24.sp) {
         lineHeight = 24.sp // 与行号保持一致的行高
     )
 
+    val lang: SyntaxLanguage = remember(mimeType) {
+        when {
+            mimeType == null -> SyntaxLanguage.DEFAULT
+            mimeType.endsWith("java", true) -> SyntaxLanguage.JAVA
+            mimeType.endsWith("js", true) -> SyntaxLanguage.JAVASCRIPT
+            mimeType.endsWith("kt", true) -> SyntaxLanguage.KOTLIN
+            mimeType.endsWith("kts", true) -> SyntaxLanguage.KOTLIN
+            mimeType.endsWith("sh", true) -> SyntaxLanguage.SHELL
+            else -> SyntaxLanguage.DEFAULT
+        }
+    }
+
+    val contentString = remember(content) {
+        val highlights = Highlights.Builder()
+            .language(lang)
+            .code(content)
+            .build()
+
+        buildAnnotatedString {
+            append(content)
+            for (highlight in highlights.getHighlights()) {
+                val location = highlight.location
+                when (highlight) {
+                    is ColorHighlight -> {
+                        val rgb: Int = highlight.rgb
+                        val color = Color(
+                            red = rgb shr 16 and 0xFF,
+                            green = rgb shr 8 and 0xFF00,
+                            blue = rgb and 0xFF,
+                        )
+                        addStyle(SpanStyle(color = color), location.start, location.end)
+                    }
+
+                    is BoldHighlight -> {
+                        addStyle(SpanStyle(fontWeight = FontWeight.Bold), location.start, location.end)
+                    }
+                }
+            }
+        }
+    }
+
     SelectionContainer {
         Column {
-            content.split('\n').forEach { line ->
+            @Composable
+            fun lineContent(line: AnnotatedString) {
                 Box(
                     modifier = Modifier.height(24.dp), // 固定高度确保对齐
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(
-                        text = if (line.isEmpty()) " " else line, // 空行显示空格以保持高度
-                        style = textStyle,
-                    )
+                    Row {
+                        Text(
+                            text = line.ifEmpty { AnnotatedString(" ") }, // 空行显示空格以保持高度
+                            style = textStyle,
+                            maxLines = 1,
+                        )
+                        Text(text = "\n", maxLines = 1)
+                    }
                 }
+            }
+
+
+            var nextStart = 0
+            var nextEnd = content.indexOf('\n')
+            while (nextEnd != -1) {
+                val line = contentString.subSequence(nextStart, nextEnd)
+                lineContent(line)
+                nextStart = nextEnd + 1
+                nextEnd = content.indexOf('\n', nextStart)
+            }
+
+            if (nextStart < content.length) {
+                val line = contentString.subSequence(nextStart, content.length)
+                lineContent(line)
             }
         }
     }

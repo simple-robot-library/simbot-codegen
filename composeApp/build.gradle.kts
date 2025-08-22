@@ -77,6 +77,8 @@ kotlin {
 
             implementation(libs.kotlin.serialization.core)
             implementation(libs.kotlin.serialization.json)
+
+            implementation(libs.highlights)
         }
 
         commonTest.dependencies {

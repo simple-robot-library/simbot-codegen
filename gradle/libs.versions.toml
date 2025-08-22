@@ -11,8 +11,9 @@ kotlin-serialization = "1.9.0"
 kotlinpoet = "1.19.0-KMP-SNAPSHOT"
 codegentle = "0.0.1-SNAPSHOT"
 
-# https://github.com/NeoUtils/Highlight
 # 代码高亮
+## https://github.com/SnipMeDev/Highlights
+highlights = "1.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -43,6 +44,8 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 # CodeGentle
 codegentle-kotlin = { module = "love.forte.codegentle:codegentle-kotlin", version.ref = "codegentle" }
 codegentle-java = { module = "love.forte.codegentle:codegentle-java", version.ref = "codegentle" }
+
+highlights = { module = "dev.snipme:highlights", version.ref = "highlights" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
