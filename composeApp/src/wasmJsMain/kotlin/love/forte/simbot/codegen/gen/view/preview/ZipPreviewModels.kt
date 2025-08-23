@@ -56,6 +56,10 @@ data class FileContent(
     companion object {
         /** 根据文件扩展名推断MIME类型 */
         fun inferMimeType(fileName: String): String {
+            when (fileName) {
+                "gradlew" -> return "application/x-sh"
+            }
+
             return when (fileName.substringAfterLast('.').lowercase()) {
                 "kt" -> "text/x-kotlin"
                 "java" -> "text/x-java"

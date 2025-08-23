@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.LocalSystemTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
@@ -27,14 +26,11 @@ import dev.snipme.highlights.model.BoldHighlight
 import dev.snipme.highlights.model.ColorHighlight
 import dev.snipme.highlights.model.SyntaxLanguage
 import dev.snipme.highlights.model.SyntaxTheme
-import dev.snipme.highlights.model.SyntaxThemes
 import kotlinx.coroutines.launch
 import love.forte.simbot.codegen.ColorMode
 import love.forte.simbot.codegen.LocalAppContext
 import org.jetbrains.compose.resources.Font
-import simbot_codegen.composeapp.generated.resources.JetBrainsMono_Medium
-import simbot_codegen.composeapp.generated.resources.Res
-import web.cssom.CSS.highlights
+import simbot_codegen.composeapp.generated.resources.*
 
 /**
  * 文件内容预览组件
@@ -216,6 +212,15 @@ private fun FileHeader(content: FileContent) {
  */
 @Composable
 private fun FileContentBody(content: FileContent) {
+    val jetBrainsMonoFontFamily = FontFamily(
+        Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium),
+        Font(Res.font.JetBrainsMono_Bold, FontWeight.Bold),
+        Font(Res.font.JetBrainsMono_Thin, FontWeight.Thin),
+        Font(Res.font.JetBrainsMono_Light, FontWeight.Light),
+        Font(Res.font.JetBrainsMono_ExtraBold, FontWeight.ExtraBold),
+        Font(Res.font.JetBrainsMono_ExtraLight, FontWeight.ExtraLight),
+    )
+
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
 
@@ -234,7 +239,7 @@ private fun FileContentBody(content: FileContent) {
                 modifier = Modifier
                     .verticalScroll(verticalScrollState)
             ) {
-                LineNumbers(content = content.content)
+                LineNumbers(content = content.content, fontFamily = jetBrainsMonoFontFamily)
             }
 
             // 分隔线
@@ -254,6 +259,7 @@ private fun FileContentBody(content: FileContent) {
             ) {
                 CodeContent(
                     content = content.content,
+                    fontFamily = jetBrainsMonoFontFamily,
                     mimeType = content.mimeType
                 )
             }
@@ -277,17 +283,13 @@ private fun FileContentBody(content: FileContent) {
  * 行号显示
  */
 @Composable
-private fun LineNumbers(content: String) {
-    val jetBrainsMonoFontFamily = FontFamily(
-        Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
-    )
-
+private fun LineNumbers(content: String, fontFamily: FontFamily) {
     val lines = content.split('\n')
     val maxLineNumber = lines.size
     val lineNumberWidth = maxLineNumber.toString().length
 
     val textStyle = MaterialTheme.typography.bodySmall.copy(
-        fontFamily = jetBrainsMonoFontFamily,
+        fontFamily = fontFamily,
         fontSize = 16.sp,
         lineHeight = 24.sp // 增加行高以改善对齐
     )
@@ -341,7 +343,7 @@ private val lightSyntaxTheme = SyntaxTheme(
 /**
  * 获取自定义的语法高亮主题
  * 根据明暗模式返回适合的主题，符合Material 3设计规范
- * 
+ *
  * 设计原则：
  * - 亮色主题：使用高对比度、清晰明快的颜色，与Material 3亮色调和谐
  * - 暗色主题：使用柔和、护眼的颜色，与Material 3暗色调协调
@@ -358,14 +360,11 @@ private fun getCustomSyntaxTheme(darkMode: Boolean) = if (darkMode) {
  * @param mimeType see [FileContent.inferMimeType]
  */
 @Composable
-private fun CodeContent(content: String, mimeType: String? = null) {
+private fun CodeContent(content: String, fontFamily: FontFamily, mimeType: String? = null) {
     val appContext = LocalAppContext.current
-    val jetBrainsMonoFontFamily = FontFamily(
-        Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium)
-    )
 
     val textStyle = MaterialTheme.typography.bodySmall.copy(
-        fontFamily = jetBrainsMonoFontFamily,
+        fontFamily = fontFamily,
         fontSize = 16.sp,
         lineHeight = 24.sp // 与行号保持一致的行高
     )
@@ -382,15 +381,22 @@ private fun CodeContent(content: String, mimeType: String? = null) {
         }
     }
 
-    val contentString = remember(content, appContext.colorMode) {
+    val contentStringLines: MutableList<AnnotatedString> = remember(content) {
+        buildList {
+            AnnotatedString(content).splitLines { add(it) }
+        }.toMutableStateList()
+    }
+
+    LaunchedEffect(content, appContext.colorMode) {
+        val contentCodeWithReplacedLineChar = content.replace(Regex("\r\n|\r|\n"), "\n")
         val highlights = Highlights.Builder()
             .language(lang)
-            .code(content)
+            .code(contentCodeWithReplacedLineChar)
             .theme(getCustomSyntaxTheme(appContext.colorMode == ColorMode.DARK))
             .build()
 
-        buildAnnotatedString {
-            append(content)
+        val contentString = buildAnnotatedString {
+            append(contentCodeWithReplacedLineChar)
             for (highlight in highlights.getHighlights()) {
                 val location = highlight.location
                 when (highlight) {
@@ -401,14 +407,27 @@ private fun CodeContent(content: String, mimeType: String? = null) {
                             green = rgb shr 8 and 0xFF,
                             blue = rgb and 0xFF,
                         )
-                        addStyle(SpanStyle(color = color), location.start, location.end)
+                        // TODO 会有一些超出去的
+                        //  add highlight style: PhraseLocation(start=3023, end=2851)
+                        //  add highlight style: PhraseLocation(start=6205, end=3179)
+                        if (location.start <= location.end) {
+                            addStyle(SpanStyle(color = color), location.start, location.end)
+                        }
                     }
 
                     is BoldHighlight -> {
-                        addStyle(SpanStyle(fontWeight = FontWeight.Bold), location.start, location.end)
+                        if (location.start <= location.end) {
+                            addStyle(SpanStyle(fontWeight = FontWeight.Bold), location.start, location.end)
+                        }
                     }
                 }
             }
+        }
+
+        var i = 0
+        contentString.splitLines {
+            contentStringLines[i] = it
+            i++
         }
     }
 
@@ -431,24 +450,31 @@ private fun CodeContent(content: String, mimeType: String? = null) {
                 }
             }
 
-
-            var nextStart = 0
-            var nextEnd = content.indexOf('\n')
-            while (nextEnd != -1) {
-                val line = contentString.subSequence(nextStart, nextEnd)
-                lineContent(line)
-                nextStart = nextEnd + 1
-                nextEnd = content.indexOf('\n', nextStart)
-            }
-
-            if (nextStart < content.length) {
-                val line = contentString.subSequence(nextStart, content.length)
+            for (line in contentStringLines) {
                 lineContent(line)
             }
         }
     }
 }
 
+private inline fun AnnotatedString.splitLines(onLine: (AnnotatedString) -> Unit) {
+    val contentString = this
+    var nextStart = 0
+    var nextEnd = contentString.indexOf('\n')
+    while (nextEnd >= 0) {
+        println("each nextStart: $nextStart, nextEnd: $nextEnd")
+        val line = contentString.subSequence(nextStart, nextEnd)
+        onLine(line)
+        nextStart = nextEnd + 1
+        nextEnd = contentString.indexOf('\n', nextStart)
+    }
+
+    if (nextStart < contentString.length) {
+        println("final nextStart: $nextStart, nextEnd: $nextEnd")
+        val line = contentString.subSequence(nextStart, contentString.length)
+        onLine(line)
+    }
+}
 
 /**
  * 格式化文件大小

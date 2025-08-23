@@ -70,7 +70,7 @@ fun GradleSettingsView(
                 )
             },
             content = { innerPaddings ->
-                AnimatedBackground(
+                OptimizedAnimatedBackground(
                     modifier = Modifier.fillMaxSize(),
                     particleCount = remember(windowSize) {
                         when (windowSize) {

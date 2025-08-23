@@ -66,7 +66,7 @@ fun GroupCard(
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
-            .frostedGlass(isActive = isHovered, intensity = 0.8f, shape = cardShape)
+            .optimizedFrostedGlass(isActive = isHovered, intensity = 0.8f, shape = cardShape)
             .hoverable(interactionSource),
         shape = cardShape,
         border = BorderStroke(

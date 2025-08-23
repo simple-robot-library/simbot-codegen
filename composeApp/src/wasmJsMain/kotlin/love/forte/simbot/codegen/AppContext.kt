@@ -1,10 +1,14 @@
 package love.forte.simbot.codegen
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.core.spring
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -28,7 +32,7 @@ val LocalAppContext = staticCompositionLocalOf<AppContext> {
 enum class ColorMode {
     DARK,
     LIGHT;
-    
+
     fun toggle(): ColorMode = when (this) {
         DARK -> LIGHT
         LIGHT -> DARK
@@ -75,19 +79,17 @@ val darkColors = darkColorScheme(
  */
 @Composable
 fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
-
-    
     val targetColors = when (colorMode) {
         ColorMode.LIGHT -> lightColors
         ColorMode.DARK -> darkColors
     }
-    
+
     // 为每个颜色添加动画过渡 - 使用弹性动画实现更自然的过渡效果
     val animationSpec = spring<Color>(
         dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness = Spring.StiffnessMedium
+        stiffness = Spring.StiffnessHigh
     )
-    
+
     val animatedPrimary by animateColorAsState(targetColors.primary, animationSpec, label = "primary")
     val animatedSecondary by animateColorAsState(targetColors.secondary, animationSpec, label = "secondary")
     val animatedTertiary by animateColorAsState(targetColors.tertiary, animationSpec, label = "tertiary")
@@ -99,27 +101,83 @@ fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
     val animatedOnTertiary by animateColorAsState(targetColors.onTertiary, animationSpec, label = "onTertiary")
     val animatedOnBackground by animateColorAsState(targetColors.onBackground, animationSpec, label = "onBackground")
     val animatedOnSurface by animateColorAsState(targetColors.onSurface, animationSpec, label = "onSurface")
-    val animatedSurfaceVariant by animateColorAsState(targetColors.surfaceVariant, animationSpec, label = "surfaceVariant")
-    val animatedPrimaryContainer by animateColorAsState(targetColors.primaryContainer, animationSpec, label = "primaryContainer")
-    val animatedSecondaryContainer by animateColorAsState(targetColors.secondaryContainer, animationSpec, label = "secondaryContainer")
-    
+    val animatedSurfaceVariant by animateColorAsState(
+        targetColors.surfaceVariant,
+        animationSpec,
+        label = "surfaceVariant"
+    )
+    val animatedPrimaryContainer by animateColorAsState(
+        targetColors.primaryContainer,
+        animationSpec,
+        label = "primaryContainer"
+    )
+    val animatedSecondaryContainer by animateColorAsState(
+        targetColors.secondaryContainer,
+        animationSpec,
+        label = "secondaryContainer"
+    )
+
     // 为剩余的颜色属性添加动画
-    val animatedOnPrimaryContainer by animateColorAsState(targetColors.onPrimaryContainer, animationSpec, label = "onPrimaryContainer")
-    val animatedInversePrimary by animateColorAsState(targetColors.inversePrimary, animationSpec, label = "inversePrimary")
-    val animatedOnSecondaryContainer by animateColorAsState(targetColors.onSecondaryContainer, animationSpec, label = "onSecondaryContainer")
-    val animatedTertiaryContainer by animateColorAsState(targetColors.tertiaryContainer, animationSpec, label = "tertiaryContainer")
-    val animatedOnTertiaryContainer by animateColorAsState(targetColors.onTertiaryContainer, animationSpec, label = "onTertiaryContainer")
-    val animatedOnSurfaceVariant by animateColorAsState(targetColors.onSurfaceVariant, animationSpec, label = "onSurfaceVariant")
+    val animatedOnPrimaryContainer by animateColorAsState(
+        targetColors.onPrimaryContainer,
+        animationSpec,
+        label = "onPrimaryContainer"
+    )
+    val animatedInversePrimary by animateColorAsState(
+        targetColors.inversePrimary,
+        animationSpec,
+        label = "inversePrimary"
+    )
+    val animatedOnSecondaryContainer by animateColorAsState(
+        targetColors.onSecondaryContainer,
+        animationSpec,
+        label = "onSecondaryContainer"
+    )
+    val animatedTertiaryContainer by animateColorAsState(
+        targetColors.tertiaryContainer,
+        animationSpec,
+        label = "tertiaryContainer"
+    )
+    val animatedOnTertiaryContainer by animateColorAsState(
+        targetColors.onTertiaryContainer,
+        animationSpec,
+        label = "onTertiaryContainer"
+    )
+    val animatedOnSurfaceVariant by animateColorAsState(
+        targetColors.onSurfaceVariant,
+        animationSpec,
+        label = "onSurfaceVariant"
+    )
     val animatedSurfaceTint by animateColorAsState(targetColors.surfaceTint, animationSpec, label = "surfaceTint")
-    val animatedInverseSurface by animateColorAsState(targetColors.inverseSurface, animationSpec, label = "inverseSurface")
-    val animatedInverseOnSurface by animateColorAsState(targetColors.inverseOnSurface, animationSpec, label = "inverseOnSurface")
+    val animatedInverseSurface by animateColorAsState(
+        targetColors.inverseSurface,
+        animationSpec,
+        label = "inverseSurface"
+    )
+    val animatedInverseOnSurface by animateColorAsState(
+        targetColors.inverseOnSurface,
+        animationSpec,
+        label = "inverseOnSurface"
+    )
     val animatedOnError by animateColorAsState(targetColors.onError, animationSpec, label = "onError")
-    val animatedErrorContainer by animateColorAsState(targetColors.errorContainer, animationSpec, label = "errorContainer")
-    val animatedOnErrorContainer by animateColorAsState(targetColors.onErrorContainer, animationSpec, label = "onErrorContainer")
+    val animatedErrorContainer by animateColorAsState(
+        targetColors.errorContainer,
+        animationSpec,
+        label = "errorContainer"
+    )
+    val animatedOnErrorContainer by animateColorAsState(
+        targetColors.onErrorContainer,
+        animationSpec,
+        label = "onErrorContainer"
+    )
     val animatedOutline by animateColorAsState(targetColors.outline, animationSpec, label = "outline")
-    val animatedOutlineVariant by animateColorAsState(targetColors.outlineVariant, animationSpec, label = "outlineVariant")
+    val animatedOutlineVariant by animateColorAsState(
+        targetColors.outlineVariant,
+        animationSpec,
+        label = "outlineVariant"
+    )
     val animatedScrim by animateColorAsState(targetColors.scrim, animationSpec, label = "scrim")
-    
+
     return ColorScheme(
         primary = animatedPrimary,
         onPrimary = animatedOnPrimary,
