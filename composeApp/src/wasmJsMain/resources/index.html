@@ -368,61 +368,73 @@
             border-radius: 50%;
             margin-right: 5px;
         }
+
+        /* 确保 codegen-root 容器占满全屏，不受加载动画影响 */
+        #codegen-root {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
-<div id="codegen-root">
-    <div class="loading-container" id="loading-container">
-        <!-- 浮动粒子背景 -->
-        <div class="floating-particles" id="floating-particles"></div>
+<!-- Loading animation as overlay - independent of codegen-root -->
+<div class="loading-container" id="loading-container">
+    <!-- 浮动粒子背景 -->
+    <div class="floating-particles" id="floating-particles"></div>
 
-        <!-- 加载器 -->
-        <div class="loader">
-            <!-- 波纹效果 -->
-            <div class="ripple"></div>
-            <div class="ripple"></div>
-            <div class="ripple"></div>
+    <!-- 加载器 -->
+    <div class="loader">
+        <!-- 波纹效果 -->
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+        <div class="ripple"></div>
 
-            <!-- 轨道与粒子 -->
-            <div class="orbit">
-                <div class="orbit-particle"></div>
-            </div>
-            <div class="orbit">
-                <div class="orbit-particle"></div>
-            </div>
-            <div class="orbit">
-                <div class="orbit-particle"></div>
-            </div>
-
-            <!-- 中心脉冲和核心 -->
-            <div class="pulse"></div>
-            <div class="core"></div>
+        <!-- 轨道与粒子 -->
+        <div class="orbit">
+            <div class="orbit-particle"></div>
+        </div>
+        <div class="orbit">
+            <div class="orbit-particle"></div>
+        </div>
+        <div class="orbit">
+            <div class="orbit-particle"></div>
         </div>
 
-        <!-- 进度条 -->
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <div class="progress-text" id="progress-text">正在加载...</div>
+        <!-- 中心脉冲和核心 -->
+        <div class="pulse"></div>
+        <div class="core"></div>
+    </div>
 
-        <!-- 代码动画 -->
-        <div class="code-animation">
-            <div class="code-line" id="code-line">正在初始化 Simbot Codegen ...</div>
-        </div>
+    <!-- 进度条 -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-text" id="progress-text">正在加载...</div>
 
-        <!-- 信息标签 -->
-        <div class="tags">
-            <div class="tag">初始化环境</div>
-            <div class="tag">加载资源</div>
-            <div class="tag">准备渲染</div>
-        </div>
+    <!-- 代码动画 -->
+    <div class="code-animation">
+        <div class="code-line" id="code-line">正在初始化 Simbot Codegen ...</div>
+    </div>
 
-        <!-- 信息文本 -->
-        <div class="info-text">
-            Simbot Codegen 正在准备中
-        </div>
+    <!-- 信息标签 -->
+    <div class="tags">
+        <div class="tag">初始化环境</div>
+        <div class="tag">加载资源</div>
+        <div class="tag">准备渲染</div>
+    </div>
+
+    <!-- 信息文本 -->
+    <div class="info-text">
+        Simbot Codegen 正在准备中
     </div>
 </div>
+
+<!-- Compose app container - now empty and ready for Compose content -->
+<div id="codegen-root"></div>
 
 <script id="codegen-root-load-script">
     // 创建浮动粒子
@@ -498,18 +510,15 @@
         script.src = 'composeApp.js';
         script.type = 'application/javascript';
 
-        // 脚本加载完成后隐藏加载界面
+        // 脚本加载完成后更新为字体加载状态
         script.onload = () => {
             // 确保进度条达到100%
             progressBar.style.width = '100%';
-            progressText.textContent = '加载完成 (100%)';
-
-            // 短暂延迟后隐藏加载界面
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-            }, 800);
+            progressText.textContent = '应用加载完成 (100%)';
 
             clearInterval(interval);
+            
+            // 不立即隐藏，等待字体加载完成的通知
         };
 
         // 脚本加载出错
@@ -521,6 +530,44 @@
         // 添加脚本到文档
         document.head.appendChild(script);
     });
+
+    // 全局函数：通知开始加载字体
+    window.notifyFontLoadingStart = function() {
+        console.log("notifyFontLoadingStart")
+        const progressText = document.getElementById('progress-text');
+        const codeLine = document.getElementById('code-line');
+        
+        if (progressText) {
+            progressText.textContent = '加载字体中...';
+        }
+        if (codeLine) {
+            codeLine.textContent = '正在加载字体文件...';
+        }
+    };
+
+    // 全局函数：通知字体加载完成，隐藏加载动画
+    window.notifyFontLoadingComplete = function() {
+        console.log("notifyFontLoadingComplete")
+        const loadingContainer = document.getElementById('loading-container');
+        const progressText = document.getElementById('progress-text');
+        
+        if (progressText) {
+            progressText.textContent = '字体加载完成！';
+        }
+
+        // 短暂延迟后隐藏加载界面
+        setTimeout(() => {
+            if (loadingContainer) {
+                loadingContainer.style.transition = 'opacity 0.5s ease-out';
+                loadingContainer.style.opacity = '0';
+                
+                setTimeout(() => {
+                    loadingContainer.style.display = 'none';
+                    loadingContainer.remove()
+                }, 500);
+            }
+        }, 300);
+    };
 </script>
 </body>
 </html>
