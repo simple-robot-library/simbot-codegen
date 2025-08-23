@@ -1,10 +1,8 @@
 package love.forte.simbot.codegen.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,29 +41,34 @@ fun EnhancedTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val borderColor by animateColorAsState(
-        targetValue = when {
-            isError -> MaterialTheme.colorScheme.error
-            isFocused -> MaterialTheme.colorScheme.primary
-            else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
-        },
-        animationSpec = tween(durationMillis = 200),
-        label = "边框颜色动画"
-    )
+//    val borderColor by animateColorAsState(
+//        targetValue = when {
+//            isError -> MaterialTheme.colorScheme.error
+//            isFocused -> MaterialTheme.colorScheme.primary
+//            else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
+//        },
+//        animationSpec = tween(durationMillis = 200),
+//        label = "边框颜色动画"
+//    )
 
-    // val backgroundColor = when {
-    //     isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-    //     else -> MaterialTheme.colorScheme.surface
-    // }
+    val borderColor = when {
+        isError -> MaterialTheme.colorScheme.error
+        isFocused -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outline.copy(alpha = 0.65f)
+    }
 
-    val backgroundColor by animateColorAsState(
-        targetValue = when {
-            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
-            else -> MaterialTheme.colorScheme.surface
-        },
-        animationSpec = tween(durationMillis = 130),
-        label = "背景颜色动画"
-    )
+//    val backgroundColor = when {
+//        isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
+//        else -> MaterialTheme.colorScheme.surface
+//    }
+
+//    val backgroundColor by animateColorAsState(
+//        targetValue = when {
+//            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
+//            else -> MaterialTheme.colorScheme.surface
+//        },
+//        label = "背景颜色动画"
+//    )
 
     OutlinedTextField(
         value = value,
@@ -107,8 +110,8 @@ fun EnhancedTextField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = borderColor,
             unfocusedBorderColor = borderColor.copy(alpha = 0.7f),
-            focusedContainerColor = backgroundColor,
-            unfocusedContainerColor = backgroundColor,
+//            focusedContainerColor = backgroundColor,
+//            unfocusedContainerColor = backgroundColor,
             focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             errorBorderColor = MaterialTheme.colorScheme.error,
