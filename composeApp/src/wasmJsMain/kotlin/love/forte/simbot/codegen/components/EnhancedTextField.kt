@@ -53,12 +53,17 @@ fun EnhancedTextField(
         label = "边框颜色动画"
     )
 
+    // val backgroundColor = when {
+    //     isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    //     else -> MaterialTheme.colorScheme.surface
+    // }
+
     val backgroundColor by animateColorAsState(
         targetValue = when {
-            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            isFocused -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
             else -> MaterialTheme.colorScheme.surface
         },
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = tween(durationMillis = 130),
         label = "背景颜色动画"
     )
 
