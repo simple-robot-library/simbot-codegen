@@ -1,17 +1,15 @@
 package love.forte.simbot.codegen.gen.view
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -19,11 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import js.date.Date
-import love.forte.simbot.codegen.components.GroupCard
-import love.forte.simbot.codegen.components.GroupGrid
-import love.forte.simbot.codegen.components.ThemeToggleButton
-import love.forte.simbot.codegen.components.WindowSize
-import love.forte.simbot.codegen.components.rememberWindowSize
+import love.forte.simbot.codegen.components.*
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.withLink
 
@@ -40,49 +34,63 @@ fun GradleSettingsView(
 ) {
     val windowSize = rememberWindowSize()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                title = {
-                    Text(
-                        "Simbot Codegen",
-                        fontWeight = FontWeight.Bold,
-                        style = when (windowSize) {
-                            WindowSize.Mobile -> MaterialTheme.typography.headlineSmall
-                            else -> MaterialTheme.typography.headlineMedium
-                        }
-                    )
-                },
-                actions = {
-                    ThemeToggleButton()
-                }
-            )
-        },
-        content = { innerPaddings ->
-            val focusManager = LocalFocusManager.current
-            val scrollState = rememberScrollState()
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPaddings)
-                    .padding(top = 8.dp, bottom = 8.dp)
-                    .verticalScroll(scrollState)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        focusManager.clearFocus()
+    // 使用Box来叠放动画背景和主要内容
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // 主要内容层
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    colors = topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                    title = {
+                        Text(
+                            "Simbot Codegen",
+                            fontWeight = FontWeight.Bold,
+                            style = when (windowSize) {
+                                WindowSize.Mobile -> MaterialTheme.typography.headlineSmall
+                                else -> MaterialTheme.typography.headlineMedium
+                            }
+                        )
                     },
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                SettingViewContent(projectViewModel, loadingCounter)
+                    actions = {
+                        ThemeToggleButton()
+                    }
+                )
+            },
+            content = { innerPaddings ->
+                AnimatedBackground(
+                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Red),
+                    particleCount = when (windowSize) {
+                        WindowSize.Mobile -> 25 // 移动端使用较少粒子以提高性能
+                        WindowSize.Tablet -> 40
+                        WindowSize.Desktop -> 65
+                    }
+                )
+
+                val focusManager = LocalFocusManager.current
+                val scrollState = rememberScrollState()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPaddings)
+                        .padding(top = 8.dp, bottom = 8.dp)
+                        .verticalScroll(scrollState)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            focusManager.clearFocus()
+                        },
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    SettingViewContent(projectViewModel, loadingCounter)
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 
