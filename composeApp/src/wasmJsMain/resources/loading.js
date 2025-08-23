@@ -93,6 +93,26 @@ function loadComposeScript() {
     });
 }
 
+// Theme detection and application
+function applyTheme() {
+    try {
+        const savedTheme = localStorage.getItem('simbot_codegen_theme_preference');
+        const isDarkTheme = savedTheme === 'DARK';
+        
+        if (isDarkTheme) {
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+        }
+        
+        console.log(`Applied theme: ${isDarkTheme ? 'DARK' : 'LIGHT'}`);
+    } catch (e) {
+        // Fallback to light theme on error
+        document.documentElement.classList.remove('dark-theme');
+        console.warn('Failed to load theme preference, using light theme as fallback');
+    }
+}
+
 // Main initialization function
 function initializeLoadingScreen() {
     const loadingContainer = document.getElementById('loading-container');
@@ -103,6 +123,9 @@ function initializeLoadingScreen() {
         console.error('Loading screen elements not found');
         return;
     }
+    
+    // Apply theme before showing animations
+    applyTheme();
     
     // Create optimized animations
     createFloatingParticles();

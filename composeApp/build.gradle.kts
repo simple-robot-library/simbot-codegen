@@ -16,12 +16,12 @@ repositories {
     }
     google()
     mavenCentral()
-    maven {
-        url = rootDir.resolve("libs").toURI()
-        mavenContent {
-            includeGroup("com.squareup")
-        }
-    }
+//    maven {
+//        url = rootDir.resolve("libs").toURI()
+//        mavenContent {
+//            includeGroup("com.squareup")
+//        }
+//    }
 }
 
 // 刷新snapshot
