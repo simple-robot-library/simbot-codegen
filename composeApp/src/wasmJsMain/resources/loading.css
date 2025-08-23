@@ -359,6 +359,99 @@
     margin-right: 5px;
 }
 
+/* Simplified Exit Animation Keyframes - Subtle and Elegant */
+@keyframes exitFade {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+@keyframes exitSlideUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+@keyframes exitSlideDown {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+}
+
+@keyframes exitScale {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+
+/* Simplified Exit Animation Classes - Subtle and Elegant */
+.loading-container.exiting {
+    animation: exitFade 0.5s ease-out forwards;
+}
+
+.loader.exiting {
+    animation: exitScale 0.4s ease-out forwards;
+}
+
+.progress-container.exiting {
+    animation: exitSlideDown 0.3s ease-out forwards;
+}
+
+.progress-text.exiting {
+    animation: exitSlideUp 0.3s ease-out forwards;
+}
+
+.code-animation.exiting {
+    animation: exitFade 0.3s ease-out forwards;
+}
+
+.tags.exiting,
+.tag.exiting {
+    animation: exitFade 0.4s ease-out forwards;
+}
+
+.info-text.exiting {
+    animation: exitSlideUp 0.3s ease-out forwards;
+}
+
+.pulse.exiting {
+    animation: exitScale 0.4s ease-out forwards;
+}
+
+.ripple.exiting {
+    animation: exitScale 0.4s ease-out forwards;
+}
+
+.float-particle.exiting,
+.orbit-particle.exiting {
+    animation: exitFade 0.5s ease-out forwards;
+}
+
+.core.exiting {
+    animation: exitScale 0.4s ease-out forwards;
+}
+
 /* Compose App Container */
 #codegen-root {
     width: 100vw;

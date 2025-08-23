@@ -182,22 +182,69 @@ window.notifyFontLoadingComplete = function() {
         progressText.textContent = '字体加载完成！';
     }
     
-    // Optimized fade-out with better performance
+    // Enhanced exit animation sequence
     if (loadingContainer) {
-        requestAnimationFrame(() => {
-            loadingContainer.style.transition = 'opacity 0.5s ease-out';
-            loadingContainer.style.opacity = '0';
-            
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                loadingContainer.remove();
-                
-                // Clear references for garbage collection
-                window.loadingIntervals = null;
-            }, 500);
-        });
+        performExitAnimation(loadingContainer);
     }
 };
+
+// Enhanced exit animation function with modern tech effects
+function performExitAnimation(loadingContainer) {
+    console.log("Starting enhanced tech-style exit animation");
+    
+    requestAnimationFrame(() => {
+        // Get all animated elements including new tech elements
+        const loader = loadingContainer.querySelector('.loader');
+        const progressContainer = loadingContainer.querySelector('.progress-container');
+        const progressText = loadingContainer.querySelector('.progress-text');
+        const codeAnimation = loadingContainer.querySelector('.code-animation');
+        const tags = loadingContainer.querySelector('.tags');
+        const tagElements = loadingContainer.querySelectorAll('.tag');
+        const infoText = loadingContainer.querySelector('.info-text');
+        const pulse = loadingContainer.querySelector('.pulse');
+        const core = loadingContainer.querySelector('.core');
+        const ripples = loadingContainer.querySelectorAll('.ripple');
+        const orbitParticles = loadingContainer.querySelectorAll('.orbit-particle');
+        const particles = loadingContainer.querySelectorAll('.float-particle');
+        
+        // Simple staggered exit animations - elegant and restrained
+        setTimeout(() => {
+            // Stage 1: Core elements (100ms delay)
+            if (core) core.classList.add('exiting');
+            if (pulse) pulse.classList.add('exiting');
+            ripples.forEach(ripple => ripple.classList.add('exiting'));
+            if (loader) loader.classList.add('exiting');
+        }, 100);
+        
+        setTimeout(() => {
+            // Stage 2: UI elements (200ms total delay)
+            if (progressContainer) progressContainer.classList.add('exiting');
+            if (progressText) progressText.classList.add('exiting');
+            if (codeAnimation) codeAnimation.classList.add('exiting');
+            if (tags) tags.classList.add('exiting');
+            tagElements.forEach(tag => tag.classList.add('exiting'));
+            if (infoText) infoText.classList.add('exiting');
+        }, 200);
+        
+        setTimeout(() => {
+            // Stage 3: Particles and final container (400ms total delay)
+            particles.forEach(particle => particle.classList.add('exiting'));
+            orbitParticles.forEach(particle => particle.classList.add('exiting'));
+            loadingContainer.classList.add('exiting');
+        }, 400);
+        
+        // Clean and efficient cleanup
+        setTimeout(() => {
+            loadingContainer.style.display = 'none';
+            loadingContainer.remove();
+            
+            // Clear references for garbage collection
+            window.loadingIntervals = null;
+            
+            console.log("Loading animation completed - subtle and elegant");
+        }, 800); // Reduced duration: 800ms
+    });
+}
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
