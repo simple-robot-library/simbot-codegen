@@ -12,10 +12,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -37,6 +37,9 @@ fun GroupCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
+    
+    // 鼠标位置状态，用于动态调整毛玻璃效果的渐变中心
+    var mousePosition by remember { mutableStateOf<Offset?>(null) }
 
     val cardBorderColor by animateColorAsState(
         targetValue = if (isHovered) {
@@ -66,7 +69,26 @@ fun GroupCard(
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
-            .optimizedFrostedGlass(isActive = isHovered, intensity = 0.8f, shape = cardShape)
+            .optimizedFrostedGlass(
+                isActive = isHovered, 
+                intensity = 0.8f, 
+                shape = cardShape,
+                mousePosition = mousePosition
+            )
+            .pointerInput(isHovered) {
+                if (isHovered) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            event.changes.firstOrNull()?.let { change ->
+                                mousePosition = change.position
+                            }
+                        }
+                    }
+                } else {
+                    mousePosition = null
+                }
+            }
             .hoverable(interactionSource),
         shape = cardShape,
         border = BorderStroke(
@@ -113,54 +135,6 @@ fun GroupCard(
                 content = content
             )
         }
-    }
-}
-
-/**
- * 轻量级的分组容器，用于不需要卡片样式的简单分组
- *
- * @param title 分组标题
- * @param modifier 修饰符
- * @param subtitle 可选的副标题
- * @param content 分组内容
- */
-@Composable
-fun GroupContainer(
-    title: String,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // 标题区域
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            subtitle?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        // 内容区域
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            content = content
-        )
     }
 }
 
