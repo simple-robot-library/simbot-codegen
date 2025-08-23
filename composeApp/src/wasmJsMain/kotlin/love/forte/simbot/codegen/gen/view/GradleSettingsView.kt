@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -20,13 +21,14 @@ import js.date.Date
 import love.forte.simbot.codegen.components.*
 import love.forte.simbot.codegen.gen.GradleProjectViewModel
 import love.forte.simbot.codegen.withLink
+import kotlin.random.Random
 
 
 /**
  * Composable function to display the view for configuring Gradle project settings.
  *
  * This view allows users to manage settings related to a*/
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun GradleSettingsView(
     projectViewModel: GradleProjectViewModel = viewModel { GradleProjectViewModel() },
@@ -34,8 +36,15 @@ fun GradleSettingsView(
 ) {
     val windowSize = rememberWindowSize()
 
+    val mousePositionState = rememberMousePositionState()
+    val mousePosition by mousePositionState
+
     // 使用Box来叠放动画背景和主要内容
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .mousePosition(mousePositionState)
+    ) {
 
         // 主要内容层
         Scaffold(
@@ -62,12 +71,16 @@ fun GradleSettingsView(
             },
             content = { innerPaddings ->
                 AnimatedBackground(
-                    modifier = Modifier.fillMaxSize().border(1.dp, Color.Red),
-                    particleCount = when (windowSize) {
-                        WindowSize.Mobile -> 25 // 移动端使用较少粒子以提高性能
-                        WindowSize.Tablet -> 40
-                        WindowSize.Desktop -> 65
-                    }
+                    modifier = Modifier.fillMaxSize(),
+                    particleCount = remember(windowSize) {
+                        when (windowSize) {
+                            // 移动端使用较少粒子
+                            WindowSize.Mobile -> Random.nextInt(20, 25)
+                            WindowSize.Tablet -> Random.nextInt(35, 45)
+                            WindowSize.Desktop -> Random.nextInt(50, 65)
+                        }
+                    },
+                    mousePosition = mousePosition
                 )
 
                 val focusManager = LocalFocusManager.current

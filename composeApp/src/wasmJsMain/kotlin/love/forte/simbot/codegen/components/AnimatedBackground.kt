@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -31,12 +32,14 @@ private data class Particle(
  * 动态连线背景组件
  * 在页面底部绘制不停变化、随机的点、线连接动态背景
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AnimatedBackground(
     modifier: Modifier = Modifier,
     particleCount: Int = 50,
     maxConnectionDistance: Float = 120f,
-    particleSpeed: Float = 0.65f
+    particleSpeed: Float = 0.65f,
+    mousePosition: Offset? = null
 ) {
     val density = LocalDensity.current
     val colorScheme = MaterialTheme.colorScheme
@@ -92,7 +95,8 @@ fun AnimatedBackground(
                 particles = particles,
                 connectionDistance = connectionDistancePx,
                 particleColor = baseParticleColor.copy(alpha = 0.65f), // 更高的透明度
-                connectionColor = baseConnectionColor.copy(alpha = 0.4f) // 使用次要颜色提高对比度
+                connectionColor = baseConnectionColor.copy(alpha = 0.4f), // 使用次要颜色提高对比度
+                mousePosition = mousePosition
             )
         }
     }
@@ -150,7 +154,8 @@ private fun DrawScope.drawParticlesAndConnections(
     particles: List<Particle>,
     connectionDistance: Float,
     particleColor: Color,
-    connectionColor: Color
+    connectionColor: Color,
+    mousePosition: Offset? = null
 ) {
     // 绘制连接线
     for (i in particles.indices) {
@@ -170,6 +175,26 @@ private fun DrawScope.drawParticlesAndConnections(
                     start = Offset(particle1.x, particle1.y),
                     end = Offset(particle2.x, particle2.y),
                     strokeWidth = 1f
+                )
+            }
+        }
+    }
+
+    // 绘制粒子到鼠标位置的连接线
+    mousePosition?.let { mouse ->
+        particles.forEach { particle ->
+            val distance = sqrt(
+                (particle.x - mouse.x).pow(2) +
+                        (particle.y - mouse.y).pow(2)
+            )
+
+            if (distance <= connectionDistance) {
+                val alpha = (1 - distance / connectionDistance) * connectionColor.alpha
+                drawLine(
+                    color = connectionColor.copy(alpha = alpha * 1.2f), // 鼠标连线稍微明亮一些
+                    start = Offset(particle.x, particle.y),
+                    end = mouse,
+                    strokeWidth = 1.5f // 稍微粗一些的线条
                 )
             }
         }
