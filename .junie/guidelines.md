@@ -3,7 +3,7 @@ Project-specific development guidelines for simbot-codegen
 Last verified: 2025-08-08 (local), Gradle 8.10.2, Kotlin 2.2.20-Beta1
 
 Overview
-- This repo is a Kotlin Multiplatform (KMP) workspace primarily targeting Web (JS + Wasm/JS) with Compose Multiplatform for the UI.
+- This repo is a Kotlin Multiplatform (KMP) workspace primarily targeting Web (Wasm/JS) with Compose Multiplatform for the UI.
 - Modules:
   - composeApp: Web UI and code generation front-end (Wasm/JS executable).
   - common: Shared code and small utilities (JS + Wasm/JS libraries).

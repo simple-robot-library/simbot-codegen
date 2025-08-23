@@ -49,7 +49,8 @@ fun GroupCard(
 
     val cardContainerColor by animateColorAsState(
         targetValue = if (isHovered) {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
+            // 当启用毛玻璃效果时，使用透明背景让效果显现
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
         } else {
             MaterialTheme.colorScheme.surface
         },
@@ -60,11 +61,14 @@ fun GroupCard(
         targetValue = if (isHovered) 2.dp else 0.dp,
         label = "cardElevation"
     )
+    val cardShape = RoundedCornerShape(16.dp) // 稍微增大圆角以获得更现代的外观
+    
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
+            .frostedGlass(isActive = isHovered, intensity = 0.8f, shape = cardShape)
             .hoverable(interactionSource),
-        shape = RoundedCornerShape(16.dp), // 稍微增大圆角以获得更现代的外观
+        shape = cardShape,
         border = BorderStroke(
             width = 1.dp,
             color = cardBorderColor
