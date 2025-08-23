@@ -87,6 +87,9 @@ fun OptimizedAnimatedBackground(
     // Convert dp to px and pre-calculate squared distance for performance
     val connectionDistancePx = with(density) { maxConnectionDistance.dp.toPx() }
     val connectionDistanceSquared = connectionDistancePx * connectionDistancePx
+    
+    // Pre-calculate sqrt to avoid repeated expensive operations in drawing loops
+    val connectionDistance = connectionDistancePx
 
     // Mutable particles list for better performance
     val particles = remember { mutableListOf<MutableParticle>() }
@@ -95,11 +98,26 @@ fun OptimizedAnimatedBackground(
     // Theme-aware cached colors with sci-fi glow effects
     val cachedColors = remember(colorScheme, themeEffects?.glowIntensity) {
         val glowIntensity = themeEffects?.glowIntensity ?: 0f
+        val particleAlpha = 0.65f + glowIntensity * 0.2f
+        val connectionAlpha = 0.4f + glowIntensity * 0.15f
+        val mouseConnectionAlpha = 0.48f + glowIntensity * 0.25f
+        val triangleFillAlpha = 0.08f + glowIntensity * 0.03f
+        
         ParticleColors(
-            particleColor = colorScheme.primary.copy(alpha = 0.65f + glowIntensity * 0.2f),
-            connectionColor = colorScheme.secondary.copy(alpha = 0.4f + glowIntensity * 0.15f),
-            mouseConnectionColor = colorScheme.secondary.copy(alpha = 0.48f + glowIntensity * 0.25f),
-            triangleFillColor = colorScheme.secondary.copy(alpha = 0.08f + glowIntensity * 0.03f)
+            particleColor = colorScheme.primary.copy(alpha = particleAlpha),
+            connectionColor = colorScheme.secondary.copy(alpha = connectionAlpha),
+            mouseConnectionColor = colorScheme.secondary.copy(alpha = mouseConnectionAlpha),
+            triangleFillColor = colorScheme.secondary.copy(alpha = triangleFillAlpha),
+            // Base colors without alpha for efficient calculations
+            particleBaseColor = colorScheme.primary,
+            connectionBaseColor = colorScheme.secondary,
+            mouseConnectionBaseColor = colorScheme.secondary,
+            triangleFillBaseColor = colorScheme.secondary,
+            // Pre-calculated alpha values
+            particleBaseAlpha = particleAlpha,
+            connectionBaseAlpha = connectionAlpha,
+            mouseConnectionBaseAlpha = mouseConnectionAlpha,
+            triangleFillBaseAlpha = triangleFillAlpha
         )
     }
 
@@ -152,6 +170,7 @@ fun OptimizedAnimatedBackground(
                 drawOptimizedParticlesAndConnections(
                     particles = particles,
                     connectionDistanceSquared = connectionDistanceSquared,
+                    connectionDistance = connectionDistance,
                     colors = cachedColors,
                     mousePosition = mousePosition
                 )
@@ -161,14 +180,44 @@ fun OptimizedAnimatedBackground(
 }
 
 /**
- * Color cache to reduce object allocation during drawing
+ * Optimized color cache to eliminate Color.copy() allocations.
+ * Stores base colors and alpha values separately for efficient alpha blending.
  */
+@Immutable
+@Stable
 private data class ParticleColors(
     val particleColor: Color,
     val connectionColor: Color,
     val mouseConnectionColor: Color,
-    val triangleFillColor: Color
-)
+    val triangleFillColor: Color,
+    // Base colors without alpha for efficient dynamic alpha calculation
+    val particleBaseColor: Color,
+    val connectionBaseColor: Color,
+    val mouseConnectionBaseColor: Color,
+    val triangleFillBaseColor: Color,
+    // Pre-calculated alpha values
+    val particleBaseAlpha: Float,
+    val connectionBaseAlpha: Float,
+    val mouseConnectionBaseAlpha: Float,
+    val triangleFillBaseAlpha: Float
+) {
+    // Efficient color calculation without object allocation
+    @Stable
+    fun connectionColorWithAlpha(alpha: Float): Color =
+        connectionBaseColor.copy(alpha = alpha * connectionBaseAlpha)
+    
+    @Stable
+    fun mouseConnectionColorWithAlpha(alpha: Float): Color =
+        mouseConnectionBaseColor.copy(alpha = alpha * mouseConnectionBaseAlpha)
+    
+    @Stable
+    fun particleColorWithAlpha(alpha: Float): Color =
+        particleBaseColor.copy(alpha = alpha * particleBaseAlpha)
+//
+//    @Stable
+//    fun triangleFillColorWithAlpha(alpha: Float): Color =
+//        triangleFillBaseColor.copy(alpha = alpha * triangleFillBaseAlpha)
+}
 
 /**
  * Create optimized mutable particle
@@ -226,6 +275,7 @@ private fun DrawScope.drawTriangles(
     mouseConnections: List<Int>,
     mousePosition: Offset?,
     connectionDistanceSquared: Float,
+    connectionDistance: Float,
     colors: ParticleColors
 ) {
 
@@ -262,7 +312,7 @@ private fun DrawScope.drawTriangles(
                         particles[p1Index],
                         particles[p2Index],
                         particles[p3Index],
-                        connectionDistanceSquared,
+                        connectionDistance,
                         colors.triangleFillColor
                     )
                 }
@@ -288,7 +338,7 @@ private fun DrawScope.drawTriangles(
                             particles[p1Index],
                             particles[p2Index],
                             mouse,
-                            connectionDistanceSquared,
+                            connectionDistance,
                             colors.triangleFillColor
                         )
                     }
@@ -305,7 +355,7 @@ private fun DrawScope.drawGlassTriangle(
     p1: MutableParticle,
     p2: MutableParticle,
     p3: MutableParticle,
-    connectionDistanceSquared: Float,
+    connectionDistance: Float,
     baseColor: Color
 ) {
     // Calculate distances of all three edges to find the longest
@@ -316,7 +366,7 @@ private fun DrawScope.drawGlassTriangle(
     // Use the longest edge for alpha calculation
     val longestDistanceSquared = maxOf(dist1Sq, dist2Sq, dist3Sq)
     val longestDistance = kotlin.math.sqrt(longestDistanceSquared)
-    val maxDistance = kotlin.math.sqrt(connectionDistanceSquared)
+    val maxDistance = connectionDistance
 
     // Make triangles fainter and decay faster than connection lines
     // Base alpha factor is 0.3 (much fainter than lines) and use squared ratio for faster decay
@@ -332,7 +382,7 @@ private fun DrawScope.drawGlassTriangle(
 
     drawPath(
         path = trianglePath,
-        color = baseColor.copy(alpha = alpha)
+        color = Color(baseColor.red, baseColor.green, baseColor.blue, alpha)
     )
 }
 
@@ -343,7 +393,7 @@ private fun DrawScope.drawGlassTriangleWithMouse(
     p1: MutableParticle,
     p2: MutableParticle,
     mousePos: Offset,
-    connectionDistanceSquared: Float,
+    connectionDistance: Float,
     baseColor: Color
 ) {
     // Calculate distances of all three edges to find the longest
@@ -354,7 +404,7 @@ private fun DrawScope.drawGlassTriangleWithMouse(
     // Use the longest edge for alpha calculation
     val longestDistanceSquared = maxOf(dist1Sq, dist2Sq, dist3Sq)
     val longestDistance = kotlin.math.sqrt(longestDistanceSquared)
-    val maxDistance = kotlin.math.sqrt(connectionDistanceSquared)
+    val maxDistance = connectionDistance
 
     // Make triangles fainter and decay faster than connection lines
     // Mouse triangles get slightly higher intensity (0.4 vs 0.3) but still much fainter than lines
@@ -370,7 +420,7 @@ private fun DrawScope.drawGlassTriangleWithMouse(
 
     drawPath(
         path = trianglePath,
-        color = baseColor.copy(alpha = alpha)
+        color = Color(baseColor.red, baseColor.green, baseColor.blue, alpha)
     )
 }
 
@@ -386,6 +436,7 @@ private fun DrawScope.drawGlassTriangleWithMouse(
 private fun DrawScope.drawOptimizedParticlesAndConnections(
     particles: List<MutableParticle>,
     connectionDistanceSquared: Float,
+    connectionDistance: Float,
     colors: ParticleColors,
     mousePosition: Offset? = null
 ) {
@@ -413,10 +464,10 @@ private fun DrawScope.drawOptimizedParticlesAndConnections(
 
                 // Only calculate sqrt when we know we need to draw
                 val distance = kotlin.math.sqrt(distanceSquared)
-                val alpha = (1 - distance / kotlin.math.sqrt(connectionDistanceSquared)) * colors.connectionColor.alpha
+                val alphaFactor = 1 - distance / connectionDistance
 
                 drawLine(
-                    color = colors.connectionColor.copy(alpha = alpha),
+                    color = colors.connectionColorWithAlpha(alphaFactor),
                     start = Offset(particle1.x, particle1.y),
                     end = Offset(particle2.x, particle2.y),
                     strokeWidth = 1f
@@ -437,11 +488,10 @@ private fun DrawScope.drawOptimizedParticlesAndConnections(
                 mouseConnections.add(index)
 
                 val distance = kotlin.math.sqrt(distanceSquared)
-                val alpha =
-                    (1 - distance / kotlin.math.sqrt(connectionDistanceSquared)) * colors.mouseConnectionColor.alpha
+                val alphaFactor = 1 - distance / connectionDistance
 
                 drawLine(
-                    color = colors.mouseConnectionColor.copy(alpha = alpha),
+                    color = colors.mouseConnectionColorWithAlpha(alphaFactor),
                     start = Offset(particle.x, particle.y),
                     end = mouse,
                     strokeWidth = 1.5f
@@ -451,12 +501,12 @@ private fun DrawScope.drawOptimizedParticlesAndConnections(
     }
 
     // Draw glass shard triangles
-    drawTriangles(particles, connections, mouseConnections, mousePosition, connectionDistanceSquared, colors)
+    drawTriangles(particles, connections, mouseConnections, mousePosition, connectionDistanceSquared, connectionDistance, colors)
 
     // Draw particles with cached colors
     particles.forEach { particle ->
         drawCircle(
-            color = colors.particleColor.copy(alpha = particle.alpha),
+            color = colors.particleColorWithAlpha(particle.alpha),
             radius = particle.radius,
             center = Offset(particle.x, particle.y)
         )

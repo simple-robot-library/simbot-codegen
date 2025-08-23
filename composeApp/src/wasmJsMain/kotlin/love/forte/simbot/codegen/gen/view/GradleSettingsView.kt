@@ -77,7 +77,7 @@ fun GradleSettingsView(
                             // 移动端使用较少粒子
                             WindowSize.Mobile -> Random.nextInt(20, 25)
                             WindowSize.Tablet -> Random.nextInt(35, 45)
-                            WindowSize.Desktop -> Random.nextInt(50, 65)
+                            WindowSize.Desktop -> Random.nextInt(70, 100)
                         }
                     },
                     mousePosition = mousePosition
