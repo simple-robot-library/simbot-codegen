@@ -64,11 +64,3 @@ fun rememberThemeState(): Pair<ColorMode, () -> Unit> {
     
     return colorMode to toggleColorMode
 }
-
-/**
- * Extension function for ColorMode to toggle between light and dark
- */
-fun ColorMode.toggle(): ColorMode = when (this) {
-    ColorMode.LIGHT -> ColorMode.DARK
-    ColorMode.DARK -> ColorMode.LIGHT
-}

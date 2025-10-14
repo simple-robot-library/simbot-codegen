@@ -75,8 +75,8 @@ object JavaTemplates {
                 returns(JavaPrimitiveTypeNames.VOID.ref())
                 addParameter(
                     JavaParameterSpec(
+                        "args",
                         ArrayTypeName(JavaClassNames.STRING.ref()).ref(),
-                        "args"
                     )
                 )
 
@@ -130,8 +130,8 @@ object JavaTemplates {
                 }
                 addParameter(
                     JavaParameterSpec(
+                        "args",
                         ArrayTypeName(JavaClassNames.STRING.ref()).ref(),
-                        "args"
                     )
                 )
 
@@ -274,8 +274,8 @@ object JavaTemplates {
 
             addParameter(
                 JavaParameterSpec(
+                    "event",
                     SimbotNames.eventClassName.ref(),
-                    "event"
                 )
             )
 
@@ -304,7 +304,7 @@ object JavaTemplates {
                 addMember("value", "%V", CodePart.string(DEFAULT_FILTER_TEXT))
             }
 
-            addParameter(JavaParameterSpec(SimbotNames.msgEventClassName.ref(), "event"))
+            addParameter(JavaParameterSpec("event", SimbotNames.msgEventClassName.ref()))
 
             if (javaStyle == JavaStyle.ASYNC) {
                 returns(
@@ -356,8 +356,8 @@ object JavaTemplates {
 
             addParameter(
                 JavaParameterSpec(
+                    "event",
                     SimbotNames.contactMsgEventClassName.ref(),
-                    "event"
                 )
             )
 
@@ -411,8 +411,8 @@ object JavaTemplates {
 
             addParameter(
                 JavaParameterSpec(
+                    "event",
                     SimbotNames.eventClassName.ref(),
-                    "event"
                 )
             )
 
