@@ -462,7 +462,6 @@ private inline fun AnnotatedString.splitLines(onLine: (AnnotatedString) -> Unit)
     var nextStart = 0
     var nextEnd = contentString.indexOf('\n')
     while (nextEnd >= 0) {
-        println("each nextStart: $nextStart, nextEnd: $nextEnd")
         val line = contentString.subSequence(nextStart, nextEnd)
         onLine(line)
         nextStart = nextEnd + 1
@@ -470,7 +469,6 @@ private inline fun AnnotatedString.splitLines(onLine: (AnnotatedString) -> Unit)
     }
 
     if (nextStart < contentString.length) {
-        println("final nextStart: $nextStart, nextEnd: $nextEnd")
         val line = contentString.subSequence(nextStart, contentString.length)
         onLine(line)
     }

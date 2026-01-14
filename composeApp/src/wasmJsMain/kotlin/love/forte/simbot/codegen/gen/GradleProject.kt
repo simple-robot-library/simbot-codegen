@@ -53,7 +53,7 @@ class GradleProjectViewModel : ViewModel() {
     var gradleSettings by mutableStateOf(GradleSettings())
 
     var simbotVersion: String? by mutableStateOf(null)
-    var kotlinVersion: String by mutableStateOf("2.1.20") // TODO initial able?
+    var kotlinVersion: String by mutableStateOf("2.3.0") // TODO initial able?
 
     // 编程语言选择
     var programmingLanguage: ProgrammingLanguage by mutableStateOf(ProgrammingLanguage.Kotlin("2.1.20"))

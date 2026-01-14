@@ -177,8 +177,28 @@ fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
         label = "outlineVariant"
     )
     val animatedScrim by animateColorAsState(targetColors.scrim, animationSpec, label = "scrim")
+    val animatedSurfaceBright by animateColorAsState(targetColors.surfaceBright, animationSpec, label = "surfaceBright")
+    val animatedSurfaceDim by animateColorAsState(targetColors.surfaceDim, animationSpec, label = "surfaceDim")
+    val animatedSurfaceContainer by animateColorAsState(targetColors.surfaceContainer, animationSpec, label = "surfaceContainer")
+    val animatedSurfaceContainerHigh by animateColorAsState(targetColors.surfaceContainerHigh, animationSpec, label = "surfaceContainerHigh")
+    val animatedSurfaceContainerHighest by animateColorAsState(targetColors.surfaceContainerHighest, animationSpec, label = "surfaceContainerHighest")
+    val animatedSurfaceContainerLow by animateColorAsState(targetColors.surfaceContainerLow, animationSpec, label = "surfaceContainerLow")
+    val animatedSurfaceContainerLowest by animateColorAsState(targetColors.surfaceContainerLowest, animationSpec, label = "surfaceContainerLowest")
 
-    return ColorScheme(
+    val animatedPrimaryFixed by animateColorAsState(targetColors.primaryFixed, animationSpec, label = "primaryFixed")
+    val animatedOnPrimaryFixed by animateColorAsState(targetColors.onPrimaryFixed, animationSpec, label = "onPrimaryFixed")
+    val animatedPrimaryFixedDim by animateColorAsState(targetColors.primaryFixedDim, animationSpec, label = "primaryFixedDim")
+    val animatedOnPrimaryFixedVariant by animateColorAsState(targetColors.onPrimaryFixedVariant, animationSpec, label = "onPrimaryFixedVariant")
+    val animatedSecondaryFixed by animateColorAsState(targetColors.secondaryFixed, animationSpec, label = "secondaryFixed")
+    val animatedOnSecondaryFixed by animateColorAsState(targetColors.onSecondaryFixed, animationSpec, label = "onSecondaryFixed")
+    val animatedSecondaryFixedDim by animateColorAsState(targetColors.secondaryFixedDim, animationSpec, label = "secondaryFixedDim")
+    val animatedOnSecondaryFixedVariant by animateColorAsState(targetColors.onSecondaryFixedVariant, animationSpec, label = "onSecondaryFixedVariant")
+    val animatedTertiaryFixed by animateColorAsState(targetColors.tertiaryFixed, animationSpec, label = "tertiaryFixed")
+    val animatedOnTertiaryFixed by animateColorAsState(targetColors.onTertiaryFixed, animationSpec, label = "onTertiaryFixed")
+    val animatedTertiaryFixedDim by animateColorAsState(targetColors.tertiaryFixedDim, animationSpec, label = "tertiaryFixedDim")
+    val animatedOnTertiaryFixedVariant by animateColorAsState(targetColors.onTertiaryFixedVariant, animationSpec, label = "onTertiaryFixedVariant")
+
+    return targetColors.copy(
         primary = animatedPrimary,
         onPrimary = animatedOnPrimary,
         primaryContainer = animatedPrimaryContainer,
@@ -208,12 +228,24 @@ fun rememberAnimatedColorScheme(colorMode: ColorMode): ColorScheme {
         outline = animatedOutline,
         outlineVariant = animatedOutlineVariant,
         scrim = animatedScrim,
-        surfaceBright = targetColors.surfaceBright,
-        surfaceDim = targetColors.surfaceDim,
-        surfaceContainer = targetColors.surfaceContainer,
-        surfaceContainerHigh = targetColors.surfaceContainerHigh,
-        surfaceContainerHighest = targetColors.surfaceContainerHighest,
-        surfaceContainerLow = targetColors.surfaceContainerLow,
-        surfaceContainerLowest = targetColors.surfaceContainerLowest
+        surfaceBright = animatedSurfaceBright,
+        surfaceDim = animatedSurfaceDim,
+        surfaceContainer = animatedSurfaceContainer,
+        surfaceContainerHigh = animatedSurfaceContainerHigh,
+        surfaceContainerHighest = animatedSurfaceContainerHighest,
+        surfaceContainerLow = animatedSurfaceContainerLow,
+        surfaceContainerLowest = animatedSurfaceContainerLowest,
+        primaryFixed = animatedPrimaryFixed,
+        onPrimaryFixed = animatedOnPrimaryFixed,
+        primaryFixedDim = animatedPrimaryFixedDim,
+        onPrimaryFixedVariant = animatedOnPrimaryFixedVariant,
+        secondaryFixed = animatedSecondaryFixed,
+        onSecondaryFixed = animatedOnSecondaryFixed,
+        secondaryFixedDim = animatedSecondaryFixedDim,
+        onSecondaryFixedVariant = animatedOnSecondaryFixedVariant,
+        tertiaryFixed = animatedTertiaryFixed,
+        onTertiaryFixed = animatedOnTertiaryFixed,
+        tertiaryFixedDim = animatedTertiaryFixedDim,
+        onTertiaryFixedVariant = animatedOnTertiaryFixedVariant,
     )
 }

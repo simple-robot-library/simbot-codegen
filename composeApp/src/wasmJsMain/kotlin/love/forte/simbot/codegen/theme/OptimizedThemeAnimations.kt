@@ -3,7 +3,6 @@ package love.forte.simbot.codegen.theme
 import androidx.compose.animation.core.*
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import love.forte.simbot.codegen.ColorMode
 import love.forte.simbot.codegen.darkColors
@@ -42,10 +41,10 @@ private class ColorSchemeCache {
     private var cachedColorScheme: ColorScheme? = null
     private var cachedLightColors: ColorScheme? = null
     private var cachedDarkColors: ColorScheme? = null
-    
+
     fun getColorScheme(
-        progress: Float, 
-        lightColors: ColorScheme, 
+        progress: Float,
+        lightColors: ColorScheme,
         darkColors: ColorScheme
     ): ColorScheme {
         // Cache color schemes to avoid repeated allocations
@@ -57,12 +56,12 @@ private class ColorSchemeCache {
             cachedDarkColors = darkColors
             cachedProgress = -1f // Invalidate cache
         }
-        
+
         // Return cached result if progress hasn't changed significantly
         if (abs(cachedProgress - progress) < 0.001f && cachedColorScheme != null) {
             return cachedColorScheme!!
         }
-        
+
         // Create new interpolated color scheme
         val interpolated = interpolateColorScheme(lightColors, darkColors, progress)
         cachedProgress = progress
@@ -81,7 +80,7 @@ fun rememberOptimizedAnimatedColorScheme(
 ): ColorScheme {
     // Use remember to maintain cache across recompositions
     val cache = remember { ColorSchemeCache() }
-    
+
     // Single animation value that controls the entire transition
     val progress by animateFloatAsState(
         targetValue = when (colorMode) {
@@ -91,7 +90,7 @@ fun rememberOptimizedAnimatedColorScheme(
         animationSpec = if (useSciFiEffects) sciFiTransitionSpec else themeTransitionSpec,
         label = "themeProgress"
     )
-    
+
     // Use cached interpolation to minimize allocations
     return cache.getColorScheme(progress, lightColors, darkColors)
 }
@@ -105,7 +104,7 @@ private fun interpolateColorScheme(
     darkColors: ColorScheme,
     progress: Float
 ): ColorScheme {
-    return ColorScheme(
+    return lightColors.copy(
         primary = lerp(lightColors.primary, darkColors.primary, progress),
         onPrimary = lerp(lightColors.onPrimary, darkColors.onPrimary, progress),
         primaryContainer = lerp(lightColors.primaryContainer, darkColors.primaryContainer, progress),
@@ -140,9 +139,26 @@ private fun interpolateColorScheme(
         surfaceDim = lerp(lightColors.surfaceDim, darkColors.surfaceDim, progress),
         surfaceContainer = lerp(lightColors.surfaceContainer, darkColors.surfaceContainer, progress),
         surfaceContainerHigh = lerp(lightColors.surfaceContainerHigh, darkColors.surfaceContainerHigh, progress),
-        surfaceContainerHighest = lerp(lightColors.surfaceContainerHighest, darkColors.surfaceContainerHighest, progress),
+        surfaceContainerHighest = lerp(
+            lightColors.surfaceContainerHighest,
+            darkColors.surfaceContainerHighest,
+            progress
+        ),
         surfaceContainerLow = lerp(lightColors.surfaceContainerLow, darkColors.surfaceContainerLow, progress),
-        surfaceContainerLowest = lerp(lightColors.surfaceContainerLowest, darkColors.surfaceContainerLowest, progress)
+        surfaceContainerLowest = lerp(lightColors.surfaceContainerLowest, darkColors.surfaceContainerLowest, progress),
+        // Fixed Colors
+        primaryFixed = lerp(lightColors.primaryFixed, darkColors.primaryFixed, progress),
+        onPrimaryFixed = lerp(lightColors.onPrimaryFixed, darkColors.onPrimaryFixed, progress),
+        primaryFixedDim = lerp(lightColors.primaryFixedDim, darkColors.primaryFixedDim, progress),
+        onPrimaryFixedVariant = lerp(lightColors.onPrimaryFixedVariant, darkColors.onPrimaryFixedVariant, progress),
+        secondaryFixed = lerp(lightColors.secondaryFixed, darkColors.secondaryFixed, progress),
+        onSecondaryFixed = lerp(lightColors.onSecondaryFixed, darkColors.onSecondaryFixed, progress),
+        secondaryFixedDim = lerp(lightColors.secondaryFixedDim, darkColors.secondaryFixedDim, progress),
+        onSecondaryFixedVariant = lerp(lightColors.onSecondaryFixedVariant, darkColors.onSecondaryFixedVariant, progress),
+        tertiaryFixed = lerp(lightColors.tertiaryFixed, darkColors.tertiaryFixed, progress),
+        onTertiaryFixed = lerp(lightColors.onTertiaryFixed, darkColors.onTertiaryFixed, progress),
+        tertiaryFixedDim = lerp(lightColors.tertiaryFixedDim, darkColors.tertiaryFixedDim, progress),
+        onTertiaryFixedVariant = lerp(lightColors.onTertiaryFixedVariant, darkColors.onTertiaryFixedVariant, progress),
     )
 }
 
@@ -154,26 +170,26 @@ private fun interpolateColorScheme(
 fun rememberSciFiThemeEffects(colorMode: ColorMode): ThemeEffectState {
     var isTransitioning by remember { mutableStateOf(false) }
     var lastColorMode by remember { mutableStateOf(colorMode) }
-    
+
     // Detect theme transition start
     LaunchedEffect(colorMode) {
         if (lastColorMode != colorMode) {
             isTransitioning = true
             lastColorMode = colorMode
-            
+
             // Auto-reset transition state after animation completes
             kotlinx.coroutines.delay(450) // Slightly longer than animation duration
             isTransitioning = false
         }
     }
-    
+
     // Glow intensity animation for sci-fi effect
     val glowIntensity by animateFloatAsState(
         targetValue = if (isTransitioning) 1f else 0f,
         animationSpec = tween(200),
         label = "glowIntensity"
     )
-    
+
     // Pulse effect for transition feedback
     val pulseScale by animateFloatAsState(
         targetValue = if (isTransitioning) 1.02f else 1f,
@@ -183,7 +199,7 @@ fun rememberSciFiThemeEffects(colorMode: ColorMode): ThemeEffectState {
         ),
         label = "pulseScale"
     )
-    
+
     return ThemeEffectState(
         isTransitioning = isTransitioning,
         glowIntensity = glowIntensity,
@@ -206,13 +222,13 @@ data class ThemeEffectState(
  */
 object ThemePerformanceMonitor {
     private var frameCount = 0
-    
+
     fun recordFrame() {
         frameCount++
     }
-    
+
     fun getFrameCount(): Int = frameCount
-    
+
     fun reset() {
         frameCount = 0
     }
