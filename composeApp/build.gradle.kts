@@ -87,6 +87,7 @@ kotlin {
         wasmJsMain.dependencies {
             implementation(kotlinWrappers.jszip)
             implementation(project(":file-saver-kotlin"))
+            //implementation("site.addzero:compose-native-component-glass:2025.12.22")
         }
 
         wasmJsTest.dependencies {
